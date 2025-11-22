@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Bot;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Signal;
+use App\Models\BotStatus;
+use App\Models\TradeLog;
 
 class BotStatusController extends Controller
 {

@@ -4,8 +4,7 @@ use App\Http\Controllers\Bot\SignalController;
 use App\Http\Controllers\Bot\TradeLogController;
 use App\Http\Controllers\Bot\BotStatusController;
 
-Route::middleware('apikey')->group(function () {
-
+Route::prefix('bot')->group(function () {
     // Signals
     Route::get('/signal', [SignalController::class, 'getActive']);
     Route::post('/signal', [SignalController::class, 'store']);
@@ -16,5 +15,6 @@ Route::middleware('apikey')->group(function () {
     // Bot Status
     Route::post('/bot/status', [BotStatusController::class, 'update']);
     Route::get('/bot/status', [BotStatusController::class, 'latest']);
-
 });
+
+    

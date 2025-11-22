@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('api_keys', function (Blueprint $table) {
             $table->id();
+            $table->string('key')->unique();
+            $table->string('label')->nullable();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TradeLog;
+use App\Models\Signal;
 
 class SignalController extends Controller
 {
