@@ -50,12 +50,10 @@ class RegisterController extends Controller
             'password' => Hash::make($request->pin),
             'role_id' => 1, // Default to regular user
         ]);
-
         event(new Registered($user));
-
         Auth::login($user);
 
-        return redirect()->route('user.dashboard')->with('success', 'Registration successful. Welcome!');
+        return redirect()->route('admin.dashboard')->with('success', 'Registration successful. Welcome!');
     }
 
     /**

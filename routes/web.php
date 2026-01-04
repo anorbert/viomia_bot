@@ -13,8 +13,20 @@ use App\Http\Controllers\EditorController;
 use App\Http\Controllers\UserController;
 
 //Admin
+use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\BotController;
+use App\Http\Controllers\Admin\TradeController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\RoleController;
 
-use App\Http\Controllers\Users\UserReportController;
+use App\Http\Controllers\Admin\SignalController;
+use App\Http\Controllers\ExitLogsController;
+
+//Bot Controllers
+use App\Http\Controllers\Bot\TradeLogController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,37 +37,65 @@ Route::resource('user_register',RegisterController::class);
 Route::get('/user_register', [RegisterController::class, 'index'])->name('user_register');
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
-    Route::resource('vehicles', ExemptedVehicleController::class);
-    Route::resource('payments', PaymentController::class);
-    Route::resource('reports', UserReportController::class);
-    Route::resource('change-pin', LoginController::class);
+
 });
 
 // Login routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+Route::match(['get', 'post'], '/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Register routes
 Route::get('/register', [RegisterController::class, 'index'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+//Admin Routes - Protected by role middleware
+Route::prefix('admin')
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.')
+    ->group(function () {
 
-Route::middleware('auth')->group(function () {
-    //Dashboard
-    Route::resource('staff',StaffController::class);
-    Route::resource('vehicles',VehicleController::class);
-   
-    Route::resource('logs',ExitLogsController::class);
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/editor/dashboard', [EditorController::class, 'index'])->name('editor.dashboard');
-    Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');  
+        // Dashboard
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        
+        Route::get('/dashboard/metrics', [DashboardController::class, 'metrics'])
+        ->name('dashboard.metrics');
 
-});
+        // Clients
+        Route::resource('clients', ClientController::class);
+        Route::get('clients/{client}/subscriptions', [ClientController::class, 'subscriptions'])
+            ->name('clients.subscriptions');
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    // Route::resource('exempted-vehicles', ExemptedVehicleController::class);
-    Route::resource('payments', AdminPaymentController::class);
-    Route::resource('reports', AdminReportController::class);
+        // Trading Accounts
+        Route::resource('accounts', AccountController::class);
+        Route::get('accounts/{account}/verify', [AccountController::class, 'verify'])
+            ->name('accounts.verify');
+        Route::get('accounts-pending', [AccountController::class, 'pending'])
+            ->name('accounts.pending');
 
-});
+        // Bots
+        Route::resource('bots', BotController::class);
+        Route::get('bots/logs', [BotController::class, 'logs'])->name('bots.logs');
+        Route::get('bots/settings', [BotController::class, 'settings'])->name('bots.settings');
+
+        // Trading Activity
+        Route::resource('trades', TradeLogController::class);
+        Route::get('trades/statistics', [TradeController::class, 'statistics'])->name('trades.statistics');
+        Route::get('trades/symbols', [TradeController::class, 'symbols'])->name('trades.symbols');
+
+        // Payments
+        Route::resource('payments', PaymentController::class);
+        Route::get('payment-plans', [PaymentController::class, 'plans'])->name('payments.plans');
+        Route::get('payment-reports', [PaymentController::class, 'reports'])->name('payments.reports');
+
+        // Settings
+        Route::resource('users', UserController::class);
+        Route::resource('roles', RoleController::class);
+        Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('settings/save', [SettingController::class, 'save'])->name('settings.save');
+
+        // Signals
+        Route::resource('signals', SignalController::class);
+
+    });
 

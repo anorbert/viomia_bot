@@ -79,26 +79,45 @@ class NewsController extends Controller
 
     public function next(Request $request)
     {
+        // 1️⃣ Log request source
+        \Log::info('Incoming News Request', [
+            'method' => $request->method(),
+            'query'  => $request->query(),
+        ]);
+
+        // 2️⃣ Read currency from query string (MT5-compatible)
         $currency = $request->query('currency', 'USD');
+
         $now = Carbon::now();
 
+        // 3️⃣ Fetch nearest upcoming HIGH-impact news
         $event = NewsEvent::where('currency', $currency)
             ->where('impact', 'high')
+            ->where('event_time', '>=', $now)
             ->orderBy('event_time', 'asc')
-            ->get();
-        return $event;
+            ->first();
 
-        if (!$event) {
-            return response()->json(['message' => 'No upcoming news'], 404);
+        if (!$event) {            
+            \Log::info('No News Available at moment');
+            return response()->json([
+                'message' => 'No upcoming high-impact news'
+            ], 200);
+
         }
-
+        \Log::info('News lookup', [
+            'currency' => $currency,
+            'now' => Carbon::now()->toDateTimeString(),
+            'count' => NewsEvent::count(),
+        ]);
         return response()->json([
-            'id' => $event->id,
-            'currency' => $event->currency,
+            'id'         => $event->id,
+            'currency'   => $event->currency,
             'event_name' => $event->event_name,
-            'event_time' => $event->event_time,
-            'impact' => $event->impact,
-            'notified' => $event->notified,
+            'event_time' => Carbon::parse($event->event_time)->format('Y-m-d H:i:s'),
+            'impact'     => $event->impact,
+            'notified'   => (int) $event->notified,
         ]);
     }
+
+
 }

@@ -1,92 +1,123 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="">
-  <div class="page-title">
-    <div class="title_left">
-      <h3>Parking Management Dashboard</h3>
+<div class="container-fluid">
+
+  {{-- ================= HEADER ================= --}}
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <h3 class="mb-0">Trading Bot Control Center</h3>
+      <small class="text-muted">Live system & performance overview</small>
+    </div>
+    <div class="col-md-6 text-right">
+      <span class="badge badge-success px-3 py-2">
+        <i class="fa fa-circle"></i> LIVE
+      </span>
     </div>
   </div>
 
-  <div class="clearfix"></div>
-
-  {{-- Top Tiles --}}
+  {{-- ================= PRIMARY KPIs ================= --}}
   <div class="row tile_count">
-    <div class="col-md-2 col-sm-4 tile_stats_count">
-      <span class="count_top"><i class="fa fa-car"></i> Total Parking Slots</span>
-      <div class="count">{{ $totalSlots ?? '120' }}</div>
-      <span class="count_bottom"><i class="green">+5 </i> New This Week</span>
+
+    <div class="col-md-3 tile_stats_count">
+      <span class="count_top">Today's Profit</span>
+      <div class="count green" id="todaysProfit">
+        {{ number_format($todaysProfit, 2) }} USD
+      </div>
+      <span class="count_bottom">Net P/L</span>
     </div>
-    <div class="col-md-2 col-sm-4 tile_stats_count">
-      <span class="count_top"><i class="fa fa-car-side"></i> Occupied Slots</span>
-      <div class="count">{{ $occupiedSlots ?? '87' }}</div>
-      <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i> 5% </i> Today</span>
+
+    <div class="col-md-3 tile_stats_count">
+      <span class="count_top">Trades Today</span>
+      <div class="count" id="tradesToday">{{ $todaysTrades }}</div>
+      <span class="count_bottom">Closed positions</span>
     </div>
-    <div class="col-md-4 col-sm-4 tile_stats_count">
-      <span class="count_top"><i class="fa fa-money-bill-wave"></i> Total Daily Revenue</span>
-      <div class="count green">{{ number_format($totalRevenue ?? 0) }} Rwf</div>
-      <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i></i> Today</span>
+
+    <div class="col-md-3 tile_stats_count">
+      <span class="count_top">Win Rate</span>
+      <div class="count" id="winRate">
+        {{ $todaysTrades > 0 ? round(($todaysWins / $todaysTrades) * 100, 1) : 0 }}%
+      </div>
+      <span class="count_bottom">Accuracy</span>
     </div>
-    <div class="col-md-2 col-sm-4 tile_stats_count">
-      <span class="count_top"><i class="fa fa-ticket-alt"></i> Active Tickets</span>
-      <div class="count">{{ $activeTickets ?? '175' }}</div>
-      <span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>2% </i> vs. Last Week</span>
+
+    <div class="col-md-3 tile_stats_count">
+      <span class="count_top">Active Bots</span>
+      <div class="count">{{ $activeBots }}</div>
+      <span class="count_bottom text-success">Running</span>
     </div>
+
   </div>
 
-  {{-- Quick Reports Table --}}
+  {{-- ================= SECONDARY KPIs ================= --}}
+  <div class="row mt-3">
+
+    <div class="col-md-2">
+      <div class="x_panel text-center">
+        <h5>Clients</h5>
+        <h3>{{ $totalClients }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="x_panel text-center">
+        <h5>New (7d)</h5>
+        <h3 class="green">+{{ $newClients }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="x_panel text-center">
+        <h5>Accounts</h5>
+        <h3>{{ $connectedAccounts }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="x_panel text-center">
+        <h5>Avg Trade Duration</h5>
+        <h3>{{ round($avgTradeDuration, 1) }} min</h3>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="x_panel text-center">
+        <h5>Server Health</h5>
+        <h3 class="{{ $serverHealth === 'OK' ? 'green' : 'red' }}">
+          {{ $serverHealth }}
+        </h3>
+      </div>
+    </div>
+
+  </div>
+
+  {{-- ================= CHARTS ================= --}}
   <div class="row mt-4">
-    <div class="col-md-12">
+
+    <div class="col-md-8">
       <div class="x_panel">
         <div class="x_title">
-          <h2>Quick Parking Reports</h2>
+          <h2>Profit Curve (12 Months)</h2>
           <div class="clearfix"></div>
         </div>
         <div class="x_content">
-          <table class="table table-bordered">
-            <thead class="thead-light">
-              <tr>
-                <th>Report Type</th>
-                <th>Value</th>
-                <th>Period</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><i class="fa fa-coins"></i> Today's Revenue</td>
-                <td><strong>{{ number_format($todaysRevenue ?? 0) }} RWF</strong></td>
-                <td>Today</td>
-              </tr>
-              <tr>
-                <td><i class="fa fa-receipt"></i> Today's Transactions</td>
-                <td><strong>{{ $todaysTransactions ?? 0 }}</strong></td>
-                <td>Today</td>
-              </tr>
-              <tr>
-                <td><i class="fa fa-receipt"></i> MOMO Revenue </td>
-                <td><strong>{{ $momo ?? 0 }}</strong></td>
-                <td>Today</td>
-              </tr>
-              <tr>
-                <td><i class="fa fa-receipt"></i> CASH Revenue</td>
-                <td><strong>{{ $cash ?? 0 }}</strong></td>
-                <td>Today</td>
-              </tr>
-              <tr>
-                <td><i class="fa fa-clock"></i> Avg. Parking Duration</td>
-                <td><strong>{{ round($avgDuration ?? 0, 1) }} minutes</strong></td>
-                <td>Today</td>
-              </tr>
-              <tr>
-                <td><i class="fa fa-car"></i> Exempted Vehicles</td>
-                <td><strong>{{ $exemptedCount ?? 0 }}</strong></td>
-                <td>Currently Active</td>
-              </tr>
-            </tbody>
-          </table>
+          <canvas id="profitChart" height="110"></canvas>
         </div>
       </div>
     </div>
+
+    <div class="col-md-4">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Trades by Symbol</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <canvas id="symbolChart" height="110"></canvas>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>
@@ -96,53 +127,56 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-  // Occupancy by Zone Chart
-  const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
-  new Chart(occupancyCtx, {
-    type: 'bar',
-    data: {
-      labels: @json($zoneNames ?? []),
-      datasets: [{
-        label: 'Occupied Slots',
-        data: @json($occupancyCounts ?? []),
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
+/* ================= PROFIT CURVE ================= */
+const profitChart = new Chart(document.getElementById('profitChart'), {
+  type: 'line',
+  data: {
+    labels: @json($months),
+    datasets: [{
+      label: 'Net Profit (USD)',
+      data: @json($monthlyProfit),
+      borderWidth: 2,
+      tension: 0.35,
+      fill: true
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: false } }
+  }
+});
 
-  // Revenue Trends Chart
-  const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-  new Chart(revenueCtx, {
-    type: 'line',
-    data: {
-      labels: @json($months ?? []),
-      datasets: [{
-        label: 'Revenue (RWF)',
-        data: @json($revenues ?? []),
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' }
-      },
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
-  });
+/* ================= SYMBOL DISTRIBUTION ================= */
+const symbolChart = new Chart(document.getElementById('symbolChart'), {
+  type: 'bar',
+  data: {
+    labels: @json($symbolData->pluck('symbol')),
+    datasets: [{
+      data: @json($symbolData->pluck('total')),
+      borderWidth: 1
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } }
+  }
+});
+
+/* ================= REAL-TIME UPDATES ================= */
+setInterval(async () => {
+  const res = await fetch("{{ route('admin.dashboard.metrics') }}");
+  const d = await res.json();
+
+  document.getElementById('todaysProfit').innerText =
+    d.profit.toFixed(2) + ' USD';
+
+  document.getElementById('tradesToday').innerText = d.trades;
+
+  const winRate = d.trades > 0
+    ? ((d.wins / d.trades) * 100).toFixed(1)
+    : 0;
+
+  document.getElementById('winRate').innerText = winRate + '%';
+
+}, 5000);
 </script>
 @endsection

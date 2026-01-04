@@ -3,8 +3,8 @@
 
     <!-- Site Title -->
     <div class="navbar nav_title" style="border: 0;">
-      <a href="" class="site_title">
-        <i class="fa fa-car"></i> <span>Parking Manager</span>
+      <a href="{{ route('admin.dashboard') }}" class="site_title">
+        <i class="fa fa-robot"></i> <span>Bot Manager</span>
       </a>
     </div>
 
@@ -13,7 +13,7 @@
     <!-- Profile Info -->
     <div class="profile clearfix">
       <div class="profile_pic">
-        <img src="{{ asset('img/pfr_logo2.png') }}" alt="Profile Picture" class="img-circle profile_img">
+        <img src="{{ asset('img/bot_logo.png') }}" alt="Profile Picture" class="img-circle profile_img">
       </div>
       <div class="profile_info">
         <span>Welcome,</span>
@@ -29,36 +29,69 @@
         <h3>Main Menu</h3>
         <ul class="nav side-menu">
 
+          {{-- Dashboard --}}
           <li>
-            <a href="{{route('admin.dashboard')}}">
+            <a href="{{ route('admin.dashboard') }}">
               <i class="fa fa-home"></i> Dashboard
             </a>
           </li>
 
+          {{-- Clients Management --}}
           <li>
-            <a><i class="fa fa-th"></i> Parking Management <span class="fa fa-chevron-down"></span></a>
+            <a><i class="fa fa-users"></i> Clients <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-              <li><a href="{{route('zones.index')}}">Zones</a></li>
-              <li><a href="{{route('slots.index')}}">Parking Slots</a></li>
-              <li><a href="{{route('vehicles.index')}}">Exempted Vehicles</a></li>
-              <li><a href="{{route('logs.index')}}">Entry & Exit Logs</a></li>
+              <li><a href="{{ route('admin.clients.index') }}">All Clients</a></li>
+              <li><a href="">Subscriptions</a></li>
             </ul>
           </li>
 
+          {{-- Trading Accounts --}}
+          <li>
+            <a><i class="fa fa-link"></i> Trading Accounts <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="{{ route('admin.accounts.index') }}">Connected Accounts</a></li>
+              <li><a href="{{ route('admin.accounts.pending') }}">Pending Verification</a></li>
+            </ul>
+          </li>
+
+          {{-- Bots --}}
+          <li>
+            <a><i class="fa fa-robot"></i> Bots <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="{{ route('admin.bots.index') }}">All Bots</a></li>
+              <li><a href="{{ route('admin.bots.logs') }}">Bot Logs</a></li>
+              <li><a href="{{ route('admin.bots.settings') }}">Bot Settings</a></li>
+            </ul>
+          </li>
+
+          {{-- Trading Activity --}}
+          <li>
+            <a><i class="fa fa-chart-line"></i> Trading Activity <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+              <li><a href="{{ route('admin.signals.index') }}">Signals</a></li>
+              <li><a href="{{ route('admin.trades.index') }}">Trades</a></li>
+              <li><a href="{{ route('admin.trades.statistics') }}">Statistics</a></li>
+              <li><a href="{{ route('admin.trades.symbols') }}">Symbols</a></li>
+            </ul>
+          </li>
+
+          {{-- Payments --}}
           <li>
             <a><i class="fa fa-credit-card"></i> Payments <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-              <li><a href="{{route('admin.payments.index')}}">All Payments</a></li>
-              <li><a href="{{route('admin.reports.index')}}">Reports</a></li>
+              <li><a href="{{ route('admin.payments.index') }}">All Payments</a></li>
+              <li><a href="{{ route('admin.payments.plans') }}">Subscription Plans</a></li>
+              <li><a href="{{ route('admin.payments.reports') }}">Payment Reports</a></li>
             </ul>
           </li>
 
+          {{-- Settings --}}
           <li>
-            <a><i class="fa fa-cogs"></i> Settings <span class="fa fa-chevron-down"></span></a>
+            <a><i class="fa fa-cogs"></i> System Settings <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-              <li><a href="{{route('staff.index')}}">Users</a></li>
-              <li><a href="{{route('rates.index')}}">Parking Rates</a></li>
-              <li><a href="">System Settings</a></li>
+              <li><a href="{{ route('admin.users.index') }}">Admin Users</a></li>
+              <li><a href="{{ route('admin.roles.index') }}">Roles & Permissions</a></li>
+              <li><a href="{{ route('admin.settings.index') }}">General Settings</a></li>
             </ul>
           </li>
 
@@ -78,11 +111,12 @@
         <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
       </a>
       <a data-toggle="tooltip" data-placement="top" title="Logout"
-         href="{{ route('logout') }}"
+         href=""
          onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
         <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
       </a>
-      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+
+      <form id="logout-form" action="" method="POST" style="display: none;">
         @csrf
       </form>
     </div>

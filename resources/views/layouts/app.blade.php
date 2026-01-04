@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Parking Management System')</title>
+    <title>@yield('title', 'Viomia Trading Bot')</title>
     <meta content="@yield('keywords', '')" name="keywords">
     <meta content="@yield('description', '')" name="description">
 

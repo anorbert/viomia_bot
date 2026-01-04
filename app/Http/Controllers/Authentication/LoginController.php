@@ -15,11 +15,22 @@ use Illuminate\Support\Facades\Validator;
 class LoginController extends Controller
 {
     /**
+     * Display login form
+     */
+    public function showLoginForm()
+    {
+        if (Auth::check()) {
+            return $this->redirectBasedOnRole();
+        }
+        return view('login');
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return $this->showLoginForm();
     }
 
     /**
@@ -55,23 +66,25 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
             Log::info('User logged in successfully. User ID: ' . $user->id);
+            
+            // Check if user account is active
+            if (!$user->is_active) {
+                Auth::logout();
+                Log::warning('Login attempt from inactive user. User ID: ' . $user->id);
+                return redirect()->back()->with('error', 'Your account has been deactivated.');
+            }
+            
             //check if pin is 1234 and redirect to change pin page
             if ($credentials['password'] === '1234') {
                 Log::info('User attempted to login with default pin. Phone: ' . $request->phone);
                 return redirect()->route('user.change-pin.create')->with('warning', 'Please change your default PIN.');
             }
+            
+            // Update last login timestamp
+            $user->update(['last_login_at' => now()]);
+            
             // Redirect based on role
-            switch ($user->role_id) {
-                case 1:
-                    return redirect()->route('admin.dashboard')->with('success', 'Welcome Admin!');
-                case 2:
-                    return redirect()->route('editor.dashboard')->with('success', 'Welcome Editor!');
-                case 3:
-                    return redirect()->route('user.dashboard')->with('success', 'Welcome!');
-                default:
-                    Auth::logout();
-                    return redirect()->back()->with('error', 'Unauthorized role.');
-            }
+            return $this->redirectBasedOnRole($user);
         }
 
         Log::warning('Failed login attempt for phone: ' . $request->phone);
@@ -122,6 +135,41 @@ class LoginController extends Controller
         Auth::logout(); // Log out the user after changing PIN
         return redirect()->route('/')->with('success', 'PIN changed successfully. Please log in again.');
 
+    }
+
+    /**
+     * Logout the user
+     */
+    public function logout(Request $request)
+    {
+        Log::info('User logged out. User ID: ' . Auth::id());
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/')->with('success', 'Logged out successfully.');
+    }
+
+    /**
+     * Redirect user based on role
+     */
+    private function redirectBasedOnRole($user = null)
+    {
+        if (!$user) {
+            $user = Auth::user();
+        }
+        
+        switch ($user->role_id) {
+            case 1: // Admin
+                return redirect()->route('admin.dashboard')->with('success', 'Welcome Admin!');
+            case 2: // Editor
+                return redirect()->route('editor.dashboard')->with('success', 'Welcome Editor!');
+            case 3: // User
+                return redirect()->route('user.dashboard')->with('success', 'Welcome!');
+            default:
+                Auth::logout();
+                Log::error('Unknown role attempted login. User ID: ' . $user->id . ' Role ID: ' . $user->role_id);
+                return redirect()->back()->with('error', 'Unauthorized role.');
+        }
     }
 
     /**

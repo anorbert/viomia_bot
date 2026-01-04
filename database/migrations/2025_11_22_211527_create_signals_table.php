@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('signals', function (Blueprint $table) {
             $table->id();
             $table->string('symbol');
+            $table->string('ticket')->unique();
             $table->enum('direction', ['buy', 'sell']);
             $table->double('entry');
             $table->double('sl');

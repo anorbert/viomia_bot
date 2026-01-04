@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Parking;
+use App\Models\TradeLog;
 use Auth;
 
 class UserReportController extends Controller
@@ -13,8 +13,8 @@ class UserReportController extends Controller
      */
     public function index(Request $request)
     {
-        // Fetch user reports
-        $query = Parking::where('user_id', Auth::id());
+        // Fetch user trading reports
+        $query = TradeLog::where('user_id', Auth::id());
 
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -25,7 +25,7 @@ class UserReportController extends Controller
         }
 
         $records = $query->latest()->get();
-        $total = $records->sum('bill');
+        $total = $records->sum('profit_loss');
 
         return view('user.reports.index', compact('records', 'total'));
     }

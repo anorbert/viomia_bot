@@ -52,7 +52,7 @@
                                     <span>System Alert</span>
                                     <span class="time">2 mins ago</span>
                                 </span>
-                                <span class="message">New vehicle entered Zone A</span>
+                                <span class="message">New trade opened</span>
                             </a>
                         </li>
                         <li class="nav-item">

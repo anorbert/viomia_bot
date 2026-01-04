@@ -4,7 +4,7 @@
     <!-- Site Title -->
     <div class="navbar nav_title" style="border: 0;">
       <a href="" class="site_title">
-        <i class="fa fa-car"></i> <span>Parking Manager</span>
+        <i class="fa fa-robot"></i> <span>Trading Bot</span>
       </a>
     </div>
 
@@ -36,10 +36,10 @@
           </li>
 
           <li>
-            <a><i class="fa fa-th"></i> Parking Management <span class="fa fa-chevron-down"></span></a>
+            <a><i class="fa fa-exchange"></i> Trading Activity <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-              <li><a href="">Exempted Vehicles</a></li>
-              <li><a href="">Entry & Exit Logs</a></li>
+              <li><a href="">Trade History</a></li>
+              <li><a href="">Open Positions</a></li>
               
             </ul>
           </li>

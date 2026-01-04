@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
   <div class="page-title mb-4">
-    <h3>Parking Management</h3>
+    <h3>Trading Dashboard</h3>
   </div>
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -13,9 +13,9 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-  {{-- Add New Car Entry --}}
+  {{-- Add New Trade Entry --}}
   <div class="card mb-4">
-    <div class="card-header">New Car Entry</div>
+    <div class="card-header">New Trade Entry</div>
     <div class="card-body">
       <form method="POST" action="">
         @csrf

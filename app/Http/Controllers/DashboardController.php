@@ -13,6 +13,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        return 'here';
         //
         return view('dashboard', [
         'totalSlots' =>0,

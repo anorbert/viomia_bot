@@ -76,7 +76,7 @@
                         <div class="separator">
                             <br />
                             <div>
-                                <h1><i class="fa fa-university"></i> Parking System</h1>
+                                <h1><i class="fa fa-robot"></i> Viomia Trading Bot</h1>
                                 <p>© {{ date('Y') }} All Rights Reserved. Privacy and Terms</p>
                             </div>
                         </div>
