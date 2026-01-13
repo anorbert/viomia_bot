@@ -48,49 +48,36 @@ class LoginController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate input
         $request->validate([
             'phone' => 'required',
             'pin' => 'required|digits:4',
         ]);
 
-        // Attempt login
-        $credentials = [
+        if (!Auth::attempt([
             'phone_number' => $request->phone,
-            'password' => $request->pin, // still called password in DB
-        ];
+            'password' => $request->pin,
+        ], $request->boolean('remember'))) {
 
-        // Check if 'remember' checkbox is checked
-        $remember = $request->has('remember');
-
-        if (Auth::attempt($credentials, $remember)) {
-            $user = Auth::user();
-            Log::info('User logged in successfully. User ID: ' . $user->id);
-            
-            // Check if user account is active
-            if (!$user->is_active) {
-                Auth::logout();
-                Log::warning('Login attempt from inactive user. User ID: ' . $user->id);
-                return redirect()->back()->with('error', 'Your account has been deactivated.');
-            }
-            
-            //check if pin is 1234 and redirect to change pin page
-            if ($credentials['password'] === '1234') {
-                Log::info('User attempted to login with default pin. Phone: ' . $request->phone);
-                return redirect()->route('user.change-pin.create')->with('warning', 'Please change your default PIN.');
-            }
-            
-            // Update last login timestamp
-            $user->update(['last_login_at' => now()]);
-            
-            // Redirect based on role
-            return $this->redirectBasedOnRole($user);
+            Log::warning('Failed login attempt', ['phone' => $request->phone]);
+            return back()->with('error', 'Invalid phone number or PIN.');
         }
 
-        Log::warning('Failed login attempt for phone: ' . $request->phone);
-        return redirect()->back()->with('error', 'Invalid credentials.');
-    }
+        $user = Auth::user();
 
+        if (!$user->is_active) {
+            Auth::logout();
+            return back()->with('error', 'Your account is deactivated.');
+        }
+
+        if ($user->is_default_pin) {
+            return redirect()->route('user.change-pin.create')
+                ->with('warning', 'Please change your default PIN.');
+        }
+
+        $user->update(['last_login_at' => now()]);
+
+        return $this->redirectBasedOnRole($user);
+    }
 
 
     /**
@@ -112,30 +99,30 @@ class LoginController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
-         $request->validate([
+        $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|string|min:4|max:4|confirmed',
+            'new_password' => 'required|digits:4|confirmed',
         ]);
 
-        $user = User::findOrFail($id);
-        // Check if the current password matches
+        $user = Auth::user();
+
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password does not match']);
+            return back()->withErrors(['current_password' => 'Current PIN is incorrect']);
         }
+
         $user->update([
             'password' => Hash::make($request->new_password),
+            'is_default_pin' => false,
         ]);
-        Log::info('User PIN changed successfully. User ID: ' . $user->id);
-         // Redirect to the change PIN page with a success message
-         session()->flash('success', 'PIN changed successfully. Please log in again.');
-        // returning to login page with success message
-        Auth::logout(); // Log out the user after changing PIN
-        return redirect()->route('/')->with('success', 'PIN changed successfully. Please log in again.');
 
+        Auth::logout();
+
+        return redirect('/')
+            ->with('success', 'PIN changed successfully. Please log in again.');
     }
+
 
     /**
      * Logout the user
@@ -152,25 +139,16 @@ class LoginController extends Controller
     /**
      * Redirect user based on role
      */
-    private function redirectBasedOnRole($user = null)
+    private function redirectBasedOnRole(User $user)
     {
-        if (!$user) {
-            $user = Auth::user();
-        }
-        
-        switch ($user->role_id) {
-            case 1: // Admin
-                return redirect()->route('admin.dashboard')->with('success', 'Welcome Admin!');
-            case 2: // Editor
-                return redirect()->route('editor.dashboard')->with('success', 'Welcome Editor!');
-            case 3: // User
-                return redirect()->route('user.dashboard')->with('success', 'Welcome!');
-            default:
-                Auth::logout();
-                Log::error('Unknown role attempted login. User ID: ' . $user->id . ' Role ID: ' . $user->role_id);
-                return redirect()->back()->with('error', 'Unauthorized role.');
-        }
+        return match ($user->role_id) {
+            1 => redirect()->route('admin.dashboard'),
+            2 => redirect()->route('editor.dashboard'),
+            3 => redirect()->route('user.dashboard'),
+            default => abort(403),
+        };
     }
+
 
     /**
      * Remove the specified resource from storage.

@@ -13,6 +13,7 @@ use App\Http\Controllers\Bot\FilterBlockController;
 use App\Http\Controllers\Bot\TechnicalSignalController;
 use App\Http\Controllers\Bot\EaStatusChangeController;
 use App\Http\Controllers\Bot\ErrorLogController;
+use App\Http\Controllers\Bot\WhatsappSignalController;
 use App\Middleware\CheckApiKey;
 
 Route::prefix('bot')->middleware(CheckApiKey::class)->group(function () {
@@ -60,4 +61,12 @@ Route::prefix('bot')->middleware(CheckApiKey::class)->group(function () {
 
     // ===== Error Logs (NEW) =====
     Route::post('/error/log', [ErrorLogController::class, 'store']);
+
+    // ===== Whatsapp Signals =====
+    Route::post('/whatsapp_signal', [WhatsappSignalController::class, 'store']);
+
+    Route::get('/latestForEA', [WhatsappSignalController::class, 'latestForEA']);
+
+    //Now here we are updating the whatsapp signal as received
+    Route::post('/whatsapp_signal/mark_received/{id}', [WhatsappSignalController::class, 'markAsReceived']);
 });

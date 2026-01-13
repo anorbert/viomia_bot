@@ -37,10 +37,9 @@ class RegisterController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'regex:/^07[2,3,8,9][0-9]{7}$/', 'unique:users,phone_number'],
+            'phone_number' => ['required', 'regex:/^07[2389][0-9]{7}$/', 'unique:users,phone_number'],
             'pin' => ['required', 'digits:4', 'confirmed'],
         ]);
 
@@ -48,12 +47,16 @@ class RegisterController extends Controller
             'name' => $request->name,
             'phone_number' => $request->phone_number,
             'password' => Hash::make($request->pin),
-            'role_id' => 1, // Default to regular user
+            'role_id' => 3, // Regular user
+            'is_active' => true,
+            'is_default_pin' => true, // 👈 IMPORTANT
         ]);
+
         event(new Registered($user));
         Auth::login($user);
 
-        return redirect()->route('admin.dashboard')->with('success', 'Registration successful. Welcome!');
+        return redirect()->route('user.change-pin.create')
+            ->with('warning', 'Please change your default PIN.');
     }
 
     /**
