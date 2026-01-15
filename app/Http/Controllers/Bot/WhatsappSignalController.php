@@ -212,13 +212,10 @@ class WhatsappSignalController extends Controller
             return response()->json(['error' => 'account_id is required'], 422);
         }
         $accountId = (string)$accountId;
-
         $signal = DB::transaction(function () use ($accountId) {
-
             $signal = WhatsappSignal::where('status', 'pending')
                 ->whereNotExists(function ($q) use ($accountId) {
                     $q->select(DB::raw(1))
-                        // ⚠️ Ensure this table name is correct in your DB
                         ->from('ea_whatsapp_excutions')
                         ->whereColumn('ea_whatsapp_excutions.whatsapp_signal_id', 'whatsapp_signals.id')
                         ->where('ea_whatsapp_excutions.account_id', $accountId);
