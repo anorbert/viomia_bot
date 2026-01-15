@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\Authentication;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\User;
-use Auth;
-use Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -20,100 +17,100 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return $this->redirectBasedOnRole();
+            return $this->redirectBasedOnRole(Auth::user());
         }
+
         return view('login');
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return $this->showLoginForm();
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show change PIN form
      */
     public function create()
     {
-        //
-        $user= Auth::user();
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect('/')->with('error', 'Please log in first.');
+        }
+
         return view('change-pin', compact('user'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Login using phone + hashed PIN
      */
     public function store(Request $request)
     {
         $request->validate([
-            'phone' => 'required',
-            'pin' => 'required|digits:4',
+            'phone' => ['required', 'string'],
+            'pin'   => ['required', 'digits:4'],
         ]);
 
-        if (!Auth::attempt([
-            'phone_number' => $request->phone,
-            'password' => $request->pin,
-        ], $request->boolean('remember'))) {
+        // Find the user
+        $user = User::where('phone_number', $request->phone)->first();
 
+        // If user not found or pin mismatch
+        if (!$user || !Hash::check($request->pin, $user->password)) {
             Log::warning('Failed login attempt', ['phone' => $request->phone]);
-            return back()->with('error', 'Invalid phone number or PIN.');
+            return back()
+                ->withInput($request->only('phone'))
+                ->with('error', 'Invalid phone number or PIN.');
         }
 
-        $user = Auth::user();
+        // Check if deactivated
+        // if (!$user->is_active) {
+        //     return back()
+        //         ->withInput($request->only('phone'))
+        //         ->with('error', 'Your account is deactivated.');
+        // }
 
-        if (!$user->is_active) {
-            Auth::logout();
-            return back()->with('error', 'Your account is deactivated.');
-        }
+        // Login user
+        Auth::login($user, $request->boolean('remember'));
 
+        // Update login timestamp
+        $user->update(['last_login_at' => now()]);
+
+        // Force default PIN change
         if ($user->is_default_pin) {
             return redirect()->route('user.change-pin.create')
                 ->with('warning', 'Please change your default PIN.');
         }
 
-        $user->update(['last_login_at' => now()]);
-
         return $this->redirectBasedOnRole($user);
     }
 
-
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Change PIN
      */
     public function update(Request $request)
     {
         $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|digits:4|confirmed',
+            'current_password' => ['required', 'digits:4'],
+            'new_password'     => ['required', 'digits:4', 'confirmed'],
         ]);
 
         $user = Auth::user();
+
+        if (!$user) {
+            return redirect('/')->with('error', 'Please log in first.');
+        }
 
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Current PIN is incorrect']);
         }
 
+        if ($request->current_password === $request->new_password) {
+            return back()->withErrors(['new_password' => 'New PIN must be different from current PIN.']);
+        }
+
         $user->update([
-            'password' => Hash::make($request->new_password),
+            'password'       => Hash::make($request->new_password),
             'is_default_pin' => false,
         ]);
 
@@ -123,16 +120,19 @@ class LoginController extends Controller
             ->with('success', 'PIN changed successfully. Please log in again.');
     }
 
-
     /**
-     * Logout the user
+     * Logout
      */
     public function logout(Request $request)
     {
-        Log::info('User logged out. User ID: ' . Auth::id());
+        if (Auth::check()) {
+            Log::info('User logged out. User ID: ' . Auth::id());
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/')->with('success', 'Logged out successfully.');
     }
 
@@ -141,20 +141,11 @@ class LoginController extends Controller
      */
     private function redirectBasedOnRole(User $user)
     {
-        return match ($user->role_id) {
-            1 => redirect()->route('admin.dashboard'),
-            2 => redirect()->route('editor.dashboard'),
-            3 => redirect()->route('user.dashboard'),
-            default => abort(403),
+        return match ((int) $user->role_id) {
+            1       => redirect()->route('admin.dashboard'),
+            2       => redirect()->route('editor.dashboard'),
+            3       => redirect()->route('user.dashboard'),
+            default => abort(403, 'Unauthorized role'),
         };
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

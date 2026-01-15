@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\WhatsappSignal;
+use App\Models\EaWhatsappExcution;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class WhatsappSignalController extends Controller
@@ -83,6 +85,12 @@ class WhatsappSignalController extends Controller
                 ], 200);
             }
 
+            // 1) Expire all pending signals (global)
+            WhatsappSignal::where('status', 'pending')
+                ->update([
+                    'status'     => 'expired'
+                ]);
+
             // 💾 Save signal
             $signal = whatsappSignal::create([
                 'symbol'       => $validated['symbol'],
@@ -103,7 +111,6 @@ class WhatsappSignalController extends Controller
                 'symbol'    => $signal->symbol,
                 'type'      => $signal->type
             ]);
-
             return response()->json([
                 'status' => 'success',
                 'signal_id' => $signal->id
@@ -174,100 +181,136 @@ class WhatsappSignalController extends Controller
 
     }
 
+
     public function latestForEA(Request $request)
     {
-        // Fetch latest pending signal
-        $signal = whatsappSignal::where('status', 'pending')
-            ->orderBy('received_at', 'desc')
-            ->first();
+        // Accept JSON OR form-data
+        $raw = $request->getContent();
+        $data = $request->all();
 
-        if (!$signal) {
-            Log::info('📡 EA requested latest signal, but none found');
-            return response()->json([
-                'status' => 'success',
-                'signals' => null
-            ]);
+        // If body exists and request->all() empty, try decode JSON
+        if (empty($data) && !empty($raw)) {
+            $clean = preg_replace('/\x00/', '', $raw);
+            $decoded = json_decode($clean, true);
+
+            if (is_array($decoded)) {
+                $data = $decoded;
+            }
         }
 
-        // Determine TP for EA
-        $tpArray = is_array($signal->take_profit) ? $signal->take_profit : [$signal->take_profit];
-        $tp = null;
-
-        if (strtoupper($signal->type) === 'BUY') {
-            $tp = max($tpArray);
-        } elseif (strtoupper($signal->type) === 'SELL') {
-            $tp = min($tpArray);
-        }
-
-        // Log the EA request safely
-        Log::info('📡 EA requested latest signal', [
-            'signal_id' => $signal->id,
-            'symbol' => $signal->symbol,
-            'type' => $signal->type,
-            'tp_selected' => $tp,
-            'bot_id' => $request->user()?->id
+        Log::info('📡 Incoming MT5 payload (latestForEA)', [
+            'raw'  => $raw,
+            'data' => $data
         ]);
 
-        // Return payload matching your desired format
+        if (!is_array($data)) {
+            return response()->json(['error' => 'Invalid JSON format', 'raw' => $raw], 400);
+        }
+
+        $accountId = $data['account_id'] ?? $request->header('X-ACCOUNT-ID');
+        if (!$accountId) {
+            return response()->json(['error' => 'account_id is required'], 422);
+        }
+        $accountId = (string)$accountId;
+
+        $signal = DB::transaction(function () use ($accountId) {
+
+            $signal = WhatsappSignal::where('status', 'pending')
+                ->whereNotExists(function ($q) use ($accountId) {
+                    $q->select(DB::raw(1))
+                        // ⚠️ Ensure this table name is correct in your DB
+                        ->from('ea_whatsapp_excutions')
+                        ->whereColumn('ea_whatsapp_excutions.whatsapp_signal_id', 'whatsapp_signals.id')
+                        ->where('ea_whatsapp_excutions.account_id', $accountId);
+                })
+                ->orderBy('received_at', 'asc')
+                ->lockForUpdate()
+                ->first();
+
+            if (!$signal) {
+                return null;
+            }
+
+            EaWhatsappExcution::firstOrCreate([
+                'whatsapp_signal_id' => $signal->id,
+                'account_id'         => $accountId,
+            ], [
+                'status'             => 'received',
+            ]);
+
+            return $signal;
+        });
+
+        if (!$signal) {
+            return response()->json(['status' => 'success', 'signal' => null]);
+        }
+
+        $tpArray = is_array($signal->take_profit) ? $signal->take_profit : [(float)$signal->take_profit];
+        $tp = strtoupper($signal->type) === 'BUY' ? max($tpArray) : min($tpArray);
+
         return response()->json([
-                'id'        => $signal->id,
-                'symbol'    => $signal->symbol,
-                'type'      => $signal->type,
-                'entry'     => (float) $signal->entry,
-                'sl'        => (float) $signal->stop_loss,
-                'tp'        => (float) $tp,
-                'timeframe' => $signal->timeframe ?? 'M5',
-                'source'    => strtoupper($signal->source),
-                'created_at'=> $signal->created_at->toDateTimeString()
+            'id'         => $signal->id,
+            'symbol'     => $signal->symbol,
+            'type'       => $signal->type,
+            'entry'      => (float)$signal->entry,
+            'sl'         => (float)$signal->stop_loss,
+            'tp'         => (float)$tp,
+            'timeframe'  => $signal->timeframe ?? 'M5',
+            'source'     => strtoupper($signal->source),
+            'created_at' => optional($signal->created_at)->toDateTimeString(),
         ]);
     }
 
     public function markAsReceived(Request $request, $id)
     {
-        // 1️⃣ Read raw MT5 payload
+        // Accept JSON OR form-data
         $raw = $request->getContent();
-        \Log::info('Incoming Response Status payload:', ['raw' => $raw]);
+        $data = $request->all();
 
-        // 2️⃣ Clean null bytes
-        $clean = preg_replace('/\x00/', '', $raw);
+        if (empty($data) && !empty($raw)) {
+            $clean = preg_replace('/\x00/', '', $raw);
+            $decoded = json_decode($clean, true);
 
-        // 3️⃣ Decode JSON
-        $data = json_decode($clean, true);
-        if (!$data) {
-            return response()->json([
-                'error' => 'Invalid JSON format',
-                'raw'   => $raw
-            ], 400);
-        }
-        // Find the signal by ID
-        $signal = whatsappSignal::find($id);
-
-        if (!$signal) {
-            Log::warning('⚠️ EA attempted to mark non-existent signal as received', [
-                'signal_id' => $id,
-                'status' => $data['status'],
-                'bot_id' => $request->user()?->id
-            ]);
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Signal not found'
-            ], 404);
+            if (is_array($decoded)) {
+                $data = $decoded;
+            }
         }
 
-        // Update status to 'received'
-        $signal->status =  $data['status'];
-        $signal->save();
-
-        Log::info('✅ Signal marked as received by EA', [
-            'signal_id' => $signal->id,
-            'bot_id' => $request->user()?->id
+        Log::info('📥 Incoming EA status payload', [
+            'raw'  => $raw,
+            'data' => $data
         ]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Signal marked as received'
-        ]);
+        if (!is_array($data)) {
+            return response()->json(['error' => 'Invalid JSON format', 'raw' => $raw], 400);
+        }
+
+        $accountId = (string)($data['account_id'] ?? $request->header('X-ACCOUNT-ID'));
+        $status    = $data['status'] ?? null;
+
+        if (!$accountId || !$status) {
+            return response()->json(['error' => 'account_id and status are required'], 422);
+        }
+
+        $allowed = ['received', 'executed', 'failed'];
+        if (!in_array($status, $allowed, true)) {
+            return response()->json(['error' => 'Invalid status value'], 422);
+        }
+
+        $row = EaWhatsappExcution::where('whatsapp_signal_id', $id)
+            ->where('account_id', $accountId)
+            ->first();
+
+        if (!$row) {
+            return response()->json(['status' => 'error', 'message' => 'Signal not found for this account'], 404);
+        }
+
+        $row->status = $status;
+        if ($status === 'executed') {
+            $row->executed_at = now();
+        }
+        $row->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Signal updated']);
     }
 }
-

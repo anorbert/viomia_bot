@@ -65,7 +65,7 @@ Route::prefix('bot')->middleware(CheckApiKey::class)->group(function () {
     // ===== Whatsapp Signals =====
     Route::post('/whatsapp_signal', [WhatsappSignalController::class, 'store']);
 
-    Route::get('/latestForEA', [WhatsappSignalController::class, 'latestForEA']);
+    Route::post('/latestForEA', [WhatsappSignalController::class, 'latestForEA']);
 
     //Now here we are updating the whatsapp signal as received
     Route::post('/whatsapp_signal/mark_received/{id}', [WhatsappSignalController::class, 'markAsReceived']);
