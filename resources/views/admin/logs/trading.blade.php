@@ -25,6 +25,7 @@
                 <thead class="thead-dark">
                     <tr>
                         <th>#</th>
+                        <th>Ticket</th>
                         <th>Type</th>
                         <th>Symbol</th>
                         <th>Lot</th>
@@ -40,6 +41,7 @@
                     @foreach($trades as $key => $log)
                         <tr>
                             <td>{{ $key + 1 }}</td>
+                            <td><strong>{{ $log->ticket }}</strong></td>
                             <td>
                                 <span class="badge {{ $log->type == 'buy' ? 'badge-success' : 'badge-danger' }}">
                                     {{ ucfirst($log->type) }}
