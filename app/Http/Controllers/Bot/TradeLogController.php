@@ -32,14 +32,11 @@ class TradeLogController extends Controller
      */
     public function store(Request $request)
     {
-        // 1️⃣ Read raw MT5 payload
         $raw = $request->getContent();
         \Log::info('Incoming MT5 close payload:', ['raw' => $raw]);
 
-        // 2️⃣ Clean null bytes
         $clean = preg_replace('/\x00/', '', $raw);
 
-        // 3️⃣ Decode JSON
         $data = json_decode($clean, true);
         if (!$data) {
             return response()->json([
@@ -48,47 +45,86 @@ class TradeLogController extends Controller
             ], 400);
         }
 
-        // 4️⃣ Validate (NO unique rule here)
         $validated = validator($data, [
-            'ticket'      => 'required|string',
-            'close_price' => 'required|numeric',
+            'ticket'      => 'required',   // POSITION ID
+            'close_price' => 'nullable|numeric',
             'profit'      => 'nullable|numeric',
+            'closed_lots' => 'nullable|numeric|min:0',
+            'reason'      => 'nullable|string',
         ])->validate();
 
-        // 5️⃣ Find trade log
-        $tradeLog = TradeLog::where('ticket', $validated['ticket'])->first();
-        if (!$tradeLog) {
-            return response()->json([
-                'error' => 'Trade log not found',
-                'ticket' => $validated['ticket']
-            ], 404);
-        }
+        return \DB::transaction(function () use ($validated) {
 
-        // 6️⃣ Update close data
-        $tradeLog->update([
-            'close_price' => $validated['close_price'],
-            'profit'      => $validated['profit'] ?? 0,
-        ]);
+            $tradeLog = TradeLog::where('ticket', $validated['ticket'])
+                ->lockForUpdate()
+                ->first();
 
-        \Log::info('Trade log closed', [
-            'ticket' => $validated['ticket'],
-            'profit' => $validated['profit']
-        ]);
+            if (!$tradeLog) {
+                return response()->json([
+                    'error'  => 'Trade log not found',
+                    'ticket' => $validated['ticket']
+                ], 404);
+            }
 
-        //Update Signal status to closed if linked to a signal
-        $signal=Signal::where('ticket',$validated['ticket'])->first();
-        if ($signal) {
-            $signal->update(['active' => false]);
-            \Log::info('Linked signal closed', [
-                'ticket' => $validated['ticket'],
+            $incomingProfit     = (float)($validated['profit'] ?? 0);
+            $incomingClosedLots = (float)($validated['closed_lots'] ?? 0);
+
+            $currentProfit = (float)($tradeLog->profit ?? 0);
+            $currentClosed = (float)($tradeLog->closed_lots ?? 0);
+
+            $newClosed = $currentClosed + $incomingClosedLots;
+
+            $lotsOpen = (float)$tradeLog->lots;
+            $epsilon  = 0.0000001;
+
+            $status = ($newClosed + $epsilon >= $lotsOpen) ? 'closed' : 'partial_closed';
+
+            $updates = [
+                'profit'      => $currentProfit + $incomingProfit,
+                'closed_lots' => $newClosed,
+                'status'      => $status,
+            ];
+
+            if (array_key_exists('close_price', $validated) && $validated['close_price'] !== null) {
+                $updates['close_price'] = $validated['close_price'];
+            }
+
+            if (!empty($validated['reason'])) {
+                $updates['close_reason'] = $validated['reason'];
+            }
+
+            $tradeLog->update($updates);
+            $tradeLog->refresh();
+
+            \Log::info('Trade log updated', [
+                'ticket'       => $validated['ticket'],
+                'added_profit' => $incomingProfit,
+                'profit_total' => $tradeLog->profit,
+                'added_lots'   => $incomingClosedLots,
+                'closed_lots'  => $tradeLog->closed_lots,
+                'open_lots'    => $tradeLog->lots,
+                'status'       => $tradeLog->status,
+                'close_price'  => $tradeLog->close_price,
+                'reason'       => $tradeLog->close_reason,
             ]);
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Trade log updated successfully',
-            'ticket'  => $validated['ticket']
-        ], 200);
+            if ($status === 'closed') {
+                $signal = Signal::where('ticket', $validated['ticket'])->first();
+                if ($signal) {
+                    $signal->update(['active' => false]);
+                    \Log::info('Linked signal closed', ['ticket' => $validated['ticket']]);
+                }
+            }
+
+            return response()->json([
+                'success'       => true,
+                'message'       => 'Trade log updated successfully',
+                'ticket'        => $validated['ticket'],
+                'status'        => $status,
+                'closed_lots'   => $tradeLog->closed_lots,
+                'profit_total'  => $tradeLog->profit,
+            ], 200);
+        });
     }
     /**
      * Display the specified resource.

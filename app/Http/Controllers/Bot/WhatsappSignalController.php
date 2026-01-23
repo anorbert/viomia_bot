@@ -181,21 +181,19 @@ class WhatsappSignalController extends Controller
 
     }
 
-
+    /**
+     * Get the latest pending signal for the EA
+     */
     public function latestForEA(Request $request)
     {
         // Accept JSON OR form-data
         $raw = $request->getContent();
         $data = $request->all();
 
-        // If body exists and request->all() empty, try decode JSON
         if (empty($data) && !empty($raw)) {
             $clean = preg_replace('/\x00/', '', $raw);
             $decoded = json_decode($clean, true);
-
-            if (is_array($decoded)) {
-                $data = $decoded;
-            }
+            if (is_array($decoded)) $data = $decoded;
         }
 
         Log::info('📡 Incoming MT5 payload (latestForEA)', [
@@ -204,15 +202,17 @@ class WhatsappSignalController extends Controller
         ]);
 
         if (!is_array($data)) {
-            return response()->json(['error' => 'Invalid JSON format', 'raw' => $raw], 400);
+            return response()->json(['status' => 'error', 'message' => 'Invalid JSON format', 'raw' => $raw], 400);
         }
 
         $accountId = $data['account_id'] ?? $request->header('X-ACCOUNT-ID');
         if (!$accountId) {
-            return response()->json(['error' => 'account_id is required'], 422);
+            return response()->json(['status' => 'error', 'message' => 'account_id is required'], 422);
         }
-        $accountId = (string)$accountId;
+        $accountId = (string) $accountId;
+
         $signal = DB::transaction(function () use ($accountId) {
+
             $signal = WhatsappSignal::where('status', 'pending')
                 ->whereNotExists(function ($q) use ($accountId) {
                     $q->select(DB::raw(1))
@@ -238,14 +238,20 @@ class WhatsappSignalController extends Controller
             return $signal;
         });
 
+        // ✅ Clear "no signal" response
         if (!$signal) {
-            return response()->json(['status' => 'success', 'signal' => null]);
+            return response()->json([
+                'status'  => 'no_signal',
+                'message' => 'No pending signal available for this account',
+                'signal'  => null
+            ], 200);
         }
 
         $tpArray = is_array($signal->take_profit) ? $signal->take_profit : [(float)$signal->take_profit];
         $tp = strtoupper($signal->type) === 'BUY' ? max($tpArray) : min($tpArray);
 
         return response()->json([
+            'status'     => 'ok',
             'id'         => $signal->id,
             'symbol'     => $signal->symbol,
             'type'       => $signal->type,
@@ -255,9 +261,12 @@ class WhatsappSignalController extends Controller
             'timeframe'  => $signal->timeframe ?? 'M5',
             'source'     => strtoupper($signal->source),
             'created_at' => optional($signal->created_at)->toDateTimeString(),
-        ]);
+        ], 200);
     }
 
+    /**
+     * Mark the Received/Executed/Failed status from EA
+     */
     public function markAsReceived(Request $request, $id)
     {
         // Accept JSON OR form-data
