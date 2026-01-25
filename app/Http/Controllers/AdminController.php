@@ -8,8 +8,10 @@ use App\Models\TradeLog;
 use App\Models\ErrorLog;
 use App\Models\Account;
 use App\Models\WhatsappSignal;
-use App\Models\EAWhatsappExcution;
+use App\Models\EaWhatsappExcution;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -130,13 +132,13 @@ class AdminController extends Controller
             ? now()->diffInSeconds($lastSignal->received_at) . "s ago"
             : null;
 
-        $lastExec = EAWhatsappExcution::latest()->first();
+        $lastExec = EaWhatsappExcution::latest()->first();
         $lastExecText = $lastExec ? "Signal #{$lastExec->whatsapp_signal_id} → Acc {$lastExec->account_id}" : null;
         $lastExecStatus = $lastExec ? strtoupper($lastExec->status) : null;
 
         $oneHour = now()->subHour();
-        $execTotal1h = EAWhatsappExcution::where('created_at', '>=', $oneHour)->count();
-        $execFailed1h = EAWhatsappExcution::where('created_at', '>=', $oneHour)->where('status', 'failed')->count();
+        $execTotal1h = EaWhatsappExcution::where('created_at', '>=', $oneHour)->count();
+        $execFailed1h = EaWhatsappExcution::where('created_at', '>=', $oneHour)->where('status', 'failed')->count();
         $execSuccessRate = $execTotal1h > 0 ? round((($execTotal1h - $execFailed1h) / $execTotal1h) * 100, 0) . '%' : '—';
 
         $openTrades = TradeLog::where('status', 'open')->count();
@@ -234,11 +236,11 @@ class AdminController extends Controller
             : null;
 
         $oneHour = now()->subHour();
-        $execTotal1h = EAWhatsappExcution::where('created_at', '>=', $oneHour)->count();
-        $execFailed1h = EAWhatsappExcution::where('created_at', '>=', $oneHour)->where('status', 'failed')->count();
+        $execTotal1h = EaWhatsappExcution::where('created_at', '>=', $oneHour)->count();
+        $execFailed1h = EaWhatsappExcution::where('created_at', '>=', $oneHour)->where('status', 'failed')->count();
         $execSuccessRate = $execTotal1h > 0 ? round((($execTotal1h - $execFailed1h) / $execTotal1h) * 100, 0) . '%' : '—';
 
-        $lastExec = EAWhatsappExcution::latest()->first();
+        $lastExec = EaWhatsappExcution::latest()->first();
         $lastExecText = $lastExec ? "Signal #{$lastExec->whatsapp_signal_id} → Acc {$lastExec->account_id}" : null;
         $lastExecStatus = $lastExec ? strtoupper($lastExec->status) : null;
 
