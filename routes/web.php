@@ -10,19 +10,23 @@ use App\Http\Controllers\Authentication\StaffController;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EditorController;
-use App\Http\Controllers\UserController;
 
 //Admin
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\BotController;
 use App\Http\Controllers\Admin\TradeController;
+use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
 
 use App\Http\Controllers\Admin\SignalController;
 use App\Http\Controllers\ExitLogsController;
+
+
+use App\Http\Controllers\Admin\UserController;
 
 //Bot Controllers
 use App\Http\Controllers\Bot\TradeLogController;
@@ -76,7 +80,8 @@ Route::prefix('admin')
         // Bots
         Route::resource('bots', BotController::class);
         Route::get('bots/logs', [BotController::class, 'logs'])->name('bots.logs');
-        Route::get('bots/settings', [BotController::class, 'settings'])->name('bots.settings');
+        Route::get('bots/{id}/settings', [BotController::class, 'settings'])->name('bots.settings');
+        Route::post('bots/{id}/settings/update', [BotController::class, 'updateSettings'])->name('bots.settings.update');
 
         // Trading Activity
         Route::resource('trades', TradeLogController::class);
@@ -84,14 +89,19 @@ Route::prefix('admin')
         Route::get('trades/symbols', [TradeController::class, 'symbols'])->name('trades.symbols');
 
         // Payments
+        Route::resource('banks', BankController::class);
+        Route::post('/banks/{id}/toggle', [BankController::class, 'toggle'])->name('banks.toggle'); // optional
+        Route::resource('subscription_plans', SubscriptionPlanController::class);
+
         Route::resource('payments', PaymentController::class);
         Route::get('payment-plans', [PaymentController::class, 'plans'])->name('payments.plans');
         Route::get('payment-reports', [PaymentController::class, 'reports'])->name('payments.reports');
 
         // Settings
         Route::resource('users', UserController::class);
+        Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::resource('roles', RoleController::class);
-        Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::resource('settings', SettingController::class);
         Route::post('settings/save', [SettingController::class, 'save'])->name('settings.save');
 
         // Signals

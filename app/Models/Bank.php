@@ -8,13 +8,7 @@ class Bank extends Model
 {
     //
     protected $fillable = [
-        'name',
-        'branch',
-        'account_number',
-        'account_name',
-        'iban',
-        'swift_code',
-        'currency',
-        'active',
+        'payment_owner', 'appId', 'secret', 'charges',
+        'phone_number', 'logo', 'balance', 'status', 'deactivated_at'
     ];
 }

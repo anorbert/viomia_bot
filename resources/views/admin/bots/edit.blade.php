@@ -1,38 +1,43 @@
-@extends('layouts.admin')
+<form id="editBotForm" method="POST" action="{{ route('admin.bots.update', $bot->id) }}">
+    @csrf
+    @method('PUT')
 
-@section('content')
-<div class="x_panel">
-    <div class="x_title"><h2>Edit Bot</h2></div>
+    <div class="p-2">
+        <div id="edit-error" class="alert alert-danger" style="display:none;"></div>
 
-    <div class="x_content">
-        <form method="POST" action="{{ route('admin.bots.update', $bot) }}">
-            @csrf @method('PUT')
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ $bot->name }}" class="form-control" required>
+        </div>
 
-            <div class="form-group">
-                <label>Bot Name</label>
-                <input class="form-control" name="name" value="{{ $bot->name }}">
-            </div>
+        <div class="form-group">
+            <label>Version</label>
+            <input type="text" name="version" value="{{ $bot->version }}" class="form-control" required>
+        </div>
 
-            <div class="form-group">
-                <label>Version</label>
-                <input class="form-control" name="version" value="{{ $bot->version }}">
-            </div>
+        <div class="form-group">
+            <label>Address / Downloads</label>
+            <input type="text" name="address" value="{{ $bot->address }}" class="form-control">
+        </div>
 
-            <div class="form-group">
-                <label>Description</label>
-                <textarea class="form-control" name="description">{{ $bot->description }}</textarea>
-            </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control" required>
+                <option value="Active" {{ $bot->status === 'Active' ? 'selected' : '' }}>Active</option>
+                <option value="Inactive" {{ $bot->status === 'Inactive' ? 'selected' : '' }}>Inactive</option>
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label>Status</label>
-                <select class="form-control" name="status">
-                    <option value="active" {{ $bot->status == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ $bot->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                </select>
-            </div>
-
-            <button class="btn btn-primary">Update</button>
-        </form>
+        <div class="form-group" style="margin-bottom:0;">
+            <label>Description</label>
+            <textarea name="description" rows="3" class="form-control">{{ $bot->description }}</textarea>
+        </div>
     </div>
-</div>
-@endsection
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-warning">
+            <i class="fa fa-save"></i> Save Changes
+        </button>
+    </div>
+</form>
