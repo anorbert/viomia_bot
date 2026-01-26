@@ -26,4 +26,9 @@ class WhatsappSignal extends Model
         'received_at' => 'datetime'
     ];
 
+    public function executions()
+    {
+        return $this->hasMany(EAWhatsappExcution::class, 'whatsapp_signal_id');
+    }
+
 }

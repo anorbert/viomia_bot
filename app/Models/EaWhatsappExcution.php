@@ -19,5 +19,10 @@ class EaWhatsappExcution extends Model
     'received_at' => 'datetime',
     ];
 
+    public function signal()
+    {
+        return $this->belongsTo(WhatsappSignal::class, 'whatsapp_signal_id');
+    }
+
     
 }

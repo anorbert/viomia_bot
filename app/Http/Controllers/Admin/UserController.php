@@ -36,6 +36,21 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //
+        $data = $request->validate([
+            'name'         => ['required','string','max:255'],
+            'phone_number' => ['required','string','max:20','unique:users,phone_number'],
+            'email'        => ['nullable','email','max:255','unique:users,email'],
+            'role_id'      => ['required','exists:roles,id'],
+            'password'     => ['required','string','min:6','confirmed'],
+        ]);
+        //check if password is set
+        if (empty($data['password'])) {
+            return redirect()->back()->withErrors(['password' => 'Password is required.'])->withInput();
+        }
+        
+        $data['password'] = Hash::make($data['password']);
+        User::create($data);
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
     /**

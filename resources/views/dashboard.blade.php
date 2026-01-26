@@ -23,10 +23,17 @@
 
   {{-- ================= PRIMARY KPIs ================= --}}
   <div class="row tile_count">
-
     <div class="col-md-3 tile_stats_count">
-      <span class="count_top">Today's Profit</span>
-      <div class="count green" id="todaysProfit">{{ number_format($todaysProfit, 2) }} USD</div>
+      <span class="count_top">Today's Profit (USD)</span>
+        @switch($todaysProfit)
+          @case($todaysProfit > 0)
+          <?php $colorClass = 'green'; ?>
+          @case($todaysProfit < 0)
+            <?php $colorClass = 'red'; ?>
+          @default
+            <?php $colorClass = ''; ?>
+        @endswitch
+      <div class="count {{ $colorClass }}" id="todaysProfit">{{ number_format($todaysProfit, 2) }}</div>
       <span class="count_bottom">Net P/L</span>
     </div>
 
@@ -63,7 +70,15 @@
 
     <div class="col-md-3 tile_stats_count">
       <span class="count_top">Expectancy / Trade</span>
-      <div class="count green" id="expectancy">{{ number_format($expectancy, 2) }}</div>
+        @switch($expectancy)
+            @case($expectancy > 0)
+            <?php $exccolor = 'green'; ?>
+            @case($expectancy < 0)
+              <?php $exccolor = 'red'; ?>
+            @default
+              <?php $exccolor = ''; ?>
+        @endswitch
+      <div class="count {{ $exccolor }}" id="expectancy">{{ number_format($expectancy, 2) }}</div>
       <span class="count_bottom">Avg edge per trade</span>
     </div>
 
@@ -144,24 +159,24 @@
 
           <div class="row text-center">
             <div class="col-md-3 col-6">
-              <h5>Open Positions</h5>
+              <h6>Open Positions</h6>
               <h3 id="openPositions">{{ $live['openPositions'] ?? 0 }}</h3>
             </div>
 
             <div class="col-md-3 col-6">
-              <h5>Floating P/L</h5>
+              <h6>Floating P/L</h6>
               <h3 id="floatingPnL" class="{{ ($live['floatingPnL'] ?? 0) >= 0 ? 'green' : 'red' }}">
-                {{ number_format($live['floatingPnL'] ?? 0, 2) }} USD
+                {{ number_format($live['floatingPnL'] ?? 0, 2) }}
               </h3>
             </div>
 
             <div class="col-md-3 col-6">
-              <h5>Signal Queue</h5>
+              <h6>Signal Queue</h6>
               <h3 id="signalQueue">{{ $live['signalQueue'] ?? 0 }}</h3>
             </div>
 
             <div class="col-md-3 col-6">
-              <h5>Exec Success (1h)</h5>
+              <h6>Exec Success (1h)</h6>
               <h3 id="execSuccessRate">{{ $live['execSuccessRate'] ?? '—' }}</h3>
             </div>
           </div>
