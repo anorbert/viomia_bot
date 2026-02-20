@@ -292,15 +292,32 @@
         </div>
       </div>
     </div>
-
+    {{-- ================= Calendar Journal ================= --}}
     <div class="col-md-6">
       <div class="x_panel">
         <div class="x_title">
-          <h2>Trades by Symbol (30 Days)</h2>
+          <h2>Daily Summary</h2>
           <div class="clearfix"></div>
         </div>
+
         <div class="x_content">
-          <canvas id="symbolChart" height="110"></canvas>
+          <div class="cal-header">
+            <button id="prevMonth" class="cal-nav-btn">‹</button>
+            <div id="monthYear" class="cal-title">January 2026</div>
+            <button id="nextMonth" class="cal-nav-btn">›</button>
+
+            <button id="todayBtn" class="cal-today-btn">
+              <i class="fa fa-calendar"></i> Today
+            </button>
+          </div>
+
+          <div class="cal-weekdays">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+
+          <div id="calendarGrid" class="cal-grid">
+            {{-- JS will render tiles here --}}
+          </div>
         </div>
       </div>
     </div>
@@ -311,6 +328,140 @@
 @endsection
 
 @section('scripts')
+  <style>
+    /* Calendar look */
+    .cal-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .cal-nav-btn{
+      width:36px;
+      height:36px;
+      border:1px solid #e3e7ee;
+      background:#fff;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:18px;
+      font-weight:700;
+      color:#333;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .cal-title{
+      flex:1;
+      text-align:center;
+      font-weight:700;
+      font-size:14px;
+      color:#222;
+      letter-spacing:.2px;
+    }
+    .cal-today-btn{
+      border:1px solid #e3e7ee;
+      background:#fff;
+      border-radius:8px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:600;
+      color:#444;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .cal-weekdays{
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:10px;
+      margin-bottom:10px;
+      padding:0 2px;
+    }
+    .cal-weekdays div{
+      text-align:center;
+      font-size:12px;
+      font-weight:700;
+      color:#8b95a5;
+    }
+
+    .cal-grid{
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:10px;
+    }
+
+    .cal-day{
+      position:relative;
+      height:74px;
+      border:1px solid #e3e7ee;
+      border-radius:10px;
+      background:#fff;
+      padding:10px;
+      overflow:hidden;
+      cursor:pointer;
+      transition:transform .06s ease, box-shadow .06s ease;
+    }
+    .cal-day:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+
+    .cal-day.disabled{
+      background:#fafbfd;
+      color:#c2c8d3;
+    }
+    .cal-day.disabled .cal-date{
+      color:#c2c8d3;
+    }
+
+    .cal-date{
+      position:absolute;
+      top:10px;
+      left:10px;
+      font-size:12px;
+      font-weight:700;
+      color:#a8b0bd;
+    }
+
+    .cal-metrics{
+      position:absolute;
+      right:10px;
+      bottom:10px;
+      text-align:right;
+      line-height:1.1;
+    }
+    .cal-trades{
+      font-size:12px;
+      font-weight:700;
+      color:#2a2f3a;
+    }
+    .cal-pnl{
+      font-size:12px;
+      font-weight:800;
+    }
+
+    /* Profit/Loss backgrounds like screenshot */
+    .cal-profit{
+      background:#d9f6ec; /* soft green */
+      border-color:#56d6a6;
+    }
+    .cal-profit .cal-pnl{ color:#0ea56b; }
+
+    .cal-loss{
+      background:#ffd9dd; /* soft red */
+      border-color:#ff6b78;
+    }
+    .cal-loss .cal-pnl{ color:#d7263d; }
+
+    /* Today outline */
+    .cal-today{
+      box-shadow:0 0 0 2px rgba(23,162,184,.15);
+      border-color:#8ad4e2;
+    }
+  </style>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -333,25 +484,15 @@ const profitChart = new Chart(document.getElementById('profitChart'), {
   }
 });
 
-/* ================= SYMBOL DISTRIBUTION ================= */
-const symbolChart = new Chart(document.getElementById('symbolChart'), {
-  type: 'bar',
-  data: {
-    labels: @json($symbolData->pluck('symbol')),
-    datasets: [{
-      data: @json($symbolData->pluck('total')),
-      borderWidth: 1
-    }]
-  },
-  options: { plugins: { legend: { display: false } } }
-});
-
 /* ================= ERROR CHART ================= */
 let errorChart = new Chart(document.getElementById('errorChart'), {
   type: 'bar',
   data: { labels: [], datasets: [{ data: [], borderWidth: 1 }] },
   options: { plugins: { legend: { display: false } } }
 });
+
+// Initialize calendar on load
+initializeCalendarData();
 
 function renderErrors(list){
   const el = document.getElementById('recentErrors');
@@ -438,12 +579,142 @@ async function refreshMetrics() {
       renderErrorChart(d.live.errorBreakdown);
     }
 
+    // Update calendar with full journal data (90 days)
+    if (d.journalFullData && typeof d.journalFullData === 'object') {
+      allJournalData = d.journalFullData;
+      renderCalendar();
+    }
+
   } catch (e) {
-    // silent fail
+    console.error('Dashboard update error:', e);
   }
 }
 
 refreshMetrics();
 setInterval(refreshMetrics, 5000);
 </script>
+
+<script>
+  // Expect data like:
+  // window.calendarDailyData = {
+  //   "2026-01-19": { trades: 1, pnl: 3.20 },
+  //   "2026-01-20": { trades: 2, pnl: -172.40 },
+  // };
+  window.calendarDailyData = window.calendarDailyData || {};
+
+  let currentDate = new Date(); // calendar view
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function ymd(d){
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function monthLabel(d){
+    return d.toLocaleString('en-US', { month:'long', year:'numeric' });
+  }
+
+  function renderCalendar(){
+    const grid = document.getElementById('calendarGrid');
+    const title = document.getElementById('monthYear');
+    if(!grid || !title) return;
+
+    title.innerText = monthLabel(currentDate);
+
+    const viewYear  = currentDate.getFullYear();
+    const viewMonth = currentDate.getMonth();
+
+    // first day of month
+    const first = new Date(viewYear, viewMonth, 1);
+    const startDayIndex = first.getDay(); // 0 Sun .. 6 Sat
+
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+    // show 6 weeks = 42 tiles (matches screenshot spacing)
+    const totalTiles = 42;
+
+    // build date range start: from previous month padding
+    const start = new Date(viewYear, viewMonth, 1 - startDayIndex);
+
+    const today = new Date();
+    const todayKey = ymd(today);
+
+    let html = '';
+
+    for(let i=0; i<totalTiles; i++){
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+
+      const key = ymd(d);
+      const inMonth = (d.getMonth() === viewMonth);
+      const daily = window.calendarDailyData[key];
+
+      const isToday = (key === todayKey);
+
+      let cls = 'cal-day';
+      if(!inMonth) cls += ' disabled';
+      if(isToday) cls += ' cal-today';
+
+      // Profit/loss coloring only if we have pnl AND day is in current month
+      if(inMonth && daily && typeof daily.pnl === 'number'){
+        if(daily.pnl > 0) cls += ' cal-profit';
+        else if(daily.pnl < 0) cls += ' cal-loss';
+      }
+
+      const dayNum = d.getDate();
+
+      // Metrics area (like screenshot: trades count and pnl)
+      let metrics = '';
+      if(inMonth && daily){
+        const trades = daily.trades ?? 0;
+        const pnl = Number(daily.pnl ?? 0);
+
+        // keep the same "tiny" look: show trades then $pnl
+        metrics = `
+          <div class="cal-metrics">
+            <div class="cal-trades">${trades} ⇆</div>
+            <div class="cal-pnl">$${Math.abs(pnl).toFixed(2)}</div>
+          </div>
+        `;
+
+        // show minus sign using red background already; keep pnl number positive like screenshot
+        // if you prefer sign, replace above with: ${pnl.toFixed(2)}
+      }
+
+      html += `
+        <div class="${cls}" data-date="${key}">
+          <div class="cal-date">${dayNum}</div>
+          ${metrics}
+        </div>
+      `;
+    }
+
+    grid.innerHTML = html;
+
+    // Optional click handler (open modal / drill-down)
+    grid.querySelectorAll('.cal-day').forEach(el => {
+      el.addEventListener('click', () => {
+        const date = el.getAttribute('data-date');
+        // Hook: open daily trades modal
+        // console.log("clicked date", date, window.calendarDailyData[date]);
+      });
+    });
+  }
+
+  // Nav
+  document.getElementById('prevMonth')?.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+  });
+  document.getElementById('nextMonth')?.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+  });
+  document.getElementById('todayBtn')?.addEventListener('click', () => {
+    currentDate = new Date();
+    renderCalendar();
+  });
+
+  // Initial
+  renderCalendar();
+</script>
+
 @endsection

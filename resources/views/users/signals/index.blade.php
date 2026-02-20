@@ -3,7 +3,7 @@
 @section('content')
 <div class="container py-4">
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="justify-content-between align-items-center mb-3">
     <div>
       <h4 class="mb-0">All Signals</h4>
       <small class="text-muted">WhatsApp signals received by the system</small>
