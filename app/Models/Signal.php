@@ -12,4 +12,6 @@ class Signal extends Model
     protected $fillable = [
         'ticket','symbol', 'direction', 'entry', 'sl', 'tp', 'timeframe', 'active'
     ];
+
+    
 }

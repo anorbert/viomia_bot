@@ -28,7 +28,7 @@ class WhatsappSignal extends Model
 
     public function executions()
     {
-        return $this->hasMany(EAWhatsappExcution::class, 'whatsapp_signal_id');
+        return $this->hasMany(EaWhatsappExcution::class, 'whatsapp_signal_id');
     }
 
 }

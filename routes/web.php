@@ -100,7 +100,7 @@ Route::prefix('admin')
         // Dashboard
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         
-        Route::get('/dashboard/metrics', [DashboardController::class, 'metrics'])
+        Route::get('/dashboard/metrics', [AdminController::class, 'metrics'])
         ->name('dashboard.metrics');
 
         // Clients

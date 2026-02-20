@@ -13,4 +13,14 @@ class SignalAccount extends Model
         'status',
         'ticket',
     ];
+
+    public function signal()
+    {
+        return $this->belongsTo(Signal::class, 'signal_id');
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'account_id');
+    }
 }

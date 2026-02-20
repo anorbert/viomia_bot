@@ -113,6 +113,38 @@ class AdminController extends Controller
         $months = array_values($months);
         $monthlyProfit = array_values($monthlyProfit);
 
+        /** ================= TRADES JOURNAL (90 DAYS - for browsing) ================= */
+        $journalData = [];
+
+        for ($i = 89; $i >= 0; $i--) {
+            $d = now()->subDays($i)->startOfDay();
+            $dateKey = $d->format('Y-m-d');
+            
+            $trades = TradeLog::where('created_at', '>=', $d)
+                ->where('created_at', '<', $d->endOfDay())
+                ->count();
+                
+            $pnl = TradeLog::where('created_at', '>=', $d)
+                ->where('created_at', '<', $d->endOfDay())
+                ->sum(DB::raw('COALESCE(profit, 0)'));
+
+            $journalData[$dateKey] = [
+                'trades' => $trades,
+                'pnl' => round($pnl, 2)
+            ];
+        }
+        
+        // Also prepare 30-day arrays for initial view
+        $journalDays = [];
+        $journalPnL = [];
+        
+        for ($i = 29; $i >= 0; $i--) {
+            $d = now()->subDays($i)->startOfDay();
+            $dateKey = $d->format('Y-m-d');
+            $journalDays[] = $d->format('M d');
+            $journalPnL[] = $journalData[$dateKey]['pnl'] ?? 0;
+        }
+
         /** ================= SYMBOL DISTRIBUTION (LAST 30D) ================= */
         $symbolData = TradeLog::selectRaw('symbol, COUNT(*) as total')
             ->where('created_at', '>=', now()->subDays(30))
@@ -189,6 +221,8 @@ class AdminController extends Controller
             'worstDayPnL',
             'months',
             'monthlyProfit',
+            'journalDays',
+            'journalPnL',
             'symbolData',
             'live'
         ));
@@ -278,6 +312,27 @@ class AdminController extends Controller
             ->get()
             ->map(fn($r) => ['type' => $r->error_type, 'total' => (int)$r->total]);
 
+        /** ================= TRADES JOURNAL (90 DAYS - for calendar browsing) ================= */
+        $journalFullData = [];
+        
+        for ($i = 89; $i >= 0; $i--) {
+            $d = now()->subDays($i)->startOfDay();
+            $dateKey = $d->format('Y-m-d');
+            
+            $trades = TradeLog::where('created_at', '>=', $d)
+                ->where('created_at', '<', $d->endOfDay())
+                ->count();
+                
+            $pnl = TradeLog::where('created_at', '>=', $d)
+                ->where('created_at', '<', $d->endOfDay())
+                ->sum(DB::raw('COALESCE(profit, 0)'));
+
+            $journalFullData[$dateKey] = [
+                'trades' => $trades,
+                'pnl' => round($pnl, 2)
+            ];
+        }
+
         return response()->json([
             'profit'       => round($profit, 2),
             'trades'       => $trades,
@@ -301,7 +356,10 @@ class AdminController extends Controller
                 'exposure'        => $exposure,
                 'recentErrors'    => $recentErrors,
                 'errorBreakdown'  => $errorBreakdown,
-            ]
+            ],
+            'journalDays' => $journalDays,
+            'journalPnL'  => $journalPnL,
+            'journalFullData' => $journalFullData,
         ]);
     }
 }
