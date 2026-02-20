@@ -78,7 +78,7 @@
                 <td>{{ $t->open_price ?? '-' }}</td>
                 <td>{{ $t->close_price ?? '-' }}</td>
                 <td>{{ $t->profit ?? '-' }}</td>
-                <td>{{ $t->closed_at ?? '-' }}</td>
+                <td>{{ $t->closed_at ? \Carbon\Carbon::parse($t->closed_at)->format('M d, Y H:i') : '-' }}</td>
               </tr>
             @empty
               <tr>
@@ -92,8 +92,12 @@
       </div>
     </div>
 
-    {{-- When you switch to paginate(), add links here --}}
-    {{-- <div class="card-footer">{{ $trades->links() }}</div> --}}
+    {{-- Pagination Links --}}
+    @if ($trades->hasPages())
+    <div class="card-footer d-flex justify-content-center">
+      {{ $trades->appends(request()->query())->links() }}
+    </div>
+    @endif
   </div>
 
 </div>

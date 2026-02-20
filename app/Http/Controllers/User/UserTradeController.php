@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Trade;
+use App\Models\TradeLog;
+use App\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -81,7 +83,11 @@ class UserTradeController extends Controller
 
     /**
      * TRADE HISTORY
-     * Later: load from your trades table and allow full filters.
+     * Load from your trades table with full filters and pagination.
+     */
+    /**
+     * TRADE HISTORY
+     * Load from your trades table with full filters and pagination.
      */
     public function history(Request $request)
     {
@@ -91,7 +97,43 @@ class UserTradeController extends Controller
         $from   = $request->get('from');
         $to     = $request->get('to');
 
-        $trades = collect([]); // will become paginate() once you connect DB
+        // Get current user's account IDs
+        $accountIds = Account::where('user_id', auth()->id())->pluck('id');
+
+        // Build the query
+        $query = TradeLog::whereIn('account_id', $accountIds);
+
+        // Filter by search term (q) - search in ticket, symbol, or status
+        if (!empty($q)) {
+            $query->where(function ($q_query) use ($q) {
+                $q_query->where('ticket', 'LIKE', "%{$q}%")
+                    ->orWhere('symbol', 'LIKE', "%{$q}%")
+                    ->orWhere('status', 'LIKE', "%{$q}%");
+            });
+        }
+
+        // Filter by symbol
+        if (!empty($symbol)) {
+            $query->where('symbol', $symbol);
+        }
+
+        // Filter by type (BUY/SELL)
+        if (!empty($type)) {
+            $query->where('type', $type);
+        }
+
+        // Filter by from date
+        if (!empty($from)) {
+            $query->whereDate('closed_at', '>=', $from);
+        }
+
+        // Filter by to date
+        if (!empty($to)) {
+            $query->whereDate('closed_at', '<=', $to);
+        }
+
+        // Get paginated results
+        $trades = $query->orderBy('closed_at', 'desc')->paginate(15);
 
         return view('users.trades.history', compact('trades','q','symbol','type','from','to'));
     }
