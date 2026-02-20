@@ -87,10 +87,6 @@
         </table>
       </div>
     </div>
-
-    <div class="card-footer">
-      {{ $executions->links() }}
-    </div>
   </div>
 
 </div>
