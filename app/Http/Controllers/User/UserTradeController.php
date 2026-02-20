@@ -85,10 +85,6 @@ class UserTradeController extends Controller
      * TRADE HISTORY
      * Load from your trades table with full filters and pagination.
      */
-    /**
-     * TRADE HISTORY
-     * Load from your trades table with full filters and pagination.
-     */
     public function history(Request $request)
     {
         $q      = trim($request->get('q', ''));
@@ -133,7 +129,9 @@ class UserTradeController extends Controller
         }
 
         // Get paginated results
-        $trades = $query->orderBy('closed_at', 'desc')->paginate(15);
+        $trades = $query->orderBy('updated_at', 'desc')
+            ->paginate(15)
+            ->appends($request->except('page')); // Preserve filters in pagination links
 
         return view('users.trades.history', compact('trades','q','symbol','type','from','to'));
     }

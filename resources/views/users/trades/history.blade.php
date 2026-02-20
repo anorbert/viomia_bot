@@ -64,9 +64,9 @@
             </tr>
           </thead>
           <tbody>
-            @forelse($trades as $i => $t)
+            @forelse($trades AS $key => $t)
               <tr>
-                <td>{{ $i+1 }}</td>
+                <td></td>
                 <td>{{ $t->ticket ?? '-' }}</td>
                 <td class="fw-bold">{{ $t->symbol ?? '-' }}</td>
                 <td>
@@ -78,7 +78,7 @@
                 <td>{{ $t->open_price ?? '-' }}</td>
                 <td>{{ $t->close_price ?? '-' }}</td>
                 <td>{{ $t->profit ?? '-' }}</td>
-                <td>{{ $t->closed_at ? \Carbon\Carbon::parse($t->closed_at)->format('M d, Y H:i') : '-' }}</td>
+                <td>{{ $t->updated_at ? \Carbon\Carbon::parse($t->updated_at)->format('M d, Y H:i') : '-' }}</td>
               </tr>
             @empty
               <tr>

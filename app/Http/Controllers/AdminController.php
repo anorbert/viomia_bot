@@ -120,17 +120,21 @@ class AdminController extends Controller
             $d = now()->subDays($i)->startOfDay();
             $dateKey = $d->format('Y-m-d');
             
-            $trades = TradeLog::where('created_at', '>=', $d)
-                ->where('created_at', '<', $d->endOfDay())
-                ->count();
-                
-            $pnl = TradeLog::where('created_at', '>=', $d)
-                ->where('created_at', '<', $d->endOfDay())
-                ->sum(DB::raw('COALESCE(profit, 0)'));
+            $query = TradeLog::where('created_at', '>=', $d)
+                ->where('created_at', '<', $d->endOfDay());
+            
+            $trades = (clone $query)->count();
+            $pnl = (clone $query)->sum(DB::raw('COALESCE(profit, 0)'));
+            $totalLots = (clone $query)->sum(DB::raw('COALESCE(lots, 0)'));
+            $wins = (clone $query)->where('profit', '>', 0)->count();
+            $losses = (clone $query)->where('profit', '<', 0)->count();
 
             $journalData[$dateKey] = [
                 'trades' => $trades,
-                'pnl' => round($pnl, 2)
+                'pnl' => round($pnl, 2),
+                'lots' => round($totalLots, 2),
+                'wins' => $wins,
+                'losses' => $losses
             ];
         }
         
@@ -223,6 +227,7 @@ class AdminController extends Controller
             'monthlyProfit',
             'journalDays',
             'journalPnL',
+            'journalData',
             'symbolData',
             'live'
         ));
@@ -319,17 +324,21 @@ class AdminController extends Controller
             $d = now()->subDays($i)->startOfDay();
             $dateKey = $d->format('Y-m-d');
             
-            $trades = TradeLog::where('created_at', '>=', $d)
-                ->where('created_at', '<', $d->endOfDay())
-                ->count();
-                
-            $pnl = TradeLog::where('created_at', '>=', $d)
-                ->where('created_at', '<', $d->endOfDay())
-                ->sum(DB::raw('COALESCE(profit, 0)'));
+            $query = TradeLog::where('created_at', '>=', $d)
+                ->where('created_at', '<', $d->endOfDay());
+            
+            $trades = (clone $query)->count();
+            $pnl = (clone $query)->sum(DB::raw('COALESCE(profit, 0)'));
+            $totalLots = (clone $query)->sum(DB::raw('COALESCE(lots, 0)'));
+            $wins = (clone $query)->where('profit', '>', 0)->count();
+            $losses = (clone $query)->where('profit', '<', 0)->count();
 
             $journalFullData[$dateKey] = [
                 'trades' => $trades,
-                'pnl' => round($pnl, 2)
+                'pnl' => round($pnl, 2),
+                'lots' => round($totalLots, 2),
+                'wins' => $wins,
+                'losses' => $losses
             ];
         }
 

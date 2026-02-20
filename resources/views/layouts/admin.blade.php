@@ -34,11 +34,15 @@
     <link href="{{ asset('gentelella/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('gentelella/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
 
+    <!-- FullCalendar -->
+    <link href="{{ asset('gentelella/vendors/fullcalendar/dist/fullcalendar.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('gentelella/vendors/fullcalendar/dist/fullcalendar.print.css') }}" rel="stylesheet" media="print">
     <!-- bootstrap-wysiwyg -->
     <link href="{{ asset('gentelella/vendors/google-code-prettify/bin/prettify.min.css') }}" rel="stylesheet">
 
     <!-- Select2 -->
     <link href="{{ asset('vendors/select2/dist/css/select2.min.css') }}" rel="stylesheet">
+
 </head>
 <body class="nav-md">
     <div class="container body">
@@ -120,6 +124,10 @@
 
     <!-- jQuery Tags Input -->
     <script src="{{ asset('gentelella/vendors/jquery.tagsinput/src/jquery.tagsinput.js') }}"></script>
+
+    
+    <script src="{{ asset('gentelella/vendors/moment/min/moment.min.js') }}"></script>
+    <script src="{{ asset('gentelella/vendors/fullcalendar/dist/fullcalendar.min.js') }}"></script>
     @stack('scripts')
     
 </body>
