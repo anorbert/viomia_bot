@@ -40,7 +40,7 @@ class RegisterController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'regex:/^07[2389][0-9]{7}$/', 'unique:users,phone_number'],
-            'pin' => ['required', 'digits:4', 'confirmed'],
+            'pin' => ['required', 'digits:10', 'confirmed'],
         ]);
 
         $user = User::create([
@@ -49,7 +49,8 @@ class RegisterController extends Controller
             'password' => Hash::make($request->pin),
             'role_id' => 3, // Regular user
             'is_active' => true,
-            'is_default_pin' => true, // 👈 IMPORTANT
+            'is_default_pin' => true, 
+            'terms' => ['required', 'accepted'],
         ]);
 
         event(new Registered($user));

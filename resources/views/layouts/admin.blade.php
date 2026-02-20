@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}"> {{-- Essential Security for AJAX --}}
-    <meta name="robots" content="noindex, nofollow"> {{-- Private Trading Environment --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="robots" content="noindex, nofollow">
     <title>@yield('title', config('app.name', 'Viomia Trading Bot'))</title>
 
-    <link href="{{ asset('img/pfr_logo2.png') }}" rel="icon">
+    <link href="{{ asset('logo.png') }}" rel="icon">
 
     <link href="{{ asset('gentelella/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('gentelella/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+    
+    {{-- ADDED: DataTables CSS (Gentelella Vendors) --}}
+    <link href="{{ asset('gentelella/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('gentelella/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
+
     <link href="{{ asset('gentelella/build/css/custom.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
@@ -26,7 +31,6 @@
             font-family: "Google Sans Flex", "Google Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
         }
 
-        /* Spacing & Weight Refinements */
         .left_col, .nav.side-menu > li > a {
             font-weight: 500;
             letter-spacing: 0.1px;
@@ -37,7 +41,6 @@
             letter-spacing: -0.5px;
         }
 
-        /* --- Custom UI Elements --- */
         .animate-pulse {
             animation: pulse-green 2s infinite;
         }
@@ -47,7 +50,6 @@
             100% { opacity: 1; }
         }
 
-        /* --- Preloader Styles --- */
         #preloader {
             position: fixed;
             top: 0; left: 0;
@@ -60,7 +62,7 @@
         }
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #26B99A; /* Theme Green */
+            border-top: 4px solid #dc3545; /* RED LOADER TO MATCH BUTTONS */
             border-radius: 50%;
             width: 45px;
             height: 45px;
@@ -68,7 +70,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Toastr Customization */
         #toast-container > div { opacity: 1; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; }
     </style>
 
@@ -95,6 +96,12 @@
 
     <script src="{{ asset('gentelella/vendors/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('gentelella/vendors/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+    
+    {{-- ADDED: DataTables JS (Gentelella Vendors) --}}
+    <script src="{{ asset('gentelella/vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('gentelella/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('gentelella/vendors/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
@@ -102,7 +109,6 @@
             $('#preloader').fadeOut('slow');
         });
 
-        // Global Toastr Configuration
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
@@ -110,7 +116,6 @@
             "timeOut": "5000"
         };
 
-        // Trigger notifications from Session
         @if(Session::has('success')) toastr.success("{{ Session::get('success') }}"); @endif
         @if(Session::has('error')) toastr.error("{{ Session::get('error') }}"); @endif
         @if(Session::has('info')) toastr.info("{{ Session::get('info') }}"); @endif
@@ -119,7 +124,6 @@
 
     <script src="{{ asset('gentelella/build/js/custom.min.js') }}"></script>
 
-    {{-- Screen Toggle Helper for Sidebar Footer --}}
     <script>
         function toggleFullScreen() {
             if (!document.fullscreenElement) {

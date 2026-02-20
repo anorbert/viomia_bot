@@ -42,7 +42,7 @@ use App\Http\Controllers\User\CheckoutController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::view('/terms', 'terms')->name('terms');
 Route::resource('user_login',LoginController::class);
 Route::resource('user_register',RegisterController::class);
 Route::get('/user_register', [RegisterController::class, 'index'])->name('user_register');

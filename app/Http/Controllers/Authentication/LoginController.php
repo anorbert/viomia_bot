@@ -20,7 +20,7 @@ class LoginController extends Controller
             return $this->redirectBasedOnRole(Auth::user());
         }
 
-        return view('login');
+        return view('welcome');
     }
 
     public function index()
@@ -49,7 +49,7 @@ class LoginController extends Controller
     {
         $request->validate([
             'phone' => ['required', 'string'],
-            'pin'   => ['required', 'digits:4'],
+            'pin'   => ['required'],
         ]);
 
         // Find the user
@@ -91,8 +91,8 @@ class LoginController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'current_password' => ['required', 'digits:4'],
-            'new_password'     => ['required', 'digits:4', 'confirmed'],
+            'current_password' => ['required'],
+            'new_password'     => ['required', 'confirmed'],
         ]);
 
         $user = Auth::user();
