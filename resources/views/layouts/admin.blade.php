@@ -3,124 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Parking System')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}"> {{-- Essential Security for AJAX --}}
+    <meta name="robots" content="noindex, nofollow"> {{-- Private Trading Environment --}}
+    <title>@yield('title', config('app.name', 'Viomia Trading Bot'))</title>
 
-     <!-- Favicon -->
     <link href="{{ asset('img/pfr_logo2.png') }}" rel="icon">
 
-    <!-- Bootstrap -->
     <link href="{{ asset('gentelella/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
-    <!-- Font Awesome -->
     <link href="{{ asset('gentelella/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-    <!-- NProgress -->
-    <link href="{{ asset('gentelella/vendors/nprogress/nprogress.css') }}" rel="stylesheet">
-    <!-- iCheck -->
-    <link href="{{ asset('gentelella/vendors/iCheck/skins/flat/green.css') }}" rel="stylesheet">
-    
-    <!-- bootstrap-progressbar -->
-    <link href="{{ asset('gentelella/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css') }}" rel="stylesheet">
-    <!-- JQVMap -->
-    <link href="{{ asset('gentelella/vendors/jqvmap/dist/jqvmap.min.css') }}" rel="stylesheet"/>
-    <!-- bootstrap-daterangepicker -->
-    <link href="{{ asset('gentelella/vendors/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
-
-    <!-- Custom Theme Style -->
     <link href="{{ asset('gentelella/build/css/custom.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
-    <!-- Datatables -->
-    <link href="{{ asset('gentelella/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('gentelella/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('gentelella/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('gentelella/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('gentelella/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
+    <style>
+        /* --- Typography: Google Sans Flex --- */
+        @font-face {
+            font-family: 'Google Sans Flex';
+            src: local('Google Sans Flex'), local('Google Sans');
+            font-display: swap;
+        }
 
-    <!-- bootstrap-wysiwyg -->
-    <link href="{{ asset('gentelella/vendors/google-code-prettify/bin/prettify.min.css') }}" rel="stylesheet">
+        body, .nav-md, .container.body, .right_col, h1, h2, h3, h4, h5, h6, .site_title, .nav.side-menu > li > a {
+            font-family: "Google Sans Flex", "Google Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+        }
 
-    <!-- Select2 -->
-    <link href="{{ asset('vendors/select2/dist/css/select2.min.css') }}" rel="stylesheet">
+        /* Spacing & Weight Refinements */
+        .left_col, .nav.side-menu > li > a {
+            font-weight: 500;
+            letter-spacing: 0.1px;
+        }
+
+        .site_title span {
+            font-weight: 700 !important;
+            letter-spacing: -0.5px;
+        }
+
+        /* --- Custom UI Elements --- */
+        .animate-pulse {
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* --- Preloader Styles --- */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #fff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #26B99A; /* Theme Green */
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Toastr Customization */
+        #toast-container > div { opacity: 1; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; }
+    </style>
+
+    @stack('styles')
 </head>
+
 <body class="nav-md">
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+
     <div class="container body">
         <div class="main_container">
-            @include('partials.sidebar')  <!-- Sidebar -->
-            @include('partials.topnav')   <!-- Top Navbar -->
+            @include('partials.sidebar')
+            @include('partials.topnav')
 
-            <!-- Page Content -->
-            <div class="right_col" role="main">
+            <div class="right_col" role="main" style="min-height: 100vh;">
                 @yield('content')
             </div>
 
-            @include('partials.footer') <!-- Footer -->
+            @include('partials.footer')
         </div>
     </div>
 
-    <!-- jQuery -->
     <script src="{{ asset('gentelella/vendors/jquery/dist/jquery.min.js') }}"></script>
-    <!-- Bootstrap -->
     <script src="{{ asset('gentelella/vendors/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-    <!-- FastClick -->
-    <script src="{{ asset('gentelella/vendors/fastclick/lib/fastclick.js') }}"></script>
-    <!-- NProgress -->
-    <script src="{{ asset('gentelella/vendors/nprogress/nprogress.js') }}"></script>
-    <!-- Chart.js -->
-    <script src="{{ asset('gentelella/vendors/Chart.js/dist/Chart.min.js') }}"></script>
-    <!-- gauge.js -->
-    <script src="{{ asset('gentelella/vendors/gauge.js/dist/gauge.min.js') }}"></script>
-    <!-- bootstrap-progressbar -->
-    <script src="{{ asset('gentelella/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js') }}"></script>
-    <!-- iCheck -->
-    <script src="{{ asset('gentelella/vendors/iCheck/icheck.min.js') }}"></script>
-    <!-- Skycons -->
-    <script src="{{ asset('gentelella/vendors/skycons/skycons.js') }}"></script>
-    <!-- Flot -->
-    <script src="{{ asset('gentelella/vendors/Flot/jquery.flot.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/Flot/jquery.flot.pie.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/Flot/jquery.flot.time.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/Flot/jquery.flot.stack.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/Flot/jquery.flot.resize.js') }}"></script>
-    <!-- Flot plugins -->
-    <script src="{{ asset('gentelella/vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/flot.curvedlines/curvedLines.js') }}"></script>
-    <!-- DateJS -->
-    <script src="{{ asset('gentelella/vendors/DateJS/build/date.js') }}"></script>
-    <!-- JQVMap -->
-    <script src="{{ asset('gentelella/vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
-    <!-- bootstrap-daterangepicker -->
-    <script src="{{ asset('gentelella/vendors/moment/min/moment.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-    <!-- Custom Theme Scripts -->
+    <script>
+        $(window).on('load', function() {
+            $('#preloader').fadeOut('slow');
+        });
+
+        // Global Toastr Configuration
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "5000"
+        };
+
+        // Trigger notifications from Session
+        @if(Session::has('success')) toastr.success("{{ Session::get('success') }}"); @endif
+        @if(Session::has('error')) toastr.error("{{ Session::get('error') }}"); @endif
+        @if(Session::has('info')) toastr.info("{{ Session::get('info') }}"); @endif
+        @if(Session::has('warning')) toastr.warning("{{ Session::get('warning') }}"); @endif
+    </script>
+
     <script src="{{ asset('gentelella/build/js/custom.min.js') }}"></script>
 
+    {{-- Screen Toggle Helper for Sidebar Footer --}}
+    <script>
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen?.();
+            } else {
+                document.exitFullscreen?.();
+            }
+        }
+    </script>
 
-    <!-- Datatables -->
-    <script src="{{ asset('gentelella/vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
-
-
-    <script src="{{ asset('gentelella/vendors/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
-
-    <!-- bootstrap-wysiwyg -->
-    <script src="{{ asset('gentelella/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/jquery.hotkeys/jquery.hotkeys.js') }}"></script>
-    <script src="{{ asset('gentelella/vendors/google-code-prettify/src/prettify.js') }}"></script>
-
-    <!-- jQuery Tags Input -->
-    <script src="{{ asset('gentelella/vendors/jquery.tagsinput/src/jquery.tagsinput.js') }}"></script>
     @stack('scripts')
-    
 </body>
 </html>

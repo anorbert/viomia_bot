@@ -137,7 +137,7 @@ Route::prefix('admin')
 
         // Settings
         Route::resource('users', UserController::class);
-        Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+        Route::post('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::resource('roles', RoleController::class);
         Route::resource('settings', SettingController::class);
         Route::post('settings/save', [SettingController::class, 'save'])->name('settings.save');
