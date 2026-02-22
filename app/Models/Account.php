@@ -24,8 +24,15 @@ class Account extends Model
         'password',
         'account_type',
         'active',
+<<<<<<< HEAD
         'connected', // Added to fillable based on your previous request
         'meta',      // Added to fillable
+=======
+        'is_verified',
+        'verified_at',
+        'verification_notes',
+        'rejection_reason',
+>>>>>>> 8a450adb7cb3c25a82182a46883c5c07b03b499a
     ];
 
     /**
@@ -35,7 +42,12 @@ class Account extends Model
         'meta' => 'array',
         'active' => 'boolean',
         'connected' => 'boolean',
+<<<<<<< HEAD
         'deleted_at' => 'datetime',
+=======
+        'is_verified' => 'boolean',
+        'verified_at' => 'datetime',
+>>>>>>> 8a450adb7cb3c25a82182a46883c5c07b03b499a
     ];
 
     /**

@@ -125,7 +125,6 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="asset-icon font-weight-bold">{{ substr($log->symbol, 0, 2) }}</div>
                                 <span class="font-weight-bold">{{ strtoupper($log->symbol) }}</span>
                             </div>
                         </td>

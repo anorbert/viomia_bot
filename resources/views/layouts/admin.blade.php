@@ -18,6 +18,13 @@
 
     <link href="{{ asset('gentelella/build/css/custom.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+     <!-- FullCalendar -->
+    <link href="{{ asset('gentelella/vendors/fullcalendar/dist/fullcalendar.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('gentelella/vendors/fullcalendar/dist/fullcalendar.print.css') }}" rel="stylesheet" media="print">
+
+    <!-- Select2 -->
+    <link href="{{ asset('gentelella/vendors/select2/dist/css/select2.min.css') }}" rel="stylesheet">
+    
 
     <style>
         /* --- Typography: Google Sans Flex --- */
@@ -133,6 +140,9 @@
             }
         }
     </script>
+
+    <script src="{{ asset('gentelella/vendors/moment/min/moment.min.js') }}"></script>
+    <script src="{{ asset('gentelella/vendors/fullcalendar/dist/fullcalendar.min.js') }}"></script>
 
     @stack('scripts')
 </body>
