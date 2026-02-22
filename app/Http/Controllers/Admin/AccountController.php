@@ -135,14 +135,43 @@ class AccountController extends Controller
 
     public function pending()
     {
-        $accounts = Account::where('active', false)->get();
-        return view('admin.accounts.pending', compact('accounts'));
+        $pendingAccounts = Account::where('is_verified', false)->with('user')->latest()->paginate(10);
+        $users = User::all();
+        return view('admin.accounts.pending', compact('pendingAccounts', 'users'));
     }
 
-    public function verify(Account $account)
+    public function verifyAccount(Account $account, Request $request)
     {
-        $account->update(['status' => 'verified']);
-        return back()->with('success', 'Account verified');
+        $request->validate([
+            'verification_notes' => 'nullable|string|max:500',
+        ]);
+
+        $account->update([
+            'is_verified' => true,
+            'verified_at' => now(),
+            'verification_notes' => $request->verification_notes,
+            'active' => true,
+        ]);
+
+        return back()->with('success', 'Account verified and activated successfully!');
+    }
+
+    public function rejectAccount(Account $account, Request $request)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:500',
+        ]);
+
+        $account->update([
+            'is_verified' => false,
+            'rejection_reason' => $request->rejection_reason,
+            'active' => false,
+        ]);
+
+        // Optionally send notification to user
+        // Notification::send($account->user, new AccountRejectedNotification($account->rejection_reason));
+
+        return back()->with('success', 'Account rejected. User has been notified.');
     }
 
     public function fetchData($id)

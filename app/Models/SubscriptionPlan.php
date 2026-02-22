@@ -9,7 +9,7 @@ class SubscriptionPlan extends Model
     //
     protected $fillable = [
         'name','slug','currency','price','billing_interval','duration_days',
-        'description','features','is_active','sort_order','profit_share'
+        'description','features','is_active','sort_order','profit_share','max_accounts'
     ];
 
     protected $casts = [

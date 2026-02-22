@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\TradeLog;
 
 class TradeController extends Controller
 {
@@ -66,7 +67,57 @@ class TradeController extends Controller
 
     public function statistics()
     {
-        return view('admin.trades.statistics');
+
+    return 'here we are';
+        $trades = TradeLog::all();
+        
+        // Calculate basic statistics
+        $totalTrades = $trades->count();
+        $winningTrades = $trades->where('profit', '>', 0)->count();
+        $losingTrades = $trades->where('profit', '<', 0)->count();
+        $totalProfit = $trades->sum('profit');
+        $totalLots = $trades->sum('lots');
+        
+        $winRate = $totalTrades > 0 ? round(($winningTrades / $totalTrades) * 100, 2) : 0;
+        $avgProfit = $totalTrades > 0 ? round($totalProfit / $totalTrades, 2) : 0;
+        $avgWin = $winningTrades > 0 ? round($trades->where('profit', '>', 0)->sum('profit') / $winningTrades, 2) : 0;
+        $avgLoss = $losingTrades > 0 ? round($trades->where('profit', '<', 0)->sum('profit') / $losingTrades, 2) : 0;
+        
+        // Profit by symbol
+        $profitBySymbol = $trades->groupBy('symbol')->map(function ($group) {
+            return [
+                'symbol' => $group[0]->symbol,
+                'profit' => round($group->sum('profit'), 2),
+                'count' => $group->count(),
+                'wins' => $group->where('profit', '>', 0)->count(),
+            ];
+        })->sortByDesc('profit')->values();
+        
+        // Profit by type (Buy/Sell)
+        $profitByType = $trades->groupBy('type')->map(function ($group) {
+            return [
+                'type' => $group[0]->type,
+                'profit' => round($group->sum('profit'), 2),
+                'count' => $group->count(),
+            ];
+        })->values();
+        
+        // Daily profit
+        $dailyProfit = $trades->groupBy(function ($trade) {
+            return $trade->created_at->format('Y-m-d');
+        })->map(function ($group) {
+            return [
+                'date' => $group[0]->created_at->format('M d'),
+                'profit' => round($group->sum('profit'), 2),
+                'count' => $group->count(),
+            ];
+        })->sortBy('date')->take(30)->values();
+        
+        return view('admin.trades.statistics', compact(
+            'totalTrades', 'winningTrades', 'losingTrades', 'totalProfit', 
+            'totalLots', 'winRate', 'avgProfit', 'avgWin', 'avgLoss',
+            'profitBySymbol', 'profitByType', 'dailyProfit'
+        ));
     }
 
     public function symbols()

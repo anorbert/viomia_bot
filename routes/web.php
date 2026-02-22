@@ -110,10 +110,9 @@ Route::prefix('admin')
 
         // Trading Accounts
         Route::resource('accounts', AccountController::class);
-        Route::get('accounts/{account}/verify', [AccountController::class, 'verify'])
-            ->name('accounts.verify');
-        Route::get('accounts-pending', [AccountController::class, 'pending'])
-            ->name('accounts.pending');
+        Route::get('accounts-pending', [AccountController::class, 'pending'])->name('accounts.pending');
+        Route::post('accounts/{account}/verify', [AccountController::class, 'verifyAccount'])->name('accounts.verify');
+        Route::post('accounts/{account}/reject', [AccountController::class, 'rejectAccount'])->name('accounts.reject');
 
         // Bots
         Route::resource('bots', BotController::class);

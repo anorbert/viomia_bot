@@ -18,6 +18,10 @@ class Account extends Model
         'password',
         'account_type',
         'active',
+        'is_verified',
+        'verified_at',
+        'verification_notes',
+        'rejection_reason',
     ];
 
     public function User()
@@ -28,7 +32,9 @@ class Account extends Model
     protected $casts = [
         'meta' => 'array',
         'active' => 'boolean',
-        'connected' => 'boolean'
+        'connected' => 'boolean',
+        'is_verified' => 'boolean',
+        'verified_at' => 'datetime',
     ];
 
     // Decrypt password accessor
