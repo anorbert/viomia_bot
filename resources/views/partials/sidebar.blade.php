@@ -61,7 +61,7 @@
               <li class="{{ $is('admin.clients.index') ? 'current-page' : '' }}">
                 <a href="{{ route('admin.clients.index') }}">All Clients</a>
               </li>
-              <li><a href="#" onclick="return false;">Subscriptions</a></li>
+              <!-- <li><a href="#" onclick="return false;">Subscriptions</a></li> -->
             </ul>
           </li>
 
