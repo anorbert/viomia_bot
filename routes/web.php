@@ -122,7 +122,10 @@ Route::prefix('admin')
 
         // Trading Activity
         Route::resource('trades', TradeLogController::class);
-        Route::get('trades/statistics', [TradeController::class, 'statistics'])->name('trades.statistics');
+
+        // Route::get('trades/statistics', [TradeController::class, 'statistics'])->name('trades.statistics');
+        Route::get('statistics', [TradeController::class, 'statistic1'])->name('trades.statistics');
+
         Route::get('trades/symbols', [TradeController::class, 'symbols'])->name('trades.symbols');
 
         // Payments

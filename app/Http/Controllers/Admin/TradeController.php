@@ -65,10 +65,9 @@ class TradeController extends Controller
         //
     }
 
-    public function statistics()
-    {
-
-    return 'here we are';
+public function statistic1(){
+    // return 'David BIKORIMANA';
+    // return 'here we are';
         $trades = TradeLog::all();
         
         // Calculate basic statistics
@@ -119,6 +118,7 @@ class TradeController extends Controller
             'profitBySymbol', 'profitByType', 'dailyProfit'
         ));
     }
+
 
     public function symbols()
     {

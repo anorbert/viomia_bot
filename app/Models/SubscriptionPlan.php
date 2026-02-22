@@ -11,7 +11,7 @@ class SubscriptionPlan extends Model
     use SoftDeletes; // Maintain consistency with User and Account
 
     protected $fillable = [
-<<<<<<< HEAD
+
         'name',
         'slug',
         'currency',
@@ -22,11 +22,9 @@ class SubscriptionPlan extends Model
         'features',
         'is_active',
         'sort_order',
-        'profit_share'
-=======
+        'profit_share',
         'name','slug','currency','price','billing_interval','duration_days',
         'description','features','is_active','sort_order','profit_share','max_accounts'
->>>>>>> 8a450adb7cb3c25a82182a46883c5c07b03b499a
     ];
 
     protected $casts = [
