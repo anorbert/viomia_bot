@@ -57,7 +57,8 @@ class UserController extends Controller
     // Changed string $id to User $user
     public function update(Request $request, User $user)
     {
-        $this->authorize('update', $user); // Security Layer B
+        // $this->authorize('update', $user); // Security Layer B
+        if (auth()->user()->role_id !== 1) { abort(403); }
 
         $data = $request->validate([
             'name'          => ['required', 'string', 'max:255'],

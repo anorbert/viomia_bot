@@ -118,6 +118,9 @@ public function statistic1(){
             'profitBySymbol', 'profitByType', 'dailyProfit'
         ));
     }
+    public function Check(){
+        
+    }
 
 
     public function symbols()
