@@ -42,7 +42,7 @@ use App\Http\Controllers\User\CheckoutController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::view('/terms', 'terms')->name('terms');
 Route::resource('user_login',LoginController::class);
 Route::resource('user_register',RegisterController::class);
 Route::get('/user_register', [RegisterController::class, 'index'])->name('user_register');
@@ -137,7 +137,7 @@ Route::prefix('admin')
 
         // Settings
         Route::resource('users', UserController::class);
-        Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+        Route::post('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::resource('roles', RoleController::class);
         Route::resource('settings', SettingController::class);
         Route::post('settings/save', [SettingController::class, 'save'])->name('settings.save');
