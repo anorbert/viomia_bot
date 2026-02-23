@@ -119,9 +119,6 @@
               <li class="{{ $is('admin.trades.statistics') ? 'current-page' : '' }}">
                 <a href="{{ route('admin.trades.statistics') }}">Statistics</a>
               </li>
-              <li class="{{ $is('admin.trades.symbols') ? 'current-page' : '' }}">
-                <a href="{{ route('admin.trades.symbols') }}">Symbols</a>
-              </li>
             </ul>
           </li>
 

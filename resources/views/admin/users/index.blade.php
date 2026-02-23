@@ -32,9 +32,9 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white">
-                    @foreach($users as $u)
+                    @foreach($users as $key => $u)
                     <tr style="transition: all 0.2s;">
-                        <td class="px-3 text-muted font-weight-bold">#{{ $u->id }}</td>
+                        <td class="px-3 text-muted font-weight-bold">#{{ $key + 1 }}</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="position-relative">
