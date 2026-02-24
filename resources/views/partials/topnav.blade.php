@@ -55,23 +55,77 @@
                              alt="" class="rounded-circle mr-2" style="width: 30px; height: 30px; object-fit: cover;">
                         <span class="d-none d-sm-inline">{{ Auth::user()->name ?? 'Administrator' }}</span>
                     </a>
-                    <div class="dropdown-menu dropdown-usermenu border-0 shadow pull-right mt-2" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item py-2" href="#"><i class="fa fa-user mr-2"></i> Profile</a>
-                        <a class="dropdown-item py-2" href="#">
-                            <span class="badge bg-red pull-right text-white">50%</span>
-                            <i class="fa fa-cog mr-2"></i> Settings
+                    <div class="dropdown-menu dropdown-usermenu border-0 shadow pull-right mt-2" aria-labelledby="navbarDropdown" style="min-width: 240px;">
+                        <!-- Profile Section -->
+                        <a class="dropdown-item py-3 px-3 rounded-top" href="{{ route('user.profile.index') }}" 
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #5A738E;">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-user mr-3" style="font-size: 16px; width: 20px; color: #5B7A9E;"></i>
+                                <div>
+                                    <div class="font-weight-600" style="font-size: 14px;">Profile</div>
+                                    <small class="text-muted" style="font-size: 12px;">Manage your account</small>
+                                </div>
+                            </div>
                         </a>
-                        <a class="dropdown-item py-2" href="#"><i class="fa fa-question-circle mr-2"></i> Help</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item py-2 text-danger" href="{{ route('logout') }}"
-                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fa fa-sign-out mr-2"></i> <strong>Log Out</strong>
+                        
+                        <!-- Settings Section -->
+                        <a class="dropdown-item py-3 px-3" href="{{ route('user.profile.edit', Auth::user()->id) }}"
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #5A738E;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-cog mr-3" style="font-size: 16px; width: 20px; color: #5B7A9E;"></i>
+                                    <div>
+                                        <div class="font-weight-600" style="font-size: 14px;">Settings</div>
+                                        <small class="text-muted" style="font-size: 12px;">Configure preferences</small>
+                                    </div>
+                                </div>
+                                <span class="badge badge-danger" style="font-size: 11px; padding: 4px 8px;">50%</span>
+                            </div>
+                        </a>
+                        
+                        <!-- Help Section -->
+                        <a class="dropdown-item py-3 px-3" href="{{ route('help') }}"
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #5A738E;">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-question-circle mr-3" style="font-size: 16px; width: 20px; color: #5B7A9E;"></i>
+                                <div>
+                                    <div class="font-weight-600" style="font-size: 14px;">Help & Support</div>
+                                    <small class="text-muted" style="font-size: 12px;">Get assistance</small>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <div class="dropdown-divider my-2"></div>
+                        
+                        <!-- Logout Section -->
+                        <a class="dropdown-item py-3 px-3 rounded-bottom" href="{{ route('logout') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #E74C3C;">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-sign-out mr-3" style="font-size: 16px; width: 20px; color: #E74C3C;"></i>
+                                <div>
+                                    <div class="font-weight-600" style="font-size: 14px;">Sign Out</div>
+                                    <small class="text-muted" style="font-size: 12px;">End your session</small>
+                                </div>
+                            </div>
                         </a>
 
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf
                         </form>
                     </div>
+                    
+                    <style>
+                        .dropdown-usermenu .dropdown-item:hover {
+                            background-color: #f8f9fa !important;
+                            border-left-color: #5B7A9E !important;
+                            color: #2c3e50 !important;
+                        }
+                        
+                        .dropdown-usermenu .dropdown-item:hover i {
+                            color: #2c3e50 !important;
+                        }
+                    </style>
                 </li>
             </ul>
         </nav>

@@ -1,31 +1,25 @@
 <div class="col-md-3 left_col">
   <div class="left_col scroll-view">
 
+    <!-- Site Title -->
     <div class="navbar nav_title" style="border: 0;">
       <a href="{{ route('user.dashboard') }}" class="site_title">
-        <i class="fa fa-robot"></i> <span>Viomia Bot</span>
+        <i class="fa fa-robot"></i> <span>Trading Bot</span>
       </a>
     </div>
 
     <div class="clearfix"></div>
 
+    <!-- Profile Info -->
     <div class="profile clearfix">
       <div class="profile_pic">
-        @if(Auth::user()->profile_photo)
-          <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" 
-               alt="User Profile" class="img-circle profile_img shadow-sm" 
-               style="width: 56px; height: 56px; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); background: #fff;">
-        @else
-          <img src="{{ asset('img/bot_logo.png') }}" 
-               alt="Default Logo" class="img-circle profile_img shadow-sm" 
-               style="width: 56px; height: 56px; object-fit: contain; border: 2px solid rgba(255,255,255,0.2); background: #fff;">
-        @endif
+        <img src="{{ asset('img/bot_logo.png') }}" alt="Profile Picture" class="img-circle profile_img">
       </div>
       <div class="profile_info">
         <span>Welcome,</span>
-        <h2>{{ Auth::user()->name ?? 'Trader' }}</h2>
-        <small style="color:#1ABB9C; font-weight: 600;">
-          {{ Auth::user()->phone_number ?? 'Active Account' }}
+        <h2>{{ Auth::user()->name ?? 'User' }}</h2>
+        <small style="color:#cbd5e1;">
+          {{ Auth::user()->phone_number ?? '' }}
         </small>
       </div>
     </div>
@@ -37,6 +31,7 @@
       $open = fn($patterns) => collect((array)$patterns)->contains(fn($p) => request()->routeIs($p));
     @endphp
 
+    <!-- Sidebar Menu -->
     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
       <div class="menu_section">
         <h3>Main Menu</h3>
@@ -118,7 +113,7 @@
             </a>
             <ul class="nav child_menu" style="{{ $profileOpen ? 'display:block;' : '' }}">
               <li class="{{ $is('user.profile.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.profile.index') }}">Profile Settings</a>
+                <a href="{{ route('user.profile.index') }}">Profile</a>
               </li>
               <li class="{{ $is('user.password.index') ? 'current-page' : '' }}">
                 <a href="{{ route('user.password.index') }}">Change Password</a>
@@ -126,16 +121,29 @@
             </ul>
           </li>
 
-          <li>
-            <a href="mailto:support@viomia.com">
-              <i class="fa fa-life-ring"></i> Support
+          {{-- Support & Help --}}
+          @php $supportOpen = $open(['help','user.support.*']); @endphp
+          <li class="{{ $supportOpen ? 'active' : '' }}">
+            <a>
+              <i class="fa fa-life-ring"></i> Support <span class="fa fa-chevron-down"></span>
             </a>
+            <ul class="nav child_menu" style="{{ $supportOpen ? 'display:block;' : '' }}">
+              <li class="{{ $is('help') ? 'current-page' : '' }}">
+                <a href="{{ route('help') }}">Help & FAQ</a>
+              </li>
+              <li>
+                <a href="mailto:support@viomiabot.com">
+                  <i class="fa fa-envelope mr-1"></i> Email Support
+                </a>
+              </li>
+            </ul>
           </li>
 
         </ul>
       </div>
     </div>
 
+    <!-- Footer Buttons -->
     <div class="sidebar-footer hidden-small">
       <a data-toggle="tooltip" data-placement="top" title="Profile" href="{{ route('user.profile.index') }}">
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
@@ -145,7 +153,7 @@
         <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
       </a>
 
-      <a data-toggle="tooltip" data-placement="top" title="Lock" href="#">
+      <a data-toggle="tooltip" data-placement="top" title="Lock" href="#" onclick="return false;">
         <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
       </a>
 

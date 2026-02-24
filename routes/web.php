@@ -66,6 +66,8 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard/metrics', [UserDashboardController::class, 'metrics'])
         ->name('dashboard.metrics');
     Route::resource('/profile', UserProfileController::class);
+    Route::get('/profile/{id}/change-password', [UserProfileController::class, 'changePassword'])->name('profile.change-password');
+    Route::post('/profile/{id}/change-password', [UserProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::resource('/password', UserPasswordController::class);
 
     Route::resource('/subscriptions', UserSubscriptionController::class);
@@ -148,4 +150,7 @@ Route::prefix('admin')
         Route::resource('signals', SignalController::class);
 
     });
+
+// Help & Support Page - Public route
+Route::view('/help', 'help.index')->name('help');
 
