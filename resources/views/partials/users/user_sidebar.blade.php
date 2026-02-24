@@ -121,11 +121,22 @@
             </ul>
           </li>
 
-          {{-- Optional Support --}}
-          <li>
-            <a href="#" onclick="return false;">
-              <i class="fa fa-life-ring"></i> Support
+          {{-- Support & Help --}}
+          @php $supportOpen = $open(['help','user.support.*']); @endphp
+          <li class="{{ $supportOpen ? 'active' : '' }}">
+            <a>
+              <i class="fa fa-life-ring"></i> Support <span class="fa fa-chevron-down"></span>
             </a>
+            <ul class="nav child_menu" style="{{ $supportOpen ? 'display:block;' : '' }}">
+              <li class="{{ $is('help') ? 'current-page' : '' }}">
+                <a href="{{ route('help') }}">Help & FAQ</a>
+              </li>
+              <li>
+                <a href="mailto:support@viomiabot.com">
+                  <i class="fa fa-envelope mr-1"></i> Email Support
+                </a>
+              </li>
+            </ul>
           </li>
 
         </ul>

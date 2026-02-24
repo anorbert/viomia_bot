@@ -84,7 +84,234 @@
 
   </div>
 
-  {{-- LIVE INFO --}}
+  {{-- BOT HEALTH & METRICS SECTION --}}
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h4 class="mb-3 font-weight-bold">
+        <i class="fa fa-robot mr-2 text-info"></i> Bot Health & Performance
+      </h4>
+    </div>
+  </div>
+
+  <div class="row">
+    {{-- Bot Health Overview --}}
+    <div class="col-md-6">
+      <div class="x_panel shadow-sm">
+        <div class="x_title" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 8px 8px 0 0; margin: -15px -15px 0 -15px; padding: 15px;">
+          <h2 style="color: white; margin: 0;">
+            <i class="fa fa-heartbeat mr-2"></i> Active Bots Status
+          </h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          @php
+            $bots = \App\Models\EaBot::where('status', 'active')->get();
+            // Get latest status change per account
+            $botStatuses = \App\Models\EaStatusChange::whereIn('account_id', auth()->user()->accounts->pluck('id'))
+              ->orderBy('changed_at', 'desc')
+              ->get()
+              ->groupBy('account_id')
+              ->map(fn($group) => $group->first());
+          @endphp
+          <div style="max-height: 350px; overflow-y: auto;">
+            @forelse($botStatuses as $bs)
+              @php
+                $account = \App\Models\Account::find($bs->account_id);
+                $isHealthy = !in_array($bs->status, ['error', 'stopped']);
+                $healthColor = $isHealthy ? '#28a745' : '#dc3545';
+              @endphp
+              <div style="padding: 12px; border-bottom: 1px solid #f1f1f1; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h6 class="mb-1" style="font-weight: 600;">
+                    Account #{{ $account->login ?? 'Unknown' }}
+                  </h6>
+                  <small class="text-muted">
+                    <i class="fa fa-clock-o mr-1"></i> {{ $bs->changed_at ? $bs->changed_at->diffForHumans() : 'Never' }}
+                  </small>
+                </div>
+                <div style="text-align: right;">
+                  <div style="margin-bottom: 6px;">
+                    <span class="badge badge-{{ $isHealthy ? 'success' : 'danger' }}" style="font-size: 11px; padding: 5px 10px;">
+                      <i class="fa {{ $isHealthy ? 'fa-check-circle' : 'fa-exclamation-circle' }} mr-1"></i>
+                      {{ strtoupper($bs->status) }}
+                    </span>
+                  </div>
+                  <small class="text-muted d-block">Loss Streak: <strong>{{ $bs->consecutive_losses ?? 0 }}</strong></small>
+                </div>
+              </div>
+            @empty
+              <div class="text-center py-4 text-muted">
+                <i class="fa fa-inbox" style="font-size: 32px; opacity: 0.3;"></i>
+                <p class="mt-2">No active bots</p>
+              </div>
+            @endforelse
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{-- Account Risk Metrics --}}
+    <div class="col-md-6">
+      <div class="x_panel shadow-sm">
+        <div class="x_title" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 8px 8px 0 0; margin: -15px -15px 0 -15px; padding: 15px;">
+          <h2 style="color: white; margin: 0;">
+            <i class="fa fa-warning mr-2"></i> Risk Indicators
+          </h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          @php
+            $allAccounts = auth()->user()->accounts;
+            $maxDrawdown = 0;
+            $totalEquity = 0;
+            $totalBalance = 0;
+            $highRiskAccounts = 0;
+
+            foreach($allAccounts as $acc) {
+              $snapshot = $acc->snapshots;
+              if($snapshot) {
+                $totalEquity += $snapshot->equity;
+                $totalBalance += $snapshot->balance;
+                if($snapshot->drawdown && $snapshot->drawdown > $maxDrawdown) {
+                  $maxDrawdown = $snapshot->drawdown;
+                }
+                // Account with margin > 80% is high risk
+                if($snapshot->margin > 0 && ($snapshot->margin / $snapshot->equity) * 100 > 80) {
+                  $highRiskAccounts++;
+                }
+              }
+            }
+
+            $portfolioMarginUsage = $totalEquity > 0 ? (($totalBalance - $totalEquity) / $totalEquity) * 100 : 0;
+          @endphp
+          <div style="padding: 12px 0;">
+            <div style="margin-bottom: 20px;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small">Portfolio Margin Usage</span>
+                <strong style="color: {{ $portfolioMarginUsage > 80 ? '#dc3545' : ($portfolioMarginUsage > 50 ? '#ffc107' : '#28a745') }};">
+                  {{ number_format($portfolioMarginUsage, 1) }}%
+                </strong>
+              </div>
+              <div class="progress" style="height: 8px; border-radius: 4px;">
+                <div class="progress-bar" style="width: {{ $portfolioMarginUsage }}%; background-color: {{ $portfolioMarginUsage > 80 ? '#dc3545' : ($portfolioMarginUsage > 50 ? '#ffc107' : '#28a745') }}; border-radius: 4px;"></div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small">Max Drawdown</span>
+                <strong style="color: {{ $maxDrawdown > 20 ? '#dc3545' : '#28a745' }};">{{ number_format($maxDrawdown, 2) }}%</strong>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+              <div class="d-flex justify-content-between">
+                <span class="text-muted small">High Risk Accounts</span>
+                <strong style="color: {{ $highRiskAccounts > 0 ? '#dc3545' : '#28a745' }};">
+                  <span class="badge badge-{{ $highRiskAccounts > 0 ? 'danger' : 'success' }}">{{ $highRiskAccounts }}</span>
+                </strong>
+              </div>
+              <small class="text-muted d-block mt-1">Accounts with >80% margin usage</small>
+            </div>
+
+            <div class="alert alert-warning py-2 px-3 small mb-0" style="border-radius: 6px; background: #fffdf0; border: 1px solid #ffc107;">
+              <i class="fa fa-info-circle mr-1"></i>
+              Keep margin usage below 60% for safer trading
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- ACCOUNT EQUITY SUMMARY --}}
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="x_panel shadow-sm">
+        <div class="x_title" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px 8px 0 0; margin: -15px -15px 0 -15px; padding: 15px;">
+          <h2 style="color: white; margin: 0;">
+            <i class="fa fa-list mr-2"></i> Account Summary
+          </h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-striped table-sm mb-0">
+              <thead style="position: sticky; top: 0; background: #f8f9fa;">
+                <tr>
+                  <th>Account</th>
+                  <th class="text-right">Balance</th>
+                  <th class="text-right">Equity</th>
+                  <th class="text-right">Margin %</th>
+                  <th class="text-right">Today P/L</th>
+                  <th class="text-center">Bot Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @forelse($allAccounts as $acc)
+                  @php
+                    $snapshot = $acc->snapshots;
+                    $dailySummary = \App\Models\DailySummary::where('account_id', $acc->id)
+                      ->whereDate('summary_date', today())
+                      ->first();
+                    $lastStatus = \App\Models\EaStatusChange::where('account_id', $acc->id)
+                      ->orderBy('changed_at', 'desc')
+                      ->first();
+                  @endphp
+                  <tr>
+                    <td>
+                      <strong>#{{ $acc->login }}</strong><br>
+                      <small class="text-muted">{{ $acc->platform }} - {{ strtoupper($acc->account_type ?? 'unknown') }}</small>
+                    </td>
+                    <td class="text-right">
+                      <strong>${{ $snapshot ? number_format($snapshot->balance, 2) : '0.00' }}</strong>
+                    </td>
+                    <td class="text-right">
+                      <strong>${{ $snapshot ? number_format($snapshot->equity, 2) : '0.00' }}</strong>
+                    </td>
+                    <td class="text-right">
+                      @php
+                        $margin_pct = 0;
+                        if($snapshot && $snapshot->equity > 0) {
+                          $margin_pct = ($snapshot->margin / $snapshot->equity) * 100;
+                        }
+                      @endphp
+                      <span style="color: {{ $margin_pct > 80 ? '#dc3545' : ($margin_pct > 50 ? '#ffc107' : '#28a745') }}; font-weight: 600;">
+                        {{ number_format($margin_pct, 1) }}%
+                      </span>
+                    </td>
+                    <td class="text-right">
+                      <strong style="color: {{ ($dailySummary && $dailySummary->daily_pl >= 0) ? '#28a745' : '#dc3545' }};">
+                        {{ $dailySummary ? (($dailySummary->daily_pl >= 0 ? '+' : '') . number_format($dailySummary->daily_pl, 2)) : '+0.00' }}
+                      </strong>
+                    </td>
+                    <td class="text-center">
+                      @if($lastStatus)
+                        <span class="badge badge-{{ in_array($lastStatus->status, ['running', 'active']) ? 'success' : (in_array($lastStatus->status, ['error', 'stopped']) ? 'danger' : 'warning') }}" style="font-size: 11px;">
+                          {{ strtoupper(substr($lastStatus->status, 0, 4)) }}
+                        </span>
+                      @else
+                        <span class="badge badge-secondary" style="font-size: 11px;">N/A</span>
+                      @endif
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                      <i class="fa fa-inbox" style="font-size: 32px; opacity: 0.3;"></i>
+                      <p class="mt-2">No accounts connected</p>
+                    </td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
   <div class="row mt-3">
     <div class="col-md-6">
       <div class="x_panel">
