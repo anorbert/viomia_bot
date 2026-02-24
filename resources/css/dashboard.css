@@ -1,0 +1,865 @@
+/* ============================================
+   ADVANCED DASHBOARD UI - Premium Styling
+   ============================================ */
+
+/* ============================================
+   ROOT VARIABLES & COLOR SCHEME
+   ============================================ */
+:root {
+  --color-primary: #3b82f6;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #06b6d4;
+  --color-text: #1f2937;
+  --color-text-light: #6b7280;
+  --color-bg: #f9fafb;
+  --color-card: #ffffff;
+  --color-border: #e5e7eb;
+  --color-shadow: rgba(0, 0, 0, 0.05);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   GLOBAL & BASE STYLES
+   ============================================ */
+* {
+  box-sizing: border-box;
+}
+
+/* ============================================
+   DASHBOARD WRAPPER & LAYOUT
+   ============================================ */
+.dashboard-wrapper {
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+/* ============================================
+   TEXT UTILITIES
+   ============================================ */
+.text-micro {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  color: var(--color-text-light);
+  font-weight: 700;
+}
+
+/* ============================================
+   CARDS - PREMIUM STYLING
+   ============================================ */
+.phx-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px var(--color-shadow), 0 1px 0 rgba(0, 0, 0, 0.02);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+.phx-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+}
+
+.phx-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1), 0 0 1px var(--color-primary);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   KPI CARDS - PRIMARY METRICS
+   ============================================ */
+.kpi-card {
+  background: var(--color-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-card:hover::after {
+  opacity: 1;
+}
+
+.icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  transition: var(--transition);
+}
+
+.kpi-card:hover .icon-box {
+  transform: scale(1.1) rotate(-5deg);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+}
+
+/* ============================================
+   BADGES - STYLED STATUS INDICATORS
+   ============================================ */
+.badge-phx {
+  font-size: 9px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.badge-phx.success {
+  background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+  color: var(--color-success);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.badge-phx.danger {
+  background: linear-gradient(135deg, #fef2f2, #fef5f5);
+  color: var(--color-danger);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.badge-phx.warning {
+  background: linear-gradient(135deg, #fffbeb, #fffcf2);
+  color: var(--color-warning);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.badge-phx.info {
+  background: linear-gradient(135deg, #ecf9ff, #f0fbff);
+  color: var(--color-info);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+.badge-phx i {
+  font-size: 7px;
+}
+
+/* ============================================
+   TABLES - ENHANCED STYLING
+   ============================================ */
+.table {
+  font-size: 11.5px;
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th {
+  background: linear-gradient(180deg, #f9fafb, #f3f4f6);
+  text-transform: uppercase;
+  font-size: 9px;
+  color: var(--color-text-light);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+  padding: 12px 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.02);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody td {
+  padding: 11px 8px;
+  vertical-align: middle;
+}
+
+/* ============================================
+   COLOR UTILITIES - TEXT COLORS
+   ============================================ */
+.green {
+  color: var(--color-success) !important;
+  font-weight: 600;
+}
+
+.red {
+  color: var(--color-danger) !important;
+  font-weight: 600;
+}
+
+.blue {
+  color: var(--color-primary) !important;
+  font-weight: 600;
+}
+
+.amber {
+  color: var(--color-warning) !important;
+  font-weight: 600;
+}
+
+/* ============================================
+   CHARTS - CONTAINER STYLING
+   ============================================ */
+.chart-h {
+  height: 200px;
+  width: 100%;
+  position: relative;
+}
+
+.chart-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/* ============================================
+   PROGRESS BARS - STYLED
+   ============================================ */
+.progress {
+  background: var(--color-border);
+  height: 6px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, var(--color-primary), #2563eb);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+.progress-bar.success {
+  background: linear-gradient(90deg, var(--color-success), #059669);
+}
+
+.progress-bar.danger {
+  background: linear-gradient(90deg, var(--color-danger), #dc2626);
+}
+
+.progress-bar.warning {
+  background: linear-gradient(90deg, var(--color-warning), #d97706);
+}
+
+/* ============================================
+   ALERTS - STYLED
+   ============================================ */
+.alert {
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  padding: 12px 14px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, #ecf9ff, #f0fbff);
+  color: var(--color-info);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, #fffbeb, #fffcf2);
+  color: var(--color-warning);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, #fef2f2, #fef5f5);
+  color: var(--color-danger);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+  color: var(--color-success);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* ============================================
+   ANIMATIONS & TRANSITIONS
+   ============================================ */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.animate-slideInUp {
+  animation: slideInUp 0.4s ease-out;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.4s ease-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   RESPONSIVE GRID ENHANCEMENTS
+   ============================================ */
+@media (max-width: 1200px) {
+  .kpi-card {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .icon-box {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    font-size: 12px;
+  }
+
+  .kpi-card {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .icon-box {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .table {
+    font-size: 10px;
+  }
+
+  .table tbody td {
+    padding: 8px 6px;
+  }
+
+  .phx-card {
+    border-radius: var(--radius-md);
+  }
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1));
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.5), rgba(59, 130, 246, 0.3));
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.shadow-sm {
+  box-shadow: 0 1px 2px var(--color-shadow);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.shadow-lg {
+  box-shadow: 0 12px 24px var(--color-shadow);
+}
+
+.rounded-card {
+  border-radius: var(--radius-md);
+}
+
+.border-soft {
+  border-color: var(--color-border);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+.bg-gradient-danger {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+}
+
+/* ============================================
+   EMPTY STATE STYLING
+   ============================================ */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--color-text-light);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.empty-state-subtitle {
+  font-size: 11px;
+  color: var(--color-text-light);
+}
+/* ============================================
+   ENHANCED SIDEBAR STYLING
+   ============================================ */
+
+/* Sidebar Container */
+.left_col {
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.scroll-view {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 20px;
+}
+
+.scroll-view::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-view::-webkit-scrollbar-track {
+  background: #f0f1f3;
+  border-radius: 10px;
+}
+
+.scroll-view::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.scroll-view::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #2563eb, #1e40af);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Menu Items Hover Effects */
+.nav.side-menu > li > a {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav.side-menu > li > a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(59, 130, 246, 0.05);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.nav.side-menu > li > a:hover::before {
+  left: 0;
+}
+
+/* Active Menu Item Indicator */
+.nav.side-menu > li.active > a {
+  position: relative;
+}
+
+.nav.side-menu > li.active > a::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 10px currentColor;
+  opacity: 0.7;
+}
+
+/* Child Menu Styling */
+.nav.child_menu {
+  border-radius: 8px;
+  animation: slideDown 0.3s ease;
+}
+
+.nav.child_menu li a {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav.child_menu li a::before {
+  content: '';
+  position: absolute;
+  left: 50px;
+  width: 3px;
+  height: 100%;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.nav.child_menu li a:hover::before {
+  background: currentColor;
+  left: 45px;
+  opacity: 0.6;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar Profile Section */
+.profile {
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.5s ease;
+}
+
+.profile_pic {
+  position: relative;
+  animation: scaleIn 0.5s ease;
+}
+
+.profile_img {
+  animation: fadeIn 0.6s ease;
+  transition: all 0.3s ease;
+}
+
+.profile_img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.25) !important;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Status Indicator (Green dot) */
+.profile_pic > div > div {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 8px rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 12px rgba(16, 185, 129, 0.6);
+  }
+}
+
+/* Menu Section Headers */
+.menu_section h3 {
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.menu_section h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 15px;
+  right: 15px;
+  height: 2px;
+  background: linear-gradient(90deg, #3b82f6, transparent);
+  border-radius: 2px;
+}
+
+/* Sidebar Footer Buttons */
+.sidebar-footer {
+  flex-shrink: 0;
+}
+
+.sidebar-footer a {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+}
+
+.sidebar-footer a::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.sidebar-footer a:hover::before {
+  width: 100px;
+  height: 100px;
+}
+
+.sidebar-footer a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Color-coded Menu Hover States */
+.sidebar-footer a[href*="profile.index"] {
+  animation: buttonHoverPulse 0.3s ease;
+}
+
+@keyframes buttonHoverPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .left_col {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 280px;
+    z-index: 1000;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .scroll-view {
+    max-height: calc(100vh - 100px);
+  }
+}
+
+@media (max-width: 768px) {
+  .left_col {
+    width: 240px;
+  }
+  
+  .profile {
+    padding: 12px;
+  }
+  
+  .nav.side-menu > li {
+    margin-bottom: 6px !important;
+  }
+}
+
+/* Smooth Scrolling */
+.scroll-view {
+  scroll-behavior: smooth;
+}
+
+/* Icon Animations */
+.nav.side-menu a i {
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.nav.side-menu > li:hover a i:first-child {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.nav.side-menu > li.active a i:first-child {
+  animation: iconPulse 0.6s ease;
+}
+
+@keyframes iconPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   SIDEBAR FOOTER BUTTON ENHANCEMENTS
+   ============================================ */
+
+.footer-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease;
+  z-index: 1;
+}
+
+.footer-btn:hover::before {
+  width: 120px;
+  height: 120px;
+}
+
+.footer-btn:hover {
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.footer-btn:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.footer-btn i {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-btn:hover i {
+  animation: buttonIconPulse 0.5s ease;
+}
+
+@keyframes buttonIconPulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}

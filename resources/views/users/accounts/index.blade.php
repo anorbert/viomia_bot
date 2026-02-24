@@ -1,50 +1,50 @@
 @extends('layouts.user')
 
 @section('content')
-<div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 40px 20px;">
+<div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 24px 16px;">
     <div class="container" style="max-width: 1400px;">
         
         {{-- Professional Header with Breadcrumb --}}
-        <div class="justify-content-between align-items-center mb-4">
+        <div class="justify-content-between align-items-center mb-3">
             <div>
-                <h2 class="mb-1 font-weight-bold text-dark" style="font-size: 32px;">
+                <h2 class="mb-1 font-weight-bold text-dark" style="font-size: 28px; margin: 0;">
                     <i class="fa fa-university mr-2 text-primary"></i> My Trading Accounts
                 </h2>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb bg-transparent p-0 small">
+                    <ol class="breadcrumb bg-transparent p-0 small" style="margin: 6px 0 0 0;">
                         <li class="breadcrumb-item"><a href="{{ route('user.dashboard') }}" class="text-primary">Dashboard</a></li>
                         <li class="breadcrumb-item active">Trading Accounts</li>
                     </ol>
                 </nav>
             </div>
             <button class="btn text-white shadow-sm border-0" 
-                    data-toggle="modal" 
-                    data-target="#addAccountModal"
-                    style="background: linear-gradient(45deg, #667eea, #764ba2); font-weight: 600; border-radius: 8px; padding: 12px 24px;">
+                    data-bs-toggle="modal" 
+                    data-bs-target="#addAccountModal"
+                    style="background: linear-gradient(45deg, #667eea, #764ba2); font-weight: 600; border-radius: 8px; padding: 10px 20px; font-size: 14px;">
                 <i class="fa fa-plus-circle mr-2"></i> Connect Account
             </button>
         </div>
 
         {{-- Alert Messages --}}
         @if(session('success'))
-            <div class="alert alert-success border-0 shadow-sm d-flex align-items-center py-3 mb-4" role="alert" style="border-radius: 10px;">
-                <i class="fa fa-check-circle fa-lg mr-3" style="color: #28a745;"></i>
+            <div class="alert alert-success border-0 shadow-sm d-flex align-items-center py-2 mb-3" role="alert" style="border-radius: 10px; font-size: 14px;">
+                <i class="fa fa-check-circle fa-lg mr-3" style="color: #28a745; font-size: 16px;"></i>
                 <div>
                     <strong>Success!</strong> {{ session('success') }}
                 </div>
-                <button type="button" class="close ml-auto" data-dismiss="alert"><span>&times;</span></button>
+                <button type="button" class="close ml-auto" data-dismiss="alert" style="font-size: 20px;"><span>&times;</span></button>
             </div>
         @endif
 
         @if($errors->any())
-            <div class="alert alert-danger border-0 shadow-sm py-3 mb-4" style="border-radius: 10px;">
+            <div class="alert alert-danger border-0 shadow-sm py-2 mb-3" style="border-radius: 10px; font-size: 14px;">
                 <div class="d-flex align-items-start">
-                    <i class="fa fa-exclamation-circle fa-lg mr-3 mt-1" style="color: #dc3545;"></i>
+                    <i class="fa fa-exclamation-circle fa-lg mr-3 mt-1" style="color: #dc3545; font-size: 16px;"></i>
                     <div>
                         <strong>Validation Errors:</strong>
-                        <ul class="mb-0 mt-2">
+                        <ul class="mb-0 mt-2" style="margin-left: 20px;">
                             @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                                <li style="font-size: 13px;">{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -56,68 +56,68 @@
         <div class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
             <div class="card-body p-0">
                 {{-- Search & Filter Bar --}}
-                <div style="background: #fcfcfc; padding: 20px; border-bottom: 1px solid #f1f1f1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div style="background: #fcfcfc; padding: 16px; border-bottom: 1px solid #f1f1f1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <div style="flex: 1; min-width: 250px;">
                         <div style="position: relative;">
-                            <i class="fa fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                            <i class="fa fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; font-size: 13px;"></i>
                             <input type="text" 
                                    id="tableSearch" 
                                    class="form-control" 
                                    placeholder="Search by login, platform, server..."
-                                   style="padding-left: 36px; border-radius: 8px; border: 1px solid #e5e5e5;">
+                                   style="padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid #e5e5e5; font-size: 13px;">
                         </div>
                     </div>
-                    <div style="display: flex; gap: 15px; align-items: center;">
+                    <div style="display: flex; gap: 12px; align-items: center;">
                         <div style="text-align: right;">
-                            <div class="text-muted small">Total Accounts</div>
-                            <div class="font-weight-bold text-dark" style="font-size: 18px;">{{ $accounts->count() }}</div>
+                            <div class="text-muted small" style="font-size: 11px; margin: 0;">Total Accounts</div>
+                            <div class="font-weight-bold text-dark" style="font-size: 16px; line-height: 1; margin: 4px 0 0 0;">{{ $accounts->count() }}</div>
                         </div>
                         <div style="text-align: right;">
-                            <div class="text-muted small">Active Accounts</div>
-                            <div class="font-weight-bold text-success" style="font-size: 18px;">{{ $accounts->where('active', true)->count() }}</div>
+                            <div class="text-muted small" style="font-size: 11px; margin: 0;">Active Accounts</div>
+                            <div class="font-weight-bold text-success" style="font-size: 16px; line-height: 1; margin: 4px 0 0 0;">{{ $accounts->where('active', true)->count() }}</div>
                         </div>
                     </div>
                 </div>
 
                 {{-- Table --}}
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="accountsTable" style="width:100%">
+                    <table class="table table-hover align-middle mb-0" id="accountsTable" style="width:100%;">
                         <thead style="background-color: #fcfcfc; border-bottom: 2px solid #f1f1f1;">
                             <tr>
-                                <th class="text-uppercase small font-weight-bold text-muted px-4 py-3" style="width: 60px;">#</th>
-                                <th class="text-uppercase small font-weight-bold text-muted">Account & Details</th>
-                                <th class="text-uppercase small font-weight-bold text-muted text-center">Type</th>
-                                <th class="text-uppercase small font-weight-bold text-muted">Platform Info</th>
-                                <th class="text-uppercase small font-weight-bold text-muted text-center">Balance/Equity</th>
-                                <th class="text-uppercase small font-weight-bold text-muted text-center">Connection</th>
-                                <th class="text-uppercase small font-weight-bold text-muted text-center">Health</th>
-                                <th class="text-uppercase small font-weight-bold text-muted text-right px-4">Actions</th>
+                                <th class="text-uppercase small font-weight-bold text-muted px-3 py-2" style="width: 50px; font-size: 11px;">#</th>
+                                <th class="text-uppercase small font-weight-bold text-muted py-2" style="font-size: 11px;">Account & Details</th>
+                                <th class="text-uppercase small font-weight-bold text-muted text-center py-2" style="font-size: 11px;">Type</th>
+                                <th class="text-uppercase small font-weight-bold text-muted py-2" style="font-size: 11px;">Platform Info</th>
+                                <th class="text-uppercase small font-weight-bold text-muted text-center py-2" style="font-size: 11px;">Balance/Equity</th>
+                                <th class="text-uppercase small font-weight-bold text-muted text-center py-2" style="font-size: 11px;">Connection</th>
+                                <th class="text-uppercase small font-weight-bold text-muted text-center py-2" style="font-size: 11px;">Health</th>
+                                <th class="text-uppercase small font-weight-bold text-muted text-right px-3 py-2" style="font-size: 11px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white">
                             @forelse($accounts as $key => $acc)
                             <tr style="transition: background 0.3s ease; border-bottom: 1px solid #f1f1f1; cursor: pointer;" class="account-row" data-id="{{ $acc->id }}">
                                 {{-- Serial Number --}}
-                                <td class="px-4">
+                                <td class="px-3 py-2">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle bg-light text-muted font-weight-bold" 
-                                         style="width: 36px; height: 36px; font-size: 0.85rem; border: 1px solid #eee;">
+                                         style="width: 32px; height: 32px; font-size: 0.8rem; border: 1px solid #eee;">
                                         {{ $key + 1 }}
                                     </div>
                                 </td>
                                 
                                 {{-- Account Login --}}
-                                <td>
+                                <td class="py-2">
                                     <div class="d-flex align-items-center">
                                         <div class="d-flex align-items-center justify-content-center rounded" 
-                                             style="width: 44px; height: 44px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-right: 12px;">
-                                            <i class="fa fa-briefcase text-white" style="font-size: 18px;"></i>
+                                             style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-right: 10px; flex-shrink: 0;">
+                                            <i class="fa fa-briefcase text-white" style="font-size: 16px;"></i>
                                         </div>
-                                        <div>
-                                            <div class="font-weight-bold text-dark" style="font-size: 0.95rem;">{{ $acc->login }}</div>
+                                        <div style="min-width: 0;">
+                                            <div class="font-weight-bold text-dark" style="font-size: 0.9rem;">{{ $acc->login }}</div>
                                             @php
                                                 $meta = $acc->meta ?? [];
                                             @endphp
-                                            <div class="text-muted extra-small" style="font-size: 0.75rem; margin-top: 3px;">
+                                            <div class="text-muted" style="font-size: 0.7rem; margin-top: 2px;">
                                                 @if($meta['currency'] ?? null)
                                                     <i class="fa fa-dollar mr-1"></i> {{ $meta['currency'] }}
                                                 @endif
@@ -131,33 +131,33 @@
                                 </td>
 
                                 {{-- Account Type --}}
-                                <td class="text-center">
+                                <td class="text-center py-2">
                                     @if(strtoupper($acc->account_type ?? '') === 'DEMO')
-                                        <span class="badge badge-pill border-info text-info px-3 py-2" 
-                                              style="background-color: #f0faff; font-size: 10px; border: 1px solid !important; font-weight: 600;">
+                                        <span class="badge badge-pill border-info text-info px-3 py-1" 
+                                              style="background-color: #f0faff; font-size: 9px; border: 1px solid !important; font-weight: 600;">
                                             <i class="fa fa-flask mr-1"></i> DEMO
                                         </span>
                                     @else
-                                        <span class="badge badge-pill border-warning text-warning px-3 py-2" 
-                                              style="background-color: #fffdf0; font-size: 10px; border: 1px solid !important; color: #856404 !important; font-weight: 600;">
+                                        <span class="badge badge-pill border-warning text-warning px-3 py-1" 
+                                              style="background-color: #fffdf0; font-size: 9px; border: 1px solid !important; color: #856404 !important; font-weight: 600;">
                                             <i class="fa fa-shield mr-1"></i> REAL
                                         </span>
                                     @endif
                                 </td>
 
                                 {{-- Platform Details --}}
-                                <td>
+                                <td class="py-2">
                                     <div class="d-flex align-items-center">
                                         @if(strtoupper($acc->platform) === 'MT5')
-                                            <i class="fa fa-windows text-info mr-2" style="font-size: 16px;"></i>
+                                            <i class="fa fa-windows text-info mr-2" style="font-size: 14px;"></i>
                                         @elseif(strtoupper($acc->platform) === 'MT4')
-                                            <i class="fa fa-windows text-secondary mr-2" style="font-size: 16px;"></i>
+                                            <i class="fa fa-windows text-secondary mr-2" style="font-size: 14px;"></i>
                                         @else
-                                            <i class="fa fa-code-branch text-success mr-2" style="font-size: 16px;"></i>
+                                            <i class="fa fa-code-branch text-success mr-2" style="font-size: 14px;"></i>
                                         @endif
                                         <div>
-                                            <div class="text-dark font-weight-bold" style="font-size: 0.85rem;">{{ strtoupper($acc->platform) }}</div>
-                                            <div class="text-muted extra-small" style="font-size: 0.7rem;">
+                                            <div class="text-dark font-weight-bold" style="font-size: 0.8rem;">{{ strtoupper($acc->platform) }}</div>
+                                            <div class="text-muted" style="font-size: 0.65rem;">
                                                 <i class="fa fa-server mr-1"></i> {{ $acc->server }}
                                             </div>
                                         </div>
@@ -165,7 +165,7 @@
                                 </td>
 
                                 {{-- Account Balance & Equity --}}
-                                <td class="text-center">
+                                <td class="text-center py-2">
                                     @php
                                         $snapshot = $acc->snapshots ? $acc->snapshots : null;
                                         $balance = $snapshot ? $snapshot->balance : 0;
@@ -174,25 +174,25 @@
                                         $marginUsage = $margin > 0 ? min(100, ($margin / $equity) * 100) : 0;
                                         $healthColor = $marginUsage > 80 ? '#dc3545' : ($marginUsage > 50 ? '#ffc107' : '#28a745');
                                     @endphp
-                                    <div style="font-size: 0.85rem;">
+                                    <div style="font-size: 0.8rem;">
                                         <div class="font-weight-bold text-dark">
                                             <i class="fa fa-dollar-sign mr-1"></i> {{ number_format($balance, 2) }}
                                         </div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">
+                                        <div class="text-muted" style="font-size: 0.7rem; margin: 2px 0;">
                                             Equity: {{ number_format($equity, 2) }}
                                         </div>
-                                        <div style="margin-top: 4px;">
-                                            <small class="text-muted">Margin:</small>
-                                            <div class="progress" style="height: 6px; border-radius: 3px; background: #f0f0f0;">
+                                        <div style="margin-top: 3px;">
+                                            <small class="text-muted" style="font-size: 0.65rem;">Margin:</small>
+                                            <div class="progress" style="height: 5px; border-radius: 3px; background: #f0f0f0; margin-top: 2px;">
                                                 <div class="progress-bar" style="width: {{ $marginUsage }}%; background-color: {{ $healthColor }}; border-radius: 3px;"></div>
                                             </div>
-                                            <small style="font-size: 0.7rem; color: {{ $healthColor }};">{{ number_format($marginUsage, 1) }}%</small>
+                                            <small style="font-size: 0.65rem; color: {{ $healthColor }};">{{ number_format($marginUsage, 1) }}%</small>
                                         </div>
                                     </div>
                                 </td>
 
                                 {{-- Connection Status --}}
-                                <td class="text-center">
+                                <td class="text-center py-2">
                                     @if($acc->connected)
                                         <span class="badge badge-pill border-success text-success px-3 py-2" 
                                               style="background-color: #f1fbf3; font-size: 0.65rem; border: 1px solid; font-weight: 600;">
@@ -249,8 +249,8 @@
                                                 data-type="{{ $acc->account_type }}"
                                                 data-currency="{{ $meta['currency'] ?? '' }}"
                                                 data-leverage="{{ $meta['leverage'] ?? '' }}"
-                                                data-toggle="modal"
-                                                data-target="#editAccountModal">
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editAccountModal">
                                             <i class="fa fa-edit"></i>
                                         </button>
 
@@ -477,7 +477,7 @@
                 <h5 class="modal-title font-weight-bold">
                     <i class="fa fa-plus-circle mr-2"></i> Connect New Account
                 </h5>
-                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body p-4">
@@ -530,7 +530,7 @@
             </div>
 
             <div class="modal-footer" style="background: #fcfcfc; border-top: 1px solid #f1f1f1;">
-                <button class="btn btn-light" data-dismiss="modal" type="button" style="border-radius: 6px;">Cancel</button>
+                <button class="btn btn-light" data-bs-dismiss="modal" type="button" style="border-radius: 6px;">Cancel</button>
                 <button class="btn text-white" type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 6px; border: none; padding: 8px 24px; font-weight: 600;">
                     <i class="fa fa-check mr-1"></i> Connect Account
                 </button>
@@ -549,7 +549,7 @@
                 <h5 class="modal-title font-weight-bold">
                     <i class="fa fa-edit mr-2"></i> Edit Account
                 </h5>
-                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body p-4">
@@ -602,7 +602,7 @@
             </div>
 
             <div class="modal-footer" style="background: #fcfcfc; border-top: 1px solid #f1f1f1;">
-                <button class="btn btn-light" data-dismiss="modal" type="button" style="border-radius: 6px;">Cancel</button>
+                <button class="btn btn-light" data-bs-dismiss="modal" type="button" style="border-radius: 6px;">Cancel</button>
                 <button class="btn text-white" type="submit" style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%); border-radius: 6px; border: none; padding: 8px 24px; font-weight: 600;">
                     <i class="fa fa-save mr-1"></i> Save Changes
                 </button>
