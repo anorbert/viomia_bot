@@ -1,25 +1,31 @@
 <div class="col-md-3 left_col">
   <div class="left_col scroll-view">
 
-    <!-- Site Title -->
     <div class="navbar nav_title" style="border: 0;">
       <a href="{{ route('user.dashboard') }}" class="site_title">
-        <i class="fa fa-robot"></i> <span>Trading Bot</span>
+        <i class="fa fa-robot"></i> <span>Viomia Bot</span>
       </a>
     </div>
 
     <div class="clearfix"></div>
 
-    <!-- Profile Info -->
     <div class="profile clearfix">
       <div class="profile_pic">
-        <img src="{{ asset('img/bot_logo.png') }}" alt="Profile Picture" class="img-circle profile_img">
+        @if(Auth::user()->profile_photo)
+          <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" 
+               alt="User Profile" class="img-circle profile_img shadow-sm" 
+               style="width: 56px; height: 56px; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); background: #fff;">
+        @else
+          <img src="{{ asset('img/bot_logo.png') }}" 
+               alt="Default Logo" class="img-circle profile_img shadow-sm" 
+               style="width: 56px; height: 56px; object-fit: contain; border: 2px solid rgba(255,255,255,0.2); background: #fff;">
+        @endif
       </div>
       <div class="profile_info">
         <span>Welcome,</span>
-        <h2>{{ Auth::user()->name ?? 'User' }}</h2>
-        <small style="color:#cbd5e1;">
-          {{ Auth::user()->phone_number ?? '' }}
+        <h2>{{ Auth::user()->name ?? 'Trader' }}</h2>
+        <small style="color:#1ABB9C; font-weight: 600;">
+          {{ Auth::user()->phone_number ?? 'Active Account' }}
         </small>
       </div>
     </div>
@@ -31,7 +37,6 @@
       $open = fn($patterns) => collect((array)$patterns)->contains(fn($p) => request()->routeIs($p));
     @endphp
 
-    <!-- Sidebar Menu -->
     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
       <div class="menu_section">
         <h3>Main Menu</h3>
@@ -113,7 +118,7 @@
             </a>
             <ul class="nav child_menu" style="{{ $profileOpen ? 'display:block;' : '' }}">
               <li class="{{ $is('user.profile.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.profile.index') }}">Profile</a>
+                <a href="{{ route('user.profile.index') }}">Profile Settings</a>
               </li>
               <li class="{{ $is('user.password.index') ? 'current-page' : '' }}">
                 <a href="{{ route('user.password.index') }}">Change Password</a>
@@ -121,9 +126,8 @@
             </ul>
           </li>
 
-          {{-- Optional Support --}}
           <li>
-            <a href="#" onclick="return false;">
+            <a href="mailto:support@viomia.com">
               <i class="fa fa-life-ring"></i> Support
             </a>
           </li>
@@ -132,7 +136,6 @@
       </div>
     </div>
 
-    <!-- Footer Buttons -->
     <div class="sidebar-footer hidden-small">
       <a data-toggle="tooltip" data-placement="top" title="Profile" href="{{ route('user.profile.index') }}">
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
@@ -142,7 +145,7 @@
         <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
       </a>
 
-      <a data-toggle="tooltip" data-placement="top" title="Lock" href="#" onclick="return false;">
+      <a data-toggle="tooltip" data-placement="top" title="Lock" href="#">
         <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
       </a>
 
