@@ -1,182 +1,133 @@
-<div class="col-md-3 left_col">
-  <div class="left_col scroll-view">
-
-    <!-- Site Title -->
-    <div class="navbar nav_title" style="border: 0;">
-      <a href="{{ route('user.dashboard') }}" class="site_title">
-        <i class="fa fa-robot"></i> <span>Trading Bot</span>
-      </a>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <!-- Profile Info -->
-    <div class="profile clearfix">
-      <div class="profile_pic">
-        <img src="{{ asset('img/bot_logo.png') }}" alt="Profile Picture" class="img-circle profile_img">
-      </div>
-      <div class="profile_info">
-        <span>Welcome,</span>
-        <h2>{{ Auth::user()->name ?? 'User' }}</h2>
-        <small style="color:#cbd5e1;">
-          {{ Auth::user()->phone_number ?? '' }}
-        </small>
-      </div>
-    </div>
-
-    <br />
-
-    @php
-      $is = fn($pattern) => request()->routeIs($pattern);
-      $open = fn($patterns) => collect((array)$patterns)->contains(fn($p) => request()->routeIs($p));
-    @endphp
-
-    <!-- Sidebar Menu -->
-    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-      <div class="menu_section">
-        <h3>Main Menu</h3>
-        <ul class="nav side-menu">
-
-          {{-- Dashboard --}}
-          <li class="{{ $is('user.dashboard') ? 'active current-page' : '' }}">
-            <a href="{{ route('user.dashboard') }}">
-              <i class="fa fa-home"></i> Dashboard
-            </a>
-          </li>
-
-          {{-- Accounts --}}
-          @php $accountsOpen = $open(['user.accounts.*']); @endphp
-          <li class="{{ $accountsOpen ? 'active' : '' }}">
-            <a>
-              <i class="fa fa-link"></i> My Accounts <span class="fa fa-chevron-down"></span>
-            </a>
-            <ul class="nav child_menu" style="{{ $accountsOpen ? 'display:block;' : '' }}">
-              <li class="{{ $is('user.accounts.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.accounts.index') }}">Connected Accounts</a>
-              </li>
-            </ul>
-          </li>
-
-          {{-- Signals --}}
-          @php $signalsOpen = $open(['user.signals.*','user.executions.*']); @endphp
-          <li class="{{ $signalsOpen ? 'active' : '' }}">
-            <a>
-              <i class="fa fa-bolt"></i> Signals <span class="fa fa-chevron-down"></span>
-            </a>
-            <ul class="nav child_menu" style="{{ $signalsOpen ? 'display:block;' : '' }}">
-              <li class="{{ $is('user.signals.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.signals.index') }}">All Signals</a>
-              </li>
-              <li class="{{ $is('user.executions.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.executions.index') }}">EA Executions</a>
-              </li>
-            </ul>
-          </li>
-
-          {{-- Trading Activity --}}
-          @php $tradingOpen = $open(['user.trades.*']); @endphp
-          <li class="{{ $tradingOpen ? 'active' : '' }}">
-            <a>
-              <i class="fa fa-exchange"></i> Trading Activity <span class="fa fa-chevron-down"></span>
-            </a>
-            <ul class="nav child_menu" style="{{ $tradingOpen ? 'display:block;' : '' }}">
-              <li class="{{ $is('user.trades.open') ? 'current-page' : '' }}">
-                <a href="{{ route('user.trades.open') }}">Open Positions</a>
-              </li>
-              <li class="{{ $is('user.trades.history') ? 'current-page' : '' }}">
-                <a href="{{ route('user.trades.history') }}">Trade History</a>
-              </li>
-            </ul>
-          </li>
-
-          {{-- Billing --}}
-          @php $billingOpen = $open(['user.payments.*','user.subscriptions.*']); @endphp
-          <li class="{{ $billingOpen ? 'active' : '' }}">
-            <a>
-              <i class="fa fa-credit-card"></i> Billing <span class="fa fa-chevron-down"></span>
-            </a>
-            <ul class="nav child_menu" style="{{ $billingOpen ? 'display:block;' : '' }}">
-              <li class="{{ $is('user.subscriptions.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.subscriptions.index') }}">My Subscription</a>
-              </li>
-              <li class="{{ $is('user.payments.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.payments.index') }}">Payments</a>
-              </li>
-            </ul>
-          </li>
-
-          {{-- Account Settings --}}
-          @php $profileOpen = $open(['user.profile.*','user.password.*']); @endphp
-          <li class="{{ $profileOpen ? 'active' : '' }}">
-            <a>
-              <i class="fa fa-user"></i> My Account <span class="fa fa-chevron-down"></span>
-            </a>
-            <ul class="nav child_menu" style="{{ $profileOpen ? 'display:block;' : '' }}">
-              <li class="{{ $is('user.profile.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.profile.index') }}">Profile</a>
-              </li>
-              <li class="{{ $is('user.password.index') ? 'current-page' : '' }}">
-                <a href="{{ route('user.password.index') }}">Change Password</a>
-              </li>
-            </ul>
-          </li>
-
-          {{-- Support & Help --}}
-          @php $supportOpen = $open(['help','user.support.*']); @endphp
-          <li class="{{ $supportOpen ? 'active' : '' }}">
-            <a>
-              <i class="fa fa-life-ring"></i> Support <span class="fa fa-chevron-down"></span>
-            </a>
-            <ul class="nav child_menu" style="{{ $supportOpen ? 'display:block;' : '' }}">
-              <li class="{{ $is('help') ? 'current-page' : '' }}">
-                <a href="{{ route('help') }}">Help & FAQ</a>
-              </li>
-              <li>
-                <a href="mailto:support@viomiabot.com">
-                  <i class="fa fa-envelope mr-1"></i> Email Support
+<div class="top_nav">
+    <div class="nav_menu d-flex justify-content-between align-items-center px-4 shadow-sm" style="background: #fff; height: 57px;">
+        
+        <div class="d-flex align-items-center">
+            <div class="nav toggle mr-3">
+                <a id="menu_toggle" class="text-dark" style="cursor: pointer; font-size: 20px;">
+                    <i class="fa fa-bars"></i>
                 </a>
-              </li>
+            </div>
+            <div class="d-none d-md-block">
+                <span class="badge badge-success shadow-sm" style="font-size: 0.75rem;">
+                    <i class="fa fa-circle mr-1 animate-pulse"></i> Bot System: Active
+                </span>
+            </div>
+        </div>
+
+        <nav class="nav navbar-nav ml-auto">
+            <ul class="navbar-right d-flex align-items-center mb-0 list-unstyled">
+                
+                <li role="presentation" class="nav-item dropdown mr-3">
+                    <a href="#" class="dropdown-toggle info-number position-relative" id="navbarDropdown1" 
+                       data-toggle="dropdown" aria-expanded="false" style="font-size: 18px; color: #5A738E;">
+                        <i class="fa fa-bell-o"></i>
+                        <span class="badge bg-green position-absolute" style="top: -5px; right: -5px; font-size: 9px;">3</span>
+                    </a>
+                    <ul class="dropdown-menu list-unstyled msg_list border-0 shadow" role="menu" aria-labelledby="navbarDropdown1" style="width: 300px;">
+                        <li class="nav-item border-bottom">
+                            <a class="dropdown-item d-flex align-items-center py-2">
+                                <span class="image mr-2">
+                                    <img src="{{ asset('img/user.png') }}" alt="Profile Image" class="rounded-circle" width="30"/>
+                                </span>
+                                <div>
+                                    <div class="d-flex justify-content-between">
+                                        <strong class="small">System Alert</strong>
+                                        <span class="time text-muted small">2 mins ago</span>
+                                    </div>
+                                    <span class="message small text-muted">New trade opened successfully...</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <div class="text-center py-2">
+                                <a class="dropdown-item small font-weight-bold text-primary">
+                                    See All Notifications <i class="fa fa-angle-right"></i>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown pl-2" style="border-left: 1px solid #e5e5e5;">
+                    <a href="#" class="user-profile dropdown-toggle d-flex align-items-center" id="navbarDropdown" 
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: #5A738E; font-weight: 600;">
+                        <img src="{{ Auth::user()->profile_photo ? asset('storage/' . Auth::user()->profile_photo) : asset('img/pfr_logo2.png') }}" 
+                             alt="" class="rounded-circle mr-2" style="width: 30px; height: 30px; object-fit: cover;">
+                        <span class="d-none d-sm-inline">{{ Auth::user()->name ?? 'Administrator' }}</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-usermenu border-0 shadow pull-right mt-2" aria-labelledby="navbarDropdown" style="min-width: 240px;">
+                        <!-- Profile Section -->
+                        <a class="dropdown-item py-3 px-3 rounded-top" href="{{ route('user.profile.index') }}" 
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #5A738E;">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-user mr-3" style="font-size: 16px; width: 20px; color: #5B7A9E;"></i>
+                                <div>
+                                    <div class="font-weight-600" style="font-size: 14px;">Profile</div>
+                                    <small class="text-muted" style="font-size: 12px;">Manage your account</small>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <!-- Settings Section -->
+                        <a class="dropdown-item py-3 px-3" href="{{ route('user.profile.edit', Auth::user()->id) }}"
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #5A738E;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-cog mr-3" style="font-size: 16px; width: 20px; color: #5B7A9E;"></i>
+                                    <div>
+                                        <div class="font-weight-600" style="font-size: 14px;">Settings</div>
+                                        <small class="text-muted" style="font-size: 12px;">Configure preferences</small>
+                                    </div>
+                                </div>
+                                <span class="badge badge-danger" style="font-size: 11px; padding: 4px 8px;">50%</span>
+                            </div>
+                        </a>
+                        
+                        <!-- Help Section -->
+                        <a class="dropdown-item py-3 px-3" href="{{ route('help') }}"
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #5A738E;">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-question-circle mr-3" style="font-size: 16px; width: 20px; color: #5B7A9E;"></i>
+                                <div>
+                                    <div class="font-weight-600" style="font-size: 14px;">Help & Support</div>
+                                    <small class="text-muted" style="font-size: 12px;">Get assistance</small>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <div class="dropdown-divider my-2"></div>
+                        
+                        <!-- Logout Section -->
+                        <a class="dropdown-item py-3 px-3 rounded-bottom" href="{{ route('logout') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                           style="transition: all 0.3s ease; border-left: 3px solid transparent; color: #E74C3C;">
+                            <div class="d-flex align-items-center">
+                                <i class="fa fa-sign-out mr-3" style="font-size: 16px; width: 20px; color: #E74C3C;"></i>
+                                <div>
+                                    <div class="font-weight-600" style="font-size: 14px;">Sign Out</div>
+                                    <small class="text-muted" style="font-size: 12px;">End your session</small>
+                                </div>
+                            </div>
+                        </a>
+
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </div>
+                    
+                    <style>
+                        .dropdown-usermenu .dropdown-item:hover {
+                            background-color: #f8f9fa !important;
+                            border-left-color: #5B7A9E !important;
+                            color: #2c3e50 !important;
+                        }
+                        
+                        .dropdown-usermenu .dropdown-item:hover i {
+                            color: #2c3e50 !important;
+                        }
+                    </style>
+                </li>
             </ul>
-          </li>
-
-        </ul>
-      </div>
+        </nav>
     </div>
-
-    <!-- Footer Buttons -->
-    <div class="sidebar-footer hidden-small">
-      <a data-toggle="tooltip" data-placement="top" title="Profile" href="{{ route('user.profile.index') }}">
-        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-      </a>
-
-      <a data-toggle="tooltip" data-placement="top" title="FullScreen" href="#" onclick="toggleFullScreen(); return false;">
-        <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-      </a>
-
-      <a data-toggle="tooltip" data-placement="top" title="Lock" href="#" onclick="return false;">
-        <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-      </a>
-
-      <a data-toggle="tooltip" data-placement="top" title="Logout"
-         href="{{ route('logout') }}"
-         onclick="event.preventDefault(); document.getElementById('logout-form-user').submit();">
-        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-      </a>
-
-      <form id="logout-form-user" action="{{ route('logout') }}" method="POST" style="display:none;">
-        @csrf
-      </form>
-    </div>
-
-  </div>
-</div>
-
-<script>
-  function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.();
-    } else {
-      document.exitFullscreen?.();
-    }
-  }
-</script>
+</div></script>

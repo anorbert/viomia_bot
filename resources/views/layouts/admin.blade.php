@@ -89,9 +89,9 @@
     </div>
 
     <div class="container body">
-        <div class="main_container">
-            @include('partials.sidebar')
+        <div class="main_container">            
             @include('partials.topnav')
+            @include('partials.sidebar')
 
             <div class="right_col" role="main" style="min-height: 100vh;">
                 @yield('content')

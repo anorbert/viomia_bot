@@ -149,14 +149,15 @@
                             @endforeach
                         </ul>
 
-                        <button type="button" 
+                        <a type="button" 
+                                href="{{ route('user.plans.show', $p->slug) }}"
                                 class="btn btn-success btn-block py-2 shadow-sm subscribeBtn"
                                 style="border-radius: 8px; font-weight: 700;"
                                 data-slug="{{ $p->slug }}"
                                 data-name="{{ $p->name }}"
                                 data-price="{{ $p->currency }} {{ number_format((float)$p->price, 2) }}">
                             Get Started
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
