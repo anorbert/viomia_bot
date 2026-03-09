@@ -20,7 +20,7 @@ class LoginController extends Controller
             return $this->redirectBasedOnRole(Auth::user());
         }
 
-        return view('welcome');
+        return view('auth.login');
     }
 
     public function index()

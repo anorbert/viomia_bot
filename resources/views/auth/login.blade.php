@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('title', 'Register | Viomia Trading Intelligence')
-
 @section('content')
 <style>
     .navbar-viomia {
@@ -29,19 +27,29 @@
         background: linear-gradient(135deg, #006d5b 0%, #002b24 100%);
         min-height: 100vh;
         display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Note: Body background is now handled by layouts.app 
+       to ensure consistency across Login, Register, and Terms.
+    */
+    body {
+        height: 100vh;
+        display: flex;
         align-items: center;
         justify-content: center;
         margin: 0;
         font-family: 'Inter', -apple-system, sans-serif;
-        padding: 20px; /* Padding for mobile view */
     }
     
-    .register-card {
+    .login-card {
         background: #ffffff;
         border-radius: 12px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.3);
         width: 100%;
-        max-width: 420px; /* Slightly wider for longer inputs */
+        max-width: 380px; 
         padding: 25px 30px;
         border: none;
         animation: slideUp 0.4s ease-out;
@@ -52,33 +60,31 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    .header-section img { 
-        max-width: 90px; 
+    .login-header img { 
+        max-width: 100px; 
         margin-bottom: 10px;
     }
 
-    .header-section h4 { 
+    .login-header h4 { 
         color: #1a202c; 
         font-weight: 700; 
         margin-bottom: 2px;
-        font-size: 20px;
+        font-size: 19px;
     }
 
-    .header-section p {
-        font-size: 13px;
+    .login-header p {
+        font-size: 12px;
         margin-bottom: 20px;
         color: #718096;
     }
 
-    /* Professional Form Controls */
     .form-group label {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 700;
         letter-spacing: 0.5px;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
         color: #a0aec0;
         display: block;
-        text-transform: uppercase;
     }
 
     .form-control {
@@ -121,20 +127,17 @@
         background-color: #f8fafc;
         border-color: #cbd5e0;
         color: #a0aec0;
-        font-size: 14px;
     }
 
-    /* Gradient Submit Button */
     .btn-gradient {
         background: linear-gradient(135deg, #00a884 0%, #008f70 100%);
         border: none;
-        height: 46px;
+        height: 44px;
         font-weight: 700;
         color: white;
         width: 100%;
         border-radius: 6px;
         transition: all 0.3s ease;
-        margin-top: 10px;
     }
 
     .btn-gradient:hover {
@@ -143,14 +146,25 @@
         color: white;
     }
 
-    .login-prompt {
+    .register-prompt {
         margin-top: 15px;
         font-size: 13px;
         color: #718096;
+    }
+
+    .register-link {
+        color: #00a884;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .back-link {
+        margin-top: 15px;
+        font-size: 12px;
         text-align: center;
     }
 
-    .login-link {
+    .back-link a {
         color: #00a884;
         font-weight: 700;
         text-decoration: none;
@@ -162,78 +176,62 @@
         margin-top: 20px;
         border-top: 1px solid #edf2f7;
         padding-top: 15px;
-        text-align: center;
     }
 </style>
 
-<div class="register-card">
-    <div class="header-section text-center">
+<div class="login-card">
+    <div class="login-header text-center">
         <img src="{{ asset('logo.png') }}" alt="Viomia Logo">
-        <h4>Create Account</h4>
-        <p>Join Viomia Trading Intelligence</p>
+        <h4>System Access</h4>
+        <p>Viomia Trading Technologies</p>
     </div>
 
-    <form method="POST" action="{{ route('user_register.store') }}">
+    <form method="POST" action="{{ route('user_login.store') }}">
         @csrf
 
-        {{-- Full Name --}}
+        {{-- Phone Input --}}
         <div class="form-group mb-3">
-            <label>Full Name</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fa fa-user"></i></span>
-                </div>
-                <input type="text" name="name" class="form-control" 
-                       placeholder="Enter full name" value="{{ old('name') }}" required autofocus>
-            </div>
-        </div>
-
-        {{-- Phone Number --}}
-        <div class="form-group mb-3">
-            <label>Phone Number</label>
+            <label class="uppercase">PHONE NUMBER</label>
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fa fa-phone"></i></span>
                 </div>
-                <input type="tel" name="phone_number" class="form-control" 
-                       placeholder="e.g. 078xxxxxxx" value="{{ old('phone_number') }}" required>
+                <input type="tel" name="phone" class="form-control" placeholder="078xxxxxxx" required value="{{ old('phone') }}" autofocus>
             </div>
         </div>
 
-        {{-- Grid for PINs to keep height short --}}
-        <div class="row">
-            <div class="col-6">
-                <div class="form-group mb-3">
-                    <label>Security PIN</label>
-                    <input type="password" name="pin" class="form-control" 
-                           placeholder="••••" required maxlength="10" pattern="\d{10}">
+        {{-- PIN Input --}}
+        <div class="form-group mb-3">
+            <label class="uppercase">SECURITY PIN</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fa fa-lock"></i></span>
                 </div>
-            </div>
-            <div class="col-6">
-                <div class="form-group mb-3">
-                    <label>Confirm PIN</label>
-                    <input type="password" name="pin_confirmation" class="form-control" 
-                           placeholder="••••" required maxlength="10" pattern="\d{10}">
-                </div>
+                <input type="password" name="pin" class="form-control" placeholder="••••" required maxlength="10">
             </div>
         </div>
-        {{-- Terms and Conditions Checkbox --}}
-<div class="custom-control custom-checkbox mb-4">
-    <input type="checkbox" class="custom-control-input" id="terms" name="terms" required>
-    <label class="custom-control-label small text-muted" for="terms" style="cursor: pointer;">
-        I agree to the <a href="{{ route('terms') }}" target="_blank" class="text-success font-weight-bold">Terms & Conditions</a> and Privacy Policy.
-    </label>
-</div>
 
-<button type="submit" class="btn btn-gradient shadow-sm">REGISTER ACCOUNT</button>
-
-        <div class="login-prompt">
-            Already have an account? <a href="{{ route('login') }}" class="login-link">Login here</a>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                <label class="custom-control-label small text-secondary" for="remember" style="cursor: pointer;">Remember</label>
+            </div>
+            <a href="#" class="small text-success font-weight-bold">Forgot PIN?</a>
         </div>
 
-        <div class="footer-text">
+        <button type="submit" class="btn btn-gradient shadow-sm">SIGN IN</button>
+
+        <div class="register-prompt text-center">
+            New here? <a href="{{ route('user_register') }}" class="register-link">Create Account</a>
+        </div>
+
+        <div class="back-link">
+            <a href="/">← Back to Home</a>
+        </div>
+
+        <div class="footer-text text-center">
             <p class="mb-1">© {{ date('Y') }} Viomia Trading Technologies</p>
-            <span class="small"><i class="fa fa-shield text-success"></i> Data Encryption Active</span>
+            <span class="small"><i class="fa fa-check-circle text-success"></i> Secure Connection</span>
         </div>
     </form>
 </div>
@@ -243,11 +241,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Map field names to input field selectors
         const errorFields = {
-            'name': 'input[name="name"]',
-            'phone_number': 'input[name="phone_number"]',
-            'pin': 'input[name="pin"]',
-            'pin_confirmation': 'input[name="pin_confirmation"]',
-            'terms': 'input[name="terms"]'
+            'phone': 'input[name="phone"]',
+            'pin': 'input[name="pin"]'
         };
 
         @if($errors->any())
@@ -282,14 +277,6 @@
         
         @if(session('success'))
             toastr.success('{{ session('success') }}', 'Success', {
-                closeButton: true,
-                progressBar: true,
-                timeOut: 5000
-            });
-        @endif
-        
-        @if(session('warning'))
-            toastr.warning('{{ session('warning') }}', 'Warning', {
                 closeButton: true,
                 progressBar: true,
                 timeOut: 5000

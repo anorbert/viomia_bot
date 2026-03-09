@@ -1,811 +1,748 @@
-@extends('layouts.general')
+@extends('layouts.app')
 
 @section('content')
-<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 40px 20px;">
-    <div class="container" style="max-width: 1200px;">
-        
-        <!-- Page Header -->
-        <div class="text-center mb-5">
-            <h1 class="display-4 font-weight-bold text-white mb-3" style="text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <i class="fa fa-life-ring mr-3"></i> Help & Support
-            </h1>
-            <p class="lead text-white-50 mb-4">Get answers to your questions and resolve issues quickly</p>
-        </div>
-
-        <!-- Quick Support Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card shadow-sm border-0 text-center support-card h-100" style="border-radius: 12px; transition: all 0.3s ease;">
-                    <div class="card-body p-4">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa fa-book text-white" style="font-size: 24px;"></i>
-                        </div>
-                        <h5 class="font-weight-bold mb-2">Documentation</h5>
-                        <p class="text-muted small mb-3">Comprehensive guides and articles</p>
-                        <a href="#faq-section" class="btn btn-sm btn-outline-primary" style="border-radius: 6px;">Browse</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card shadow-sm border-0 text-center support-card h-100" style="border-radius: 12px; transition: all 0.3s ease;">
-                    <div class="card-body p-4">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 10px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa fa-envelope text-white" style="font-size: 24px;"></i>
-                        </div>
-                        <h5 class="font-weight-bold mb-2">Email Support</h5>
-                        <p class="text-muted small mb-3">24-hour response time</p>
-                        <a href="mailto:support@viomiabot.com" class="btn btn-sm btn-outline-danger" style="border-radius: 6px;">Contact</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card shadow-sm border-0 text-center support-card h-100" style="border-radius: 12px; transition: all 0.3s ease;">
-                    <div class="card-body p-4">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa fa-question-circle text-white" style="font-size: 24px;"></i>
-                        </div>
-                        <h5 class="font-weight-bold mb-2">FAQ</h5>
-                        <p class="text-muted small mb-3">Popular questions answered</p>
-                        <a href="#faq-section" class="btn btn-sm btn-outline-info" style="border-radius: 6px;">View</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card shadow-sm border-0 text-center support-card h-100" style="border-radius: 12px; transition: all 0.3s ease;">
-                    <div class="card-body p-4">
-                        <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 10px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa fa-video-camera text-white" style="font-size: 24px;"></i>
-                        </div>
-                        <h5 class="font-weight-bold mb-2">Tutorials</h5>
-                        <p class="text-muted small mb-3">Video guides & walkthroughs</p>
-                        <button class="btn btn-sm btn-outline-warning" style="border-radius: 6px;" onclick="alert('Video tutorials coming soon!')">Watch</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="row mb-5">
-            <div class="col-lg-8 offset-lg-2">
-                <form method="GET" action="{{ route('help') }}" class="mb-4">
-                    <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
-                        <input type="text" name="q" class="form-control border-0" 
-                               placeholder="Search help articles..." 
-                               value="{{ request('q') }}"
-                               style="padding: 12px 16px; font-size: 15px;">
-                        <div class="input-group-append">
-                            <button class="btn" type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0 20px; font-weight: 600;">
-                                <i class="fa fa-search"></i> Search
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="row">
-            <!-- Sidebar Navigation -->
-            <div class="col-lg-3 mb-4">
-                <div class="card shadow-lg border-0" style="border-radius: 12px; overflow: hidden;">
-                    <div class="card-header text-white font-weight-bold p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <i class="fa fa-list mr-2"></i> Categories
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <a href="#getting-started" class="list-group-item list-group-item-action" style="border: none; padding: 12px 16px; transition: all 0.2s ease;">
-                            <i class="fa fa-rocket mr-2" style="color: #667eea;"></i> Getting Started
-                        </a>
-                        <a href="#account-help" class="list-group-item list-group-item-action" style="border: none; padding: 12px 16px; transition: all 0.2s ease;">
-                            <i class="fa fa-user mr-2" style="color: #28a745;"></i> Account Management
-                        </a>
-                        <a href="#trading-help" class="list-group-item list-group-item-action" style="border: none; padding: 12px 16px; transition: all 0.2s ease;">
-                            <i class="fa fa-exchange mr-2" style="color: #17a2b8;"></i> Trading Guide
-                        </a>
-                        <a href="#payment-help" class="list-group-item list-group-item-action" style="border: none; padding: 12px 16px; transition: all 0.2s ease;">
-                            <i class="fa fa-credit-card mr-2" style="color: #ffc107;"></i> Payments & Billing
-                        </a>
-                        <a href="#bot-help" class="list-group-item list-group-item-action" style="border: none; padding: 12px 16px; transition: all 0.2s ease;">
-                            <i class="fa fa-robot mr-2" style="color: #dc3545;"></i> Bot Management
-                        </a>
-                        <a href="#troubleshoot" class="list-group-item list-group-item-action" style="border: none; padding: 12px 16px; transition: all 0.2s ease;">
-                            <i class="fa fa-wrench mr-2" style="color: #6c757d;"></i> Troubleshooting
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content Area -->
-            <div class="col-lg-9">
-                <div id="faq-section">
-                <!-- Getting Started -->
-                <section id="getting-started" class="mb-5">
-                    <div class="mb-4">
-                        <h3 class="font-weight-bold d-flex align-items-center text-white">
-                            <i class="fa fa-rocket mr-3" style="font-size: 24px;"></i> Getting Started
-                        </h3>
-                        <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 2px; margin-top: 10px;"></div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="card shadow-sm border-0 h-100" style="border-radius: 10px; overflow: hidden; transition: all 0.3s ease;">
-                                <div class="card-body p-4">
-                                    <h5 class="card-title font-weight-bold mb-3">
-                                        <i class="fa fa-book text-primary mr-2"></i> Platform Overview
-                                    </h5>
-                                    <p class="card-text text-muted">Understand the core features and functionality of our trading platform.</p>
-                                    <a href="#" class="btn btn-sm btn-outline-primary" style="border-radius: 6px;">Read Guide</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="card shadow-sm border-0 h-100" style="border-radius: 10px; overflow: hidden; transition: all 0.3s ease;">
-                                <div class="card-body p-4">
-                                    <h5 class="card-title font-weight-bold mb-3">
-                                        <i class="fa fa-check-square text-success mr-2"></i> Setup Checklist
-                                    </h5>
-                                    <p class="card-text text-muted">Follow our step-by-step checklist to set up your account properly.</p>
-                                    <a href="#" class="btn btn-sm btn-outline-success" style="border-radius: 6px;">Get Started</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Account Management -->
-                <section id="account-help" class="mb-5">
-                    <div class="mb-4">
-                        <h3 class="font-weight-bold d-flex align-items-center text-white">
-                            <i class="fa fa-user mr-3" style="font-size: 24px;"></i> Account Management
-                        </h3>
-                        <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #28a745, #20c997); border-radius: 2px; margin-top: 10px;"></div>
-                    </div>
-                    
-                    <div class="accordion" id="accountAccordion">
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading1">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse1" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> How do I update my profile?
-                                </button>
-                            </div>
-                            <div id="collapse1" class="collapse" data-parent="#accountAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>To update your profile, navigate to <strong>My Account → Profile</strong> from the sidebar menu. You can change your name, email, phone number, and upload a profile photo. All changes are saved immediately.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading2">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse2" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> How do I change my password?
-                                </button>
-                            </div>
-                            <div id="collapse2" class="collapse" data-parent="#accountAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Go to <strong>My Account → Change Password</strong>. Enter your current password, then your new password (minimum 8 characters). We recommend using a strong password with uppercase, lowercase, numbers, and special characters.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading3">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse3" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> How do I enable two-factor authentication?
-                                </button>
-                            </div>
-                            <div id="collapse3" class="collapse" data-parent="#accountAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Two-factor authentication adds an extra layer of security to your account. Go to <strong>Security Settings</strong> and enable 2FA using an authenticator app like Google Authenticator or Authy.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Trading Guide -->
-                <section id="trading-help" class="mb-5">
-                    <div class="mb-4">
-                        <h3 class="font-weight-bold d-flex align-items-center text-white">
-                            <i class="fa fa-exchange mr-3" style="font-size: 24px;"></i> Trading Guide
-                        </h3>
-                        <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #17a2b8, #138496); border-radius: 2px; margin-top: 10px;"></div>
-                    </div>
-                    
-                    <div class="accordion" id="tradingAccordion">
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading4">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse4" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> How do I connect a trading account?
-                                </button>
-                            </div>
-                            <div id="collapse4" class="collapse" data-parent="#tradingAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>To connect a trading account, navigate to <strong>My Accounts</strong> and click <strong>Connect Account</strong>. Enter your broker credentials:</p>
-                                    <ul>
-                                        <li>Select the trading platform (MT4, MT5, cTrader)</li>
-                                        <li>Enter server address and account login</li>
-                                        <li>Enter your password (encrypted for security)</li>
-                                        <li>Select account type (Real/Demo)</li>
-                                        <li>Click Connect</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading5">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse5" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> What are trading signals?
-                                </button>
-                            </div>
-                            <div id="collapse5" class="collapse" data-parent="#tradingAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Trading signals are automated recommendations generated by our AI algorithms. They analyze market conditions and indicate optimal entry and exit points for specific currency pairs. Each signal includes:</p>
-                                    <ul>
-                                        <li>Currency pair (e.g., EUR/USD)</li>
-                                        <li>Signal type (Buy/Sell)</li>
-                                        <li>Entry price and levels</li>
-                                        <li>Risk/Reward ratio</li>
-                                        <li>Confidence score</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading6">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse6" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> How do I track my trades?
-                                </button>
-                            </div>
-                            <div id="collapse6" class="collapse" data-parent="#tradingAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Visit <strong>Trading Activity → Trade History</strong> to see all your past trades. You can:</p>
-                                    <ul>
-                                        <li>Filter by account, symbol, or date range</li>
-                                        <li>View detailed trade analytics</li>
-                                        <li>See profit/loss for each trade</li>
-                                        <li>Export trade data as CSV</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Payments & Billing -->
-                <section id="payment-help" class="mb-5">
-                    <div class="mb-4">
-                        <h3 class="font-weight-bold d-flex align-items-center text-white">
-                            <i class="fa fa-credit-card mr-3" style="font-size: 24px;"></i> Payments & Billing
-                        </h3>
-                        <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #ffc107, #ff9800); border-radius: 2px; margin-top: 10px;"></div>
-                    </div>
-                    
-                    <div class="accordion" id="paymentAccordion">
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading7">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse7" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> What payment methods are accepted?
-                                </button>
-                            </div>
-                            <div id="collapse7" class="collapse" data-parent="#paymentAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>We accept multiple secure payment methods:</p>
-                                    <ul>
-                                        <li><strong>Credit/Debit Cards</strong> - Visa, Mastercard, American Express</li>
-                                        <li><strong>Bank Transfers</strong> - Direct wire transfers</li>
-                                        <li><strong>E-wallets</strong> - PayPal, Skrill, Neteller</li>
-                                        <li><strong>Cryptocurrency</strong> - Bitcoin, Ethereum</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading8">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse8" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> How do I manage my subscription?
-                                </button>
-                            </div>
-                            <div id="collapse8" class="collapse" data-parent="#paymentAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Go to <strong>Billing → My Subscription</strong> to manage your plan:</p>
-                                    <ul>
-                                        <li>View your current plan and billing cycle</li>
-                                        <li>Upgrade to a higher tier</li>
-                                        <li>Cancel anytime without penalties</li>
-                                        <li>Access invoices and payment history</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading9">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse9" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> Is there a money-back guarantee?
-                                </button>
-                            </div>
-                            <div id="collapse9" class="collapse" data-parent="#paymentAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Yes! We offer a <strong>30-day money-back guarantee</strong> on all subscription plans. If you're not satisfied with our service, contact us within 30 days of purchase for a full refund, no questions asked.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Bot Management -->
-                <section id="bot-help" class="mb-5">
-                    <div class="mb-4">
-                        <h3 class="font-weight-bold d-flex align-items-center text-white">
-                            <i class="fa fa-robot mr-3" style="font-size: 24px;"></i> Bot Management
-                        </h3>
-                        <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #dc3545, #c82333); border-radius: 2px; margin-top: 10px;"></div>
-                    </div>
-                    
-                    <div class="accordion" id="botAccordion">
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading10">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse10" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> What is an automated trading bot?
-                                </button>
-                            </div>
-                            <div id="collapse10" class="collapse" data-parent="#botAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>An automated trading bot is a software program that executes trades based on predefined rules and market conditions. Our bots work 24/7 to:</p>
-                                    <ul>
-                                        <li>Monitor market conditions continuously</li>
-                                        <li>Generate trading signals based on AI algorithms</li>
-                                        <li>Execute trades on your behalf</li>
-                                        <li>Manage risk and position sizing</li>
-                                        <li>Track performance and profitability</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading11">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse11" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> How do I configure bot settings?
-                                </button>
-                            </div>
-                            <div id="collapse11" class="collapse" data-parent="#botAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Configure your bot by navigating to <strong>Settings</strong> where you can customize:</p>
-                                    <ul>
-                                        <li><strong>Risk Level</strong> - Conservative, Moderate, or Aggressive</li>
-                                        <li><strong>Trading Pairs</strong> - Select which symbols to trade</li>
-                                        <li><strong>Time Frames</strong> - 1M, 5M, 15M, 1H, 4H, Daily</li>
-                                        <li><strong>Position Size</strong> - Lot size and maximum exposure</li>
-                                        <li><strong>Stop Loss & Take Profit</strong> - Risk management levels</li>
-                                    </ul>
-                                    <p>Click <strong>Save</strong> to apply changes. They take effect immediately.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card border-0 shadow-sm mb-3" style="border-radius: 10px; overflow: hidden;">
-                            <div class="card-header bg-light p-0" id="heading12">
-                                <button class="btn btn-link btn-block text-left p-4 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse12" style="text-decoration: none; color: #2c3e50; transition: all 0.2s ease;">
-                                    <i class="fa fa-question-circle mr-2"></i> Can I pause or stop the bot?
-                                </button>
-                            </div>
-                            <div id="collapse12" class="collapse" data-parent="#botAccordion">
-                                <div class="card-body p-4 bg-white">
-                                    <p>Yes! You have full control. From the <strong>My Accounts</strong> page, you can:</p>
-                                    <ul>
-                                        <li><strong>Pause Bot</strong> - Stop trading temporarily while keeping positions open</li>
-                                        <li><strong>Stop Bot</strong> - Close all positions and stop trading</li>
-                                        <li><strong>Resume Bot</strong> - Start trading again whenever you want</li>
-                                    </ul>
-                                    <p>Changes take effect immediately. There's no penalty for pausing or stopping.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Troubleshooting -->
-                <section id="troubleshoot" class="mb-5">
-                    <div class="mb-4">
-                        <h3 class="font-weight-bold d-flex align-items-center text-white">
-                            <i class="fa fa-wrench mr-3" style="font-size: 24px;"></i> Troubleshooting
-                        </h3>
-                        <div style="width: 60px; height: 4px; background: linear-gradient(90deg, #6c757d, #495057); border-radius: 2px; margin-top: 10px;"></div>
-                    </div>
-
-                    <div class="alert alert-info alert-dismissible fade show shadow-sm" style="border-radius: 10px; border: none; background: #e7f3ff; color: #004085;">
-                        <button type="button" class="close" data-dismiss="alert" style="color: #004085;">×</button>
-                        <strong><i class="fa fa-info-circle mr-2"></i> Can't find what you're looking for?</strong>
-                        <p class="mb-0 mt-2">Our support team is here to help. Get in touch using one of the options below.</p>
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col-md-6 mb-3">
-                            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden; transition: all 0.3s ease;">
-                                <div class="card-body text-center p-4">
-                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 10px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fa fa-envelope text-white" style="font-size: 28px;"></i>
-                                    </div>
-                                    <h5 class="font-weight-bold mb-2">Email Support</h5>
-                                    <p class="text-muted small mb-3">
-                                        <i class="fa fa-clock-o mr-1"></i> Response within 24 hours
-                                    </p>
-                                    <a href="mailto:support@viomiabot.com" class="btn btn-sm btn-danger" style="border-radius: 6px; font-weight: 600;">
-                                        <i class="fa fa-envelope mr-1"></i> Email Us
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden; transition: all 0.3s ease;">
-                                <div class="card-body text-center p-4">
-                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fa fa-comments text-white" style="font-size: 28px;"></i>
-                                    </div>
-                                    <h5 class="font-weight-bold mb-2">Live Chat</h5>
-                                    <p class="text-muted small mb-3">
-                                        <i class="fa fa-clock-o mr-1"></i> Mon-Fri, 9 AM - 6 PM EST
-                                    </p>
-                                    <button class="btn btn-sm btn-info" style="border-radius: 6px; font-weight: 600;" onclick="alert('Live chat feature coming soon!')">
-                                        <i class="fa fa-comments mr-1"></i> Start Chat
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
-    .support-card {
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #0f0f0f;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #00a884;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #00c896;
+    }
+
+    body, .help-page {
+        background: #0f0f0f;
+        color: #b0b0b0;
+    }
+
+    .help-header {
+        background: linear-gradient(135deg, #006d5b 0%, #002b24 100%);
+        padding: 30px 20px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .help-header h1 {
+        font-size: 2em;
+        color: white;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .help-header p {
+        font-size: 0.9em;
+        color: rgba(255, 255, 255, 0.85);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .faq-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px 40px;
+    }
+
+    .faq-section {
+        margin-bottom: 35px;
+    }
+
+    .faq-section-title {
+        font-size: 1.3em;
+        color: white;
+        margin-bottom: 5px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .faq-section-title i {
+        color: #00a884;
+        font-size: 1.3em;
+    }
+
+    .faq-section-divider {
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #006d5b, #00a884);
+        border-radius: 2px;
+        margin-bottom: 15px;
+    }
+
+    .faq-item {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        overflow: hidden;
         transition: all 0.3s ease;
     }
-    
-    .support-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+
+    .faq-item:hover {
+        border-color: #00a884;
+        box-shadow: 0 2px 8px rgba(0, 168, 132, 0.1);
     }
 
-    .list-group-item {
-        transition: all 0.2s ease;
-        border-left: 3px solid transparent !important;
+    .faq-question {
+        padding: 12px 15px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #1a1a1a;
+        transition: all 0.3s ease;
+        user-select: none;
     }
-    
-    .list-group-item:hover {
-        background-color: #f0f4ff !important;
-        border-left-color: #667eea !important;
+
+    .faq-question:hover {
+        background: #222;
+        padding-left: 18px;
     }
-    
-    .accordion .card-header button {
+
+    .faq-question-text {
+        color: white;
+        margin: 0;
+        font-size: 0.95em;
+        font-weight: 600;
+        flex: 1;
+    }
+
+    .faq-toggle {
+        color: #00a884;
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+        margin-left: 10px;
+        flex-shrink: 0;
+    }
+
+    .faq-item.active .faq-toggle {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        display: none;
+        padding: 12px 15px;
+        background: #0f0f0f;
+        color: #b0b0b0;
+        line-height: 1.6;
+        border-top: 1px solid #333;
+        font-size: 0.85em;
+    }
+
+    .faq-item.active .faq-answer {
+        display: block;
+    }
+
+    .faq-answer ul, .faq-answer ol {
+        margin: 10px 0 10px 15px;
+        padding: 0;
+    }
+
+    .faq-answer li {
+        margin-bottom: 5px;
+    }
+
+    .faq-answer strong {
+        color: #00a884;
+    }
+
+    .faq-answer a {
+        color: #00a884;
         text-decoration: none;
-        color: #2c3e50;
-        transition: all 0.2s ease;
-    }
-    
-    .accordion .card-header button:hover {
-        color: #667eea;
+        font-weight: 600;
     }
 
-    .accordion .card-header {
-        background: #fcfcfc !important;
-        border: none !important;
+    .faq-answer a:hover {
+        text-decoration: underline;
     }
 
-    .card {
-        border: none !important;
-    }
-
-    /* Collapse animation */
-    .collapse.show {
-        animation: slideDown 0.3s ease;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Smooth scrolling */
-    html {
-        scroll-behavior: smooth;
-    }
-</style>
-@endsection
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading1">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse1">
-                                <i class="fa fa-question-circle text-success mr-2"></i> How do I update my profile?
-                            </button>
-                        </div>
-                        <div id="collapse1" class="collapse" data-parent="#accountAccordion">
-                            <div class="card-body">
-                                <p>To update your profile, navigate to <strong>Profile Settings</strong> from the dropdown menu. You can change your name, email, phone number, and upload a profile photo.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading2">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse2">
-                                <i class="fa fa-question-circle text-success mr-2"></i> How do I change my password?
-                            </button>
-                        </div>
-                        <div id="collapse2" class="collapse" data-parent="#accountAccordion">
-                            <div class="card-body">
-                                <p>Go to your profile and click on <strong>Change Password</strong>. Enter your current password, then your new password. Your password must be at least 8 characters long.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading3">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse3">
-                                <i class="fa fa-question-circle text-success mr-2"></i> How do I delete my account?
-                            </button>
-                        </div>
-                        <div id="collapse3" class="collapse" data-parent="#accountAccordion">
-                            <div class="card-body">
-                                <p>Account deletion is permanent. To delete your account, please contact our support team with a request. We'll verify your identity and process the deletion within 24 hours.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Trading Guide -->
-            <section id="trading-help" class="mb-5">
-                <h3 class="mb-3 font-weight-bold d-flex align-items-center">
-                    <i class="fa fa-exchange text-info mr-2"></i> Trading Guide
-                </h3>
-                
-                <div class="accordion" id="tradingAccordion">
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading4">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse4">
-                                <i class="fa fa-question-circle text-info mr-2"></i> How do I link a trading account?
-                            </button>
-                        </div>
-                        <div id="collapse4" class="collapse" data-parent="#tradingAccordion">
-                            <div class="card-body">
-                                <p>To link a trading account, go to <strong>Trading Accounts</strong> and click <strong>Add New Account</strong>. Enter your trading platform credentials and select the bot that will manage this account.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading5">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse5">
-                                <i class="fa fa-question-circle text-info mr-2"></i> What are trading signals?
-                            </button>
-                        </div>
-                        <div id="collapse5" class="collapse" data-parent="#tradingAccordion">
-                            <div class="card-body">
-                                <p>Trading signals are automated recommendations generated by our AI algorithms. They indicate when to buy or sell specific currency pairs based on market analysis.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading6">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse6">
-                                <i class="fa fa-question-circle text-info mr-2"></i> How do I track my trades?
-                            </button>
-                        </div>
-                        <div id="collapse6" class="collapse" data-parent="#tradingAccordion">
-                            <div class="card-body">
-                                <p>Visit the <strong>Trade History</strong> page to see all your past trades. You can filter by account, symbol, or date range. Click on individual trades to view detailed analytics.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Payments & Billing -->
-            <section id="payment-help" class="mb-5">
-                <h3 class="mb-3 font-weight-bold d-flex align-items-center">
-                    <i class="fa fa-credit-card text-warning mr-2"></i> Payments & Billing
-                </h3>
-                
-                <div class="accordion" id="paymentAccordion">
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading7">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse7">
-                                <i class="fa fa-question-circle text-warning mr-2"></i> What payment methods do you accept?
-                            </button>
-                        </div>
-                        <div id="collapse7" class="collapse" data-parent="#paymentAccordion">
-                            <div class="card-body">
-                                <p>We accept multiple payment methods including:</p>
-                                <ul>
-                                    <li>Credit/Debit Cards (Visa, Mastercard, American Express)</li>
-                                    <li>Bank Transfers</li>
-                                    <li>E-wallets (PayPal, Skrill, Neteller)</li>
-                                    <li>Cryptocurrency (Bitcoin, Ethereum)</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading8">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse8">
-                                <i class="fa fa-question-circle text-warning mr-2"></i> How do I upgrade my subscription?
-                            </button>
-                        </div>
-                        <div id="collapse8" class="collapse" data-parent="#paymentAccordion">
-                            <div class="card-body">
-                                <p>Go to <strong>Plans & Subscription</strong> and select your desired plan. Click <strong>Upgrade</strong> and follow the payment process. Your plan will be activated immediately.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading9">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse9">
-                                <i class="fa fa-question-circle text-warning mr-2"></i> Can I get a refund?
-                            </button>
-                        </div>
-                        <div id="collapse9" class="collapse" data-parent="#paymentAccordion">
-                            <div class="card-body">
-                                <p>We offer a 14-day money-back guarantee on all subscription plans. If you're not satisfied, contact us within 14 days of purchase for a full refund.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Bot Management -->
-            <section id="bot-help" class="mb-5">
-                <h3 class="mb-3 font-weight-bold d-flex align-items-center">
-                    <i class="fa fa-cogs text-danger mr-2"></i> Bot Management
-                </h3>
-                
-                <div class="accordion" id="botAccordion">
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading10">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse10">
-                                <i class="fa fa-question-circle text-danger mr-2"></i> What is a bot?
-                            </button>
-                        </div>
-                        <div id="collapse10" class="collapse" data-parent="#botAccordion">
-                            <div class="card-body">
-                                <p>A bot is an automated trading system that executes trades based on predefined rules and market conditions. Our bots work 24/7 to generate trading signals and manage your accounts.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading11">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse11">
-                                <i class="fa fa-question-circle text-danger mr-2"></i> How do I configure a bot?
-                            </button>
-                        </div>
-                        <div id="collapse11" class="collapse" data-parent="#botAccordion">
-                            <div class="card-body">
-                                <p>Go to <strong>Bot Settings</strong> to customize your bot's behavior. You can set risk levels, trading pairs, time frames, and more. Click <strong>Save</strong> to apply changes.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-light p-0" id="heading12">
-                            <button class="btn btn-link btn-block text-left p-3 font-weight-bold" type="button" data-toggle="collapse" data-target="#collapse12">
-                                <i class="fa fa-question-circle text-danger mr-2"></i> Can I stop the bot anytime?
-                            </button>
-                        </div>
-                        <div id="collapse12" class="collapse" data-parent="#botAccordion">
-                            <div class="card-body">
-                                <p>Yes! You can stop, pause, or restart your bot anytime from the Bot Management panel. Changes take effect immediately.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Troubleshooting -->
-            <section id="troubleshoot" class="mb-5">
-                <h3 class="mb-3 font-weight-bold d-flex align-items-center">
-                    <i class="fa fa-exclamation-triangle text-secondary mr-2"></i> Troubleshooting
-                </h3>
-                
-                <div class="alert alert-info alert-dismissible fade show">
-                    <strong>Still need help?</strong>
-                    <p class="mb-0 mt-2">Can't find the answer? Our support team is ready to assist you.</p>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-md-6 mb-3">
-                        <div class="card shadow-sm border-0 help-card">
-                            <div class="card-body text-center">
-                                <i class="fa fa-envelope fa-2x text-secondary mb-3"></i>
-                                <h5>Email Support</h5>
-                                <p class="text-muted small">Response time: 24 hours</p>
-                                <a href="mailto:support@trading-bot.com" class="btn btn-sm btn-outline-secondary">
-                                    <i class="fa fa-envelope mr-2"></i> Email Us
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="card shadow-sm border-0 help-card">
-                            <div class="card-body text-center">
-                                <i class="fa fa-headphones fa-2x text-secondary mb-3"></i>
-                                <h5>Live Chat</h5>
-                                <p class="text-muted small">Available 9 AM - 6 PM EST</p>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="alert('Chat feature coming soon!')">
-                                    <i class="fa fa-comments mr-2"></i> Start Chat
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </div>
-</div>
-
-<style>
-    .help-card {
-        transition: all 0.3s ease;
-    }
-    
-    .help-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-    }
-    
-    .rounded-lg {
+    .help-cta {
+        background: linear-gradient(135deg, #006d5b 0%, #002b24 100%);
+        padding: 30px 20px;
         border-radius: 8px;
+        text-align: center;
+        margin-top: 50px;
     }
-    
-    .list-group-item {
-        transition: all 0.2s ease;
+
+    .help-cta h2 {
+        color: white;
+        font-size: 1.4em;
+        margin-bottom: 10px;
+        font-weight: 700;
     }
-    
-    .list-group-item:hover {
-        background-color: #f8f9fa;
-        border-left: 4px solid #667eea;
-        padding-left: calc(0.75rem - 1px);
+
+    .help-cta p {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.9em;
+        margin-bottom: 20px;
     }
-    
-    .accordion .card-header button {
+
+    .help-cta-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .help-cta-btn {
+        background: white;
+        color: #006d5b;
+        padding: 10px 20px;
+        border-radius: 6px;
         text-decoration: none;
-        color: #2c3e50;
-        transition: all 0.2s ease;
+        font-weight: 600;
+        font-size: 0.9em;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
-    
-    .accordion .card-header button:hover {
-        color: #667eea;
+
+    .help-cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 168, 132, 0.3);
     }
-    
-    .accordion .card-header button.collapsed::after {
-        content: "▼";
-        float: right;
-        transition: transform 0.3s ease;
+
+    .help-cta-btn.whatsapp {
+        background: #25d366;
+        color: white;
     }
-    
-    .accordion .card-header button::after {
-        content: "▲";
-        float: right;
-        transition: transform 0.3s ease;
+
+    @media (max-width: 768px) {
+        .help-header h1 {
+            font-size: 1.5em;
+        }
+
+        .faq-question {
+            padding: 10px 12px;
+        }
+
+        .faq-question-text {
+            font-size: 0.9em;
+        }
+
+        .faq-answer {
+            padding: 10px 12px;
+            font-size: 0.8em;
+        }
+
+        .help-cta {
+            padding: 20px 15px;
+        }
+
+        .help-cta-buttons {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .help-cta-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 8px 15px;
+        }
     }
 </style>
+
+<div class="help-page">
+    <!-- Header -->
+    <div class="help-header">
+        <h1>Help & Support</h1>
+        <p>Find answers to common questions about Viomia Trading Bot</p>
+    </div>
+
+    <div class="faq-container">
+        <!-- Getting Started Section -->
+        <div class="faq-section">
+            <h2 class="faq-section-title">
+                <i class="fas fa-rocket"></i>
+                Getting Started
+            </h2>
+            <div class="faq-section-divider"></div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What is Viomia Trading Bot?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Viomia Trading Bot is an automated cryptocurrency trading platform that helps you execute trading strategies on exchanges like Binance. Our bots use advanced algorithms to monitor markets 24/7 and execute trades based on your configured strategies, without requiring you to be online.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">How do I get started with Viomia?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Getting started is easy:
+                    <ol>
+                        <li>Create an account on our platform</li>
+                        <li>Link your exchange account (API keys)</li>
+                        <li>Choose a trading strategy or create your own</li>
+                        <li>Set your parameters (risk level, trade size, etc.)</li>
+                        <li>Start trading and monitor your bot</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">Is my account secure when using Viomia?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes, security is our top priority. We use industry-standard encryption for all data, API keys are stored securely in encrypted vaults, and we never have access to your exchange funds. We only execute trades on your behalf with the permissions you grant. We recommend using API keys with restricted trading permissions only.
+                </div>
+            </div>
+        </div>
+
+        <!-- Bot Management Section -->
+        <div class="faq-section">
+            <h2 class="faq-section-title">
+                <i class="fas fa-robot"></i>
+                Bot Management
+            </h2>
+            <div class="faq-section-divider"></div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What trading strategies does Viomia support?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Viomia supports multiple professional trading strategies:
+                    <ul>
+                        <li><strong>Grid Trading</strong> - Profit from price volatility in sideways markets</li>
+                        <li><strong>DCA (Dollar Cost Averaging)</strong> - Accumulate assets over time at regular intervals</li>
+                        <li><strong>Momentum Trading</strong> - Follow market trends and ride momentum waves</li>
+                        <li><strong>Mean Reversion</strong> - Exploit price deviations from moving averages</li>
+                        <li><strong>Custom Strategies</strong> - Create your own rules and conditions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">How do I configure bot settings?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Configure your bot by navigating to the bot settings page where you can customize:
+                    <ul>
+                        <li><strong>Risk Level</strong> - Conservative, Moderate, or Aggressive</li>
+                        <li><strong>Trading Pairs</strong> - Select which symbols to trade</li>
+                        <li><strong>Time Frames</strong> - 1M, 5M, 15M, 1H, 4H, Daily</li>
+                        <li><strong>Position Size</strong> - Lot size and maximum exposure</li>
+                        <li><strong>Stop Loss & Take Profit</strong> - Risk management levels</li>
+                    </ul>
+                    Click <strong>Save</strong> to apply changes. They take effect immediately.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">Can I pause or stop the bot?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You have full control over your bots. You can:
+                    <ul>
+                        <li><strong>Pause Bot</strong> - Stop trading temporarily while keeping positions open</li>
+                        <li><strong>Stop Bot</strong> - Close all positions and stop trading</li>
+                        <li><strong>Resume Bot</strong> - Start trading again whenever you want</li>
+                    </ul>
+                    Changes take effect immediately. There's no penalty for pausing or stopping.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">How do I monitor bot performance?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Viomia provides comprehensive performance tracking and analytics:
+                    <ul>
+                        <li><strong>Real-time Dashboard</strong> - Monitor active bots and open positions</li>
+                        <li><strong>Performance Charts</strong> - Visualize profit/loss over time</li>
+                        <li><strong>Win Rate Statistics</strong> - See your bot's accuracy and success ratio</li>
+                        <li><strong>Trade History</strong> - Detailed logs of every executed trade</li>
+                        <li><strong>Risk Analysis</strong> - Maximum drawdown, Sharpe ratio, and other metrics</li>
+                        <li><strong>Export Reports</strong> - Download performance data for records</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What is the minimum trading balance required?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    There's no mandatory minimum balance to start using Viomia. However, for best results we recommend:
+                    <ul>
+                        <li><strong>Minimum $100</strong> - To see meaningful results with most strategies</li>
+                        <li><strong>Recommended $500+</strong> - Allows for better risk management</li>
+                        <li><strong>Optimal $1000+</strong> - Maximum flexibility and strategy options</li>
+                    </ul>
+                    You can start with any amount and increase your trading capital later. Risk management tools adjust automatically.
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing & Plans Section -->
+        <div class="faq-section">
+            <h2 class="faq-section-title">
+                <i class="fas fa-credit-card"></i>
+                Pricing & Plans
+            </h2>
+            <div class="faq-section-divider"></div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">How much does it cost to use Viomia?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Viomia offers flexible subscription plans to suit different traders:
+                    <ul>
+                        <li><strong>Starter Plan</strong> - Access to basic bot features and strategies</li>
+                        <li><strong>Professional Plan</strong> - Advanced strategies and priority support</li>
+                        <li><strong>Enterprise Plan</strong> - Unlimited bots, custom strategies, and dedicated support</li>
+                    </ul>
+                    All plans are monthly subscriptions with no hidden fees. Visit the <strong>Pricing section</strong> to see detailed features and current pricing.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">Can I cancel my subscription anytime?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes, you can cancel your subscription at any time. Cancellation is effective immediately, and no refunds are issued for the current billing period. Your bots will stop once the subscription ends. You can reactivate anytime by choosing a new plan.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">Is there a money-back guarantee?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! We offer a <strong>30-day money-back guarantee</strong> on all subscription plans. If you're not satisfied with our service, contact us within 30 days of purchase for a full refund, no questions asked. Your satisfaction is our priority.
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Section -->
+        <div class="faq-section">
+            <h2 class="faq-section-title">
+                <i class="fas fa-cogs"></i>
+                Technical & Advanced
+            </h2>
+            <div class="faq-section-divider"></div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">Does Viomia have an API?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! Viomia provides a comprehensive REST API for advanced users. You can:
+                    <ul>
+                        <li>Programmatically create and manage bots</li>
+                        <li>Access historical trade data</li>
+                        <li>Retrieve performance metrics and analytics</li>
+                        <li>Integrate with your own applications</li>
+                    </ul>
+                    Visit <strong>Settings → API Documentation</strong> to get your API keys and explore available endpoints.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">How long does it take for a bot to execute trades?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Trade execution speed depends on several factors:
+                    <ul>
+                        <li><strong>Signal Detection</strong> - Milliseconds (typically less than 100ms)</li>
+                        <li><strong>API Latency</strong> - Depends on exchange and internet connection</li>
+                        <li><strong>Market Conditions</strong> - Can affect slippage and execution price</li>
+                        <li><strong>Average Execution Time</strong> - Most trades execute within 1-5 seconds</li>
+                    </ul>
+                    We use direct exchange APIs to minimize latency and ensure fast execution.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">Is backtesting available?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! Viomia includes a powerful backtesting feature that allows you to:
+                    <ul>
+                        <li>Test strategies using historical market data</li>
+                        <li>See how your strategy would have performed in the past</li>
+                        <li>Optimize parameters before live trading</li>
+                        <li>Analyze win rates and risk metrics</li>
+                        <li>Adjust strategies based on results</li>
+                    </ul>
+                    Access backtesting from <strong>Tools → Strategy Backtester</strong> for any date range.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What exchanges are supported?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Viomia currently supports these major cryptocurrency exchanges:
+                    <ul>
+                        <li><strong>Binance</strong> - Spot trading and futures</li>
+                        <li><strong>Coinbase Pro</strong> - Spot trading</li>
+                        <li><strong>Kraken</strong> - Spot trading and margin</li>
+                        <li><strong>Bybit</strong> - Futures trading</li>
+                        <li><strong>Kucoin</strong> - Spot trading</li>
+                    </ul>
+                    We're constantly adding support for more exchanges. Check back regularly for updates.
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy & SMC Section -->
+        <div class="faq-section">
+            <h2 class="faq-section-title">
+                <i class="fas fa-lightbulb"></i>
+                Trading Strategy (SMC)
+            </h2>
+            <div class="faq-section-divider"></div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What is Smart Money Concepts (SMC)?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Smart Money Concepts is an advanced trading methodology that focuses on institutional order flow and market structure rather than traditional retail indicators.
+                    <p>The SMC strategy identifies how institutional traders (the "smart money") move the market through:</p>
+                    <ul>
+                        <li><strong>Market Structure Analysis</strong> - Identifying key support and resistance zones</li>
+                        <li><strong>Liquidity Sweeps</strong> - Detecting when price breaks levels to trigger stop-loss orders</li>
+                        <li><strong>Break of Structure (BOS)</strong> - Confirming shifts in market control</li>
+                        <li><strong>Trend Confirmation</strong> - Ensuring trades align with the broader trend</li>
+                    </ul>
+                    This approach allows traders to enter positions <strong>after institutional manipulation</strong> rather than before it, leading to higher-probability trades.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What are liquidity sweeps and why do they matter?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    A liquidity sweep occurs when price briefly breaks below a support level or above a resistance level, triggering retail stop-loss orders, before reversing.
+                    <p><strong>Why they matter:</strong></p>
+                    <ul>
+                        <li>Institutional traders use these sweeps to accumulate positions at better prices</li>
+                        <li>Smart Money collects liquidity from panicked retail traders</li>
+                        <li>After the sweep, price typically moves strongly in the opposite direction</li>
+                        <li>Viomia detects these sweeps and enters trades <em>after</em> the reversal for better risk-reward</li>
+                    </ul>
+                    <p><strong>Example:</strong> Price drops to $50,000 (triggering sell stops), then reverses to $52,000. Viomia would enter a BUY after confirming the reversal.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What is Break of Structure (BOS)?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Break of Structure (BOS) is the confirmation that market control has shifted to the other side.
+                    <p><strong>Definition:</strong> If the market was making lower lows (downtrend), a BOS would be an uptrend where price makes a higher low and breaks above the previous structure.</p>
+                    <p><strong>Why it's important:</strong></p>
+                    <ul>
+                        <li>BOS confirms that the direction is changing</li>
+                        <li>It provides high-conviction trade setup confirmation</li>
+                        <li>Combined with other filters, it gives excellent risk-reward entries</li>
+                        <li>Viomia uses BOS as a core entry signal</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">How does Viomia approach risk management?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Risk management is the foundation of the Viomia trading system. Multiple layers of protection are implemented:
+                    <ul>
+                        <li><strong>Fixed Risk Per Trade:</strong> Each trade risks only 1-2% of account equity</li>
+                        <li><strong>Risk-Reward Ratio:</strong> Minimum 1:3 (you win $3 for every $1 risked)</li>
+                        <li><strong>Maximum Daily Loss:</strong> Trading stops if daily losses exceed 30%</li>
+                        <li><strong>Consecutive Loss Protection:</strong> Pauses after 3 consecutive losses</li>
+                        <li><strong>Position Limits:</strong> Maximum 1 open trade at a time to prevent overexposure</li>
+                        <li><strong>Cooldown Periods:</strong> 1-hour minimum between trades to avoid overtrading</li>
+                    </ul>
+                    <p>This structure means <strong>even with a 40-50% win rate, the system remains profitable</strong> due to the asymmetric risk-reward ratio.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What market protection filters does Viomia use?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Viomia avoids trading during unfavorable market conditions using multiple filters:
+                    <ul>
+                        <li><strong>News Filter:</strong> Trading pauses 30 minutes before/after high-impact economic events</li>
+                        <li><strong>Session Filter:</strong> Only trades during active market sessions (London, New York)</li>
+                        <li><strong>Spread Filter:</strong> Rejects trades when spreads are too wide</li>
+                        <li><strong>Correlation Filter:</strong> Prevents clustering of trades in the same direction</li>
+                        <li><strong>Volatility Filter:</strong> Requires minimum volatility threshold for setups</li>
+                    </ul>
+                    <p>These filters protect your account from explosive volatility and slippage during unpredictable events.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What performance metrics should I track?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    To evaluate Viomia's performance, monitor these key metrics:
+                    <ul>
+                        <li><strong>Win Rate:</strong> Percentage of profitable trades (target: 40-55%)</li>
+                        <li><strong>Profit Factor:</strong> Gross profit divided by gross loss (target: > 1.5)</li>
+                        <li><strong>Risk-Reward Ratio:</strong> Average win size vs. average loss size (target: 1:3)</li>
+                        <li><strong>Maximum Drawdown:</strong> Largest peak-to-trough decline (target: < 20%)</li>
+                        <li><strong>Sharpe Ratio:</strong> Risk-adjusted returns (higher is better)</li>
+                        <li><strong>Trade Frequency:</strong> Typically 5-15 trades per week (quality over quantity)</li>
+                        <li><strong>Average Trade Duration:</strong> How long positions remain open</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack Section -->
+        <div class="faq-section">
+            <h2 class="faq-section-title">
+                <i class="fas fa-server"></i>
+                Technology & Infrastructure
+            </h2>
+            <div class="faq-section-divider"></div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">What technology powers Viomia?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Viomia is built on a professional trading architecture combining:
+                    <ul>
+                        <li><strong>MetaTrader 5 (MT5):</strong> The trading execution platform</li>
+                        <li><strong>MQL5:</strong> Advanced programming language for algorithmic strategies</li>
+                        <li><strong>Laravel:</strong> Cloud backend for monitoring, analytics, and signal distribution</li>
+                        <li><strong>REST APIs:</strong> Secure communication between trading platform and cloud infrastructure</li>
+                    </ul>
+                    <p>Learn more on our <a href="/technology" style="color: #00a884; font-weight: 600;">Technology page</a> or download the full <a href="#" style="color: #00a884; font-weight: 600;">technical whitepaper</a>.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">How does Viomia monitor my trading?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    The cloud infrastructure synchronizes with your trading bot in real-time, tracking:
+                    <ul>
+                        <li><strong>Trade Data:</strong> Every trade opened, closed, and position update</li>
+                        <li><strong>Account Metrics:</strong> Balance, equity, margin, and open positions</li>
+                        <li><strong>Performance Analytics:</strong> Daily profit, win rate, trade count</li>
+                        <li><strong>System Alerts:</strong> Risk limit triggers, filter blocks, errors</li>
+                    </ul>
+                    <p>This enables you to monitor your bot 24/7 from the Viomia dashboard.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3 class="faq-question-text">Is the system secure?</h3>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes. Viomia implements institutional-grade security:
+                    <ul>
+                        <li><strong>API Key Authentication:</strong> Secure credential management</li>
+                        <li><strong>Encrypted Communication:</strong> All data transmitted securely via REST APIs</li>
+                        <li><strong>No Fund Access:</strong> Viomia never has access to your exchange funds</li>
+                        <li><strong>Restricted Permissions:</strong> We recommend using API keys with trading-only permissions</li>
+                        <li><strong>Retry Logic & Error Handling:</strong> Robust protection against network failures</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="faq-container">
+        <div class="help-cta">
+            <h2>Still have questions?</h2>
+            <p>Our support team is here to help. Choose your preferred contact method below.</p>
+            <div class="help-cta-buttons">
+                <a href="https://wa.me/0787373722?text=I%20need%20help%20with%20Viomia" target="_blank" class="help-cta-btn whatsapp">
+                    <i class="fas fa-comments"></i> WhatsApp Support
+                </a>
+                <a href="mailto:support@viomia.com" class="help-cta-btn">
+                    <i class="fas fa-envelope"></i> Email Support
+                </a>
+                <a href="/" class="help-cta-btn">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFaq(element) {
+        const faqItem = element.closest('.faq-item');
+        faqItem.classList.toggle('active');
+    }
+
+    // Close other items when opening a new one (optional)
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', function() {
+            const allItems = document.querySelectorAll('.faq-item');
+            allItems.forEach(item => {
+                if (item !== this.closest('.faq-item')) {
+                    item.classList.remove('active');
+                }
+            });
+        });
+    });
+</script>
+
 @endsection
