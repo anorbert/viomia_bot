@@ -40,9 +40,15 @@ use App\Http\Controllers\User\UserAccountController;
 use App\Http\Controllers\User\CheckoutController;
 
 Route::get('/', function () {
-    return view('welcome');
+    $subscriptionPlans = \App\Models\SubscriptionPlan::where('is_active', true)
+        ->orderBy('sort_order')
+        ->get();
+    return view('index', compact('subscriptionPlans'));
 });
 Route::view('/terms', 'terms')->name('terms');
+Route::view('/risk-disclosure', 'risk-disclosure')->name('risk-disclosure');
+Route::view('/technology', 'technology')->name('technology');
+Route::view('/help', 'help.index')->name('help');
 Route::resource('user_login',LoginController::class);
 Route::resource('user_register',RegisterController::class);
 Route::get('/user_register', [RegisterController::class, 'index'])->name('user_register');
@@ -154,3 +160,19 @@ Route::prefix('admin')
 // Help & Support Page - Public route
 Route::view('/help', 'help.index')->name('help');
 
+// Contact Form - Public route
+Route::post('/contact', function (\Illuminate\Http\Request $request) {
+    // Validate the form data
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'subject' => 'required|string|max:100',
+        'message' => 'required|string|max:5000',
+    ]);
+    
+    // TODO: Send email to support team
+    // TODO: Store contact form data in database or mail service
+    
+    // For now, just redirect back with success message
+    return redirect('/')->with('status', 'Thank you for contacting us! We will get back to you soon.');
+})->name('contact.store');
