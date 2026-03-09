@@ -1,5 +1,5 @@
 <div class="col-md-3 left_col">
-  <div class="left_col scroll-view">
+  <div class="scroll-view">
 
     <div class="navbar nav_title d-flex align-items-center" style="border: 0; padding-left: 15px;">
   <a href="{{ route('admin.dashboard') }}" class="site_title d-flex align-items-center">

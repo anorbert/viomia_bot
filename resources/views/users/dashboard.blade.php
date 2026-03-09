@@ -259,6 +259,7 @@
                             $lastStatus = \App\Models\EaStatusChange::where('account_id', $acc->id)->orderBy('changed_at', 'desc')->first();
                             $margin_pct = ($snapshot && $snapshot->equity > 0) ? ($snapshot->margin / $snapshot->equity) * 100 : 0;
                             $dailyPl = $dailySummary ? $dailySummary->daily_pl : 0;
+                            $statusValue = $lastStatus ? strtolower($lastStatus->status) : 'off';
                         @endphp
                         <tr style="background: {{ $dailyPl >= 0 ? 'linear-gradient(90deg, #f0fdf4, #ffffff)' : 'linear-gradient(90deg, #fef2f2, #ffffff)' }};">
                             <td class="ps-3 py-2">
@@ -277,9 +278,9 @@
                                 {{ $dailyPl >= 0 ? '+' : '' }}{{ number_format($dailyPl, 2) }}
                             </td>
                             <td class="text-center">
-                                <span class="badge-phx" style="background: {{ $lastStatus->status == 'running' ? '#ecfdf5' : '#fef2f2' }}; color: {{ $lastStatus->status == 'running' ? '#10b981' : '#ef4444' }};">
-                                    <i class="fa {{ $lastStatus->status == 'running' ? 'fa-play' : 'fa-stop' }}" style="font-size: 7px;"></i>
-                                    {{ strtoupper(substr($lastStatus->status ?? 'OFF', 0, 4)) }}
+                                <span class="badge-phx" style="background: {{ $statusValue == 'running' ? '#ecfdf5' : '#fef2f2' }}; color: {{ $statusValue == 'running' ? '#10b981' : '#ef4444' }};">
+                                    <i class="fa {{ $statusValue == 'running' ? 'fa-play' : 'fa-stop' }}" style="font-size: 7px;"></i>
+                                    {{ strtoupper(substr($statusValue, 0, 4)) }}
                                 </span>
                             </td>
                         </tr>
