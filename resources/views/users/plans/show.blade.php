@@ -185,13 +185,36 @@
             </div>
 
             {{-- Phone Number (for MoMo) --}}
-            <div class="mb-3" id="phoneGroup">
+            <div class="mb-3" id="phoneGroup" style="display: none;">
               <label class="form-label small text-muted">
                 <i class="fa fa-phone me-1"></i>Mobile Money Phone (Optional)
               </label>
               <input type="tel" name="phone" class="form-control rounded-2" placeholder="e.g. 0712345678" maxlength="30">
               <small class="text-muted d-block mt-1">
                 If empty, we'll use the phone number on your account.
+              </small>
+            </div>
+
+            {{-- Binance Requirements --}}
+            <div class="mb-3" id="binanceGroup" style="display: none;">
+              <label class="form-label small text-muted">
+                <i class="fa fa-bitcoin me-1"></i>Binance Pay Requirements
+              </label>
+              <div class="alert alert-info border-0 mb-3">
+                <i class="fa fa-info-circle me-2"></i>
+                <strong>Instructions:</strong>
+                <ul class="mb-0 ps-3 mt-2">
+                  <li>You'll be redirected to Binance Pay to complete the transaction</li>
+                  <li>Have your Binance account ready</li>
+                  <li>Transaction completes within minutes</li>
+                </ul>
+              </div>
+              <label class="form-label small text-muted">
+                <i class="fa fa-user-circle me-1"></i>Binance Account Email/UID
+              </label>
+              <input type="text" name="binance_account" class="form-control rounded-2" placeholder="Your Binance email or UID (optional)" maxlength="100">
+              <small class="text-muted d-block mt-1">
+                Optional. We'll confirm your payment after you complete the Binance Pay confirmation.
               </small>
             </div>
 
@@ -303,18 +326,30 @@
 <script>
   const form = document.getElementById('checkoutForm');
   const phoneGroup = document.getElementById('phoneGroup');
+  const binanceGroup = document.getElementById('binanceGroup');
   const providerRadios = document.querySelectorAll('.provider-radio');
   const submitBtn = document.getElementById('submitBtn');
   const spinnerIcon = document.getElementById('spinnerIcon');
   const btnText = document.getElementById('btnText');
 
-  // Update phone field visibility based on provider selection
+  // Update form fields visibility based on provider selection
   function updateProviderUI() {
     const selectedProvider = document.querySelector('.provider-radio:checked').value;
     
-    // Only show phone for MoMo
-    if (phoneGroup) {
-      phoneGroup.style.display = selectedProvider === 'momo' ? 'block' : 'none';
+    // Show/hide form fields based on selected provider
+    if (phoneGroup && binanceGroup) {
+      if (selectedProvider === 'momo') {
+        phoneGroup.style.display = 'block';
+        binanceGroup.style.display = 'none';
+        phoneGroup.querySelector('input[name="phone"]').removeAttribute('required');
+      } else if (selectedProvider === 'binance') {
+        phoneGroup.style.display = 'none';
+        binanceGroup.style.display = 'block';
+        binanceGroup.querySelector('input[name="binance_account"]').removeAttribute('required');
+      } else {
+        phoneGroup.style.display = 'none';
+        binanceGroup.style.display = 'none';
+      }
     }
 
     // Visual feedback for provider cards
@@ -323,14 +358,16 @@
       if (radio && radio.checked) {
         card.style.borderColor = '#28a745';
         card.style.backgroundColor = '#f8fff9';
+        card.style.boxShadow = '0 0 0 3px rgba(40, 167, 69, 0.1)';
       } else {
         card.style.borderColor = '#dee2e6';
         card.style.backgroundColor = 'white';
+        card.style.boxShadow = 'none';
       }
     });
   }
 
-  // Initialize
+  // Initialize on page load
   updateProviderUI();
 
   // Listen to provider changes
@@ -340,24 +377,28 @@
 
   // Form submission
   form.addEventListener('submit', function(e) {
+    const selectedProvider = document.querySelector('.provider-radio:checked').value;
+    
+    // Validate based on provider
+    if (selectedProvider === 'momo') {
+      // Optional phone validation can be added here
+    } else if (selectedProvider === 'binance') {
+      // Optional Binance account validation can be added here
+    }
+    
     // Disable button and show loading state
     submitBtn.disabled = true;
     spinnerIcon.classList.remove('d-none');
     btnText.textContent = 'Processing...';
   });
 
-  // Enhanced radio button styling with older browser support
-  providerRadios.forEach(function(radio) {
-    radio.addEventListener('change', function() {
-      document.querySelectorAll('.provider-card').forEach(c => {
-        c.classList.remove('border-success');
-        c.style.borderColor = '#dee2e6';
-      });
-      
-      const card = radio.closest('label').querySelector('.provider-card');
-      if(card) {
-        card.classList.add('border-success');
-        card.style.borderColor = '#28a745';
+  // Enhanced visual feedback for provider card interactions
+  document.querySelectorAll('.provider-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const radio = this.closest('label').querySelector('.provider-radio');
+      if (radio) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
       }
     });
   });
