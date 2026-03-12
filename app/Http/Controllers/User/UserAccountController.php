@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
 
 class UserAccountController extends Controller
 {
@@ -105,5 +106,24 @@ class UserAccountController extends Controller
         $account->save();
 
         return response()->json(['ok' => true, 'active' => (bool)$account->active]);
+    }
+
+    public function activateAccount($id)
+    {
+        $account=Account::where('login', $id)->firstOrFail();
+        if ($account->user_id !== Auth::user()->id) abort(403);
+
+        //check if account is already active
+        if($account->active) {
+            // Deactivate the account
+            $account->active = false;
+            $account->save();            
+            return back()->with('success', 'Account Disactivated successfully.');
+        }else{
+            //Activate the account
+            $account->active = true;
+            $account->save();
+            return back()->with('success', 'Account Activated successfully.');
+        }
     }
 }

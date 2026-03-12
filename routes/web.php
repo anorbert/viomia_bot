@@ -89,6 +89,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     // Accounts pages (create controllers later)
     Route::resource('/accounts', UserAccountController::class);
     Route::get('/accounts/pending', [UserAccountController::class,'pending'])->name('accounts.pending');
+    Route::get('/accounts/activate/{id}', [UserAccountController::class,'activateAccount'])->name('accounts.activate');
 
     // Plans + checkout
     Route::get('/plans', [CheckoutController::class, 'plans'])->name('plans.index');

@@ -193,10 +193,10 @@
 
                                 {{-- Connection Status --}}
                                 <td class="text-center py-2">
-                                    @if($acc->connected)
+                                    @if($acc->active)
                                         <span class="badge badge-pill border-success text-success px-3 py-2" 
                                               style="background-color: #f1fbf3; font-size: 0.65rem; border: 1px solid; font-weight: 600;">
-                                            <i class="fa fa-circle mr-1"></i> CONNECTED
+                                            <i class="fa fa-circle mr-1"></i> ONLINE
                                         </span>
                                     @else
                                         <span class="badge badge-pill border-danger text-danger px-3 py-2" 
@@ -254,12 +254,21 @@
                                             <i class="fa fa-edit"></i>
                                         </button>
 
-                                        <button class="btn btn-sm btn-white text-warning border shadow-sm mr-2 toggleBtn" 
-                                                style="border-radius: 6px;" 
-                                                title="Toggle Active Status"
-                                                data-id="{{ $acc->id }}">
+                                        {{-- Toggle Active/Inactive Button --}}
+                                        @php
+                                            // Determine color and label based on account status
+                                            // If active, we want the button to show 'danger' (to deactivate)
+                                            // If inactive, we show 'success' or 'warning' (to activate)
+                                            $statusColor = $acc->active ? 'danger' : 'success';
+                                        @endphp
+
+                                        <a class="btn btn-sm btn-white text-{{ $statusColor }} border shadow-sm mr-2 toggleBtn" 
+                                            style="border-radius: 6px;" 
+                                            href="{{ route('user.accounts.activate', $acc->login) }}"
+                                            title="{{ $acc->active ? 'Deactivate' : 'Activate' }} Account"
+                                            data-id="{{ $acc->login }}">
                                             <i class="fa fa-power-off"></i>
-                                        </button>
+                                        </a>
 
                                         <form method="POST" action="{{ route('user.accounts.destroy', $acc->id) }}" style="display:inline;">
                                             @csrf
@@ -419,8 +428,8 @@
                                                         <div class="row small">
                                                             <div class="col-md-3">
                                                                 <span class="text-muted d-block mb-1">Connection Status</span>
-                                                                <span class="badge badge-{{ $acc->connected ? 'success' : 'danger' }}">
-                                                                    {{ $acc->connected ? '🟢 Connected' : '🔴 Offline' }}
+                                                                <span class="badge badge-{{ $acc->active ? 'success' : 'danger' }}">
+                                                                    {{ $acc->active ? '🟢 Active' : '🔴 Inactive' }}
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
@@ -574,7 +583,7 @@
 
                 <div class="form-group">
                     <label class="font-weight-bold" style="color: #2c3e50;">Server Address</label>
-                    <input class="form-control" name="server" id="editServer" required style="border-radius: 6px; border: 1px solid #e5e5e5;">
+                    <input class="form-control" value="{{$acc->server}}" name="server" id="editServer" required style="border-radius: 6px; border: 1px solid #e5e5e5;">
                 </div>
 
                 <div class="form-group">
@@ -608,6 +617,49 @@
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- CONFIRM ACTIVATE / DEACTIVATE MODAL -->
+<div class="modal fade" id="confirmToggleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:12px;border:none;box-shadow:0 10px 40px rgba(0,0,0,0.15);">
+
+            <div class="modal-header" style="background:linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%);border:none;">
+                <h5 class="modal-title font-weight-bold text-dark">
+                    <i class="fa fa-exclamation-triangle mr-2"></i>
+                    Confirm Action
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center p-4">
+
+                <div style="font-size:50px;color:#ffc107;margin-bottom:15px;">
+                    <i class="fa fa-power-off"></i>
+                </div>
+
+                <h5 id="confirmToggleTitle" class="font-weight-bold mb-2"></h5>
+
+                <p id="confirmToggleText" class="text-muted mb-0"></p>
+
+            </div>
+
+            <div class="modal-footer justify-content-center" style="background:#fcfcfc;border-top:1px solid #f1f1f1;">
+
+                <button class="btn btn-light px-4" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button id="confirmToggleBtn"
+                        class="btn text-white px-4"
+                        style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;font-weight:600;">
+                    Confirm
+                </button>
+
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -701,45 +753,39 @@
         });
     });
 
-    // Toggle account active status via AJAX
+    /* ====================================
+    Activate / Deactivate confirmation
+    ==================================== */
+    let toggleHref = null;
+
     document.querySelectorAll('.toggleBtn').forEach(btn => {
-        btn.addEventListener('click', async function(){
-            const id = this.dataset.id;
-            try{
-                const res = await fetch("{{ url('user/accounts') }}/" + id + "/toggle", {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if(!res.ok) {
-                    console.error('Toggle failed:', res.statusText);
-                    return;
-                }
 
-                const data = await res.json();
-                const badge = document.getElementById('status-badge-' + id);
+        btn.addEventListener('click', function(e){
+            e.preventDefault();            // stop the <a> from navigating
+            e.stopPropagation();           // stop row expand from firing
 
-                if(badge){
-                    if(data.active) {
-                        badge.classList.remove('border-secondary', 'text-secondary');
-                        badge.classList.add('border-success', 'text-success');
-                        badge.innerHTML = '<i class="fa fa-circle mr-1 pulse-green"></i> ACTIVE';
-                        badge.style.backgroundColor = '#f1fbf3';
-                    } else {
-                        badge.classList.remove('border-success', 'text-success');
-                        badge.classList.add('border-secondary', 'text-secondary');
-                        badge.innerHTML = '<i class="fa fa-circle mr-1"></i> INACTIVE';
-                        badge.style.backgroundColor = '#f8f9fa';
-                    }
-                }
-            }catch(e){
-                console.error('Error toggling account:', e);
-            }
+            toggleHref = this.getAttribute('href'); // capture the real route URL
+
+            const isDeactivate = this.classList.contains('text-danger');
+
+            document.getElementById("confirmToggleTitle").innerText = isDeactivate
+                ? "Deactivate Trading Account?"
+                : "Activate Trading Account?";
+
+            document.getElementById("confirmToggleText").innerText = isDeactivate
+                ? "The trading bot and connection will be stopped for this account."
+                : "The system will reconnect the trading bot to this account.";
+
+            new bootstrap.Modal(document.getElementById('confirmToggleModal')).show();
         });
+    });
+
+    /* ====================================
+    Confirm button — just follow the href
+    ==================================== */
+    document.getElementById("confirmToggleBtn").addEventListener("click", function(){
+        if (!toggleHref) return;
+        window.location.href = toggleHref;   // navigate to activate/deactivate route
     });
 
 })();
