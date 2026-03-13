@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('currency', 10)->default('RWF');
             $table->decimal('price', 12, 2)->default(0);
 
-            $table->enum('billing_interval', ['monthly','yearly','weekly','daily'])->default('monthly');
+            $table->enum('billing_interval', ['monthly','yearly','weekly','daily','one_time'])->default('monthly');
             $table->unsignedInteger('duration_days')->nullable(); // optional override
 
             $table->text('description')->nullable();

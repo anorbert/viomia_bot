@@ -72,6 +72,11 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/metrics', [UserDashboardController::class, 'metrics'])
         ->name('dashboard.metrics');
+    
+    // Change PIN
+    Route::get('/change-pin', [LoginController::class, 'create'])->name('change-pin.create');
+    Route::post('/change-pin', [LoginController::class, 'update'])->name('change-pin.update');
+    
     Route::resource('/profile', UserProfileController::class);
     Route::get('/profile/{id}/change-password', [UserProfileController::class, 'changePassword'])->name('profile.change-password');
     Route::post('/profile/{id}/change-password', [UserProfileController::class, 'updatePassword'])->name('profile.update-password');

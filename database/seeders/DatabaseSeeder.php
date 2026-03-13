@@ -8,6 +8,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\BankSeeder;
 use Database\Seeders\UserSeeder;
+use Database\Seeders\SubscriptionPlanSeeder;
 use Database\Seeders\NewsEventsSeeder;
 use Database\Seeders\ApiKeySeeder;
 use Database\Seeders\HistoricalTradesSeeder;
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             BankSeeder::class,
+            SubscriptionPlanSeeder::class,
             UserSeeder::class,
             ApiKeySeeder::class,
             //NewsEventsSeeder::class,
