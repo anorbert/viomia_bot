@@ -89,6 +89,14 @@
         transition: all 0.2s;
     }
 
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a0aec0' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 30px;
+    }
+
     .form-control:focus {
         background-color: #ffffff;
         border-color: #00a884;
@@ -137,10 +145,16 @@
         margin-top: 10px;
     }
 
-    .btn-gradient:hover {
+    .btn-gradient:hover:not(:disabled) {
         transform: translateY(-1px);
         box-shadow: 0 5px 15px rgba(0, 168, 132, 0.3);
         color: white;
+    }
+    
+    .btn-gradient:disabled {
+        background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+        cursor: not-allowed;
+        opacity: 0.6;
     }
 
     .login-prompt {
@@ -188,15 +202,30 @@
             </div>
         </div>
 
-        {{-- Phone Number --}}
+        {{-- Phone Number with Country Code --}}
         <div class="form-group mb-3">
-            <label>Phone Number</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fa fa-phone"></i></span>
+            <label>Country & Phone Number</label>
+            <div class="row">
+                <div class="col-4">
+                    <select name="country_code" class="form-control" required id="countryCode">
+                        <option value="">Select Country</option>
+                        <option value="+250" {{ old('country_code') === '+250' ? 'selected' : '' }}>Rwanda (+250)</option>
+                        <option value="+257" {{ old('country_code') === '+257' ? 'selected' : '' }}>Burundi (+257)</option>
+                        <option value="+243" {{ old('country_code') === '+243' ? 'selected' : '' }}>DRC (+243)</option>
+                        <option value="+33" {{ old('country_code') === '+33' ? 'selected' : '' }}>France (+33)</option>
+                        <option value="+44" {{ old('country_code') === '+44' ? 'selected' : '' }}>UK (+44)</option>
+                        <option value="+1" {{ old('country_code') === '+1' ? 'selected' : '' }}>USA (+1)</option>
+                    </select>
                 </div>
-                <input type="tel" name="phone_number" class="form-control" 
-                       placeholder="e.g. 078xxxxxxx" value="{{ old('phone_number') }}" required>
+                <div class="col-8">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                        </div>
+                        <input type="tel" name="phone_number" class="form-control" 
+                               placeholder="e.g. 788275364" value="{{ old('phone_number') }}" required pattern="[0-9]{9,10}">
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -204,28 +233,48 @@
         <div class="row">
             <div class="col-6">
                 <div class="form-group mb-3">
-                    <label>Security PIN</label>
+                    <label>Security PIN (4-6 digits)</label>
                     <input type="password" name="pin" class="form-control" 
-                           placeholder="••••" required maxlength="10" pattern="\d{10}">
+                           placeholder="••••" required minlength="4" maxlength="6" pattern="[0-9]{4,6}">
                 </div>
             </div>
             <div class="col-6">
                 <div class="form-group mb-3">
                     <label>Confirm PIN</label>
                     <input type="password" name="pin_confirmation" class="form-control" 
-                           placeholder="••••" required maxlength="10" pattern="\d{10}">
+                           placeholder="••••" required minlength="4" maxlength="6" pattern="[0-9]{4,6}">
                 </div>
             </div>
         </div>
-        {{-- Terms and Conditions Checkbox --}}
-<div class="custom-control custom-checkbox mb-4">
-    <input type="checkbox" class="custom-control-input" id="terms" name="terms" required>
-    <label class="custom-control-label small text-muted" for="terms" style="cursor: pointer;">
-        I agree to the <a href="{{ route('terms') }}" target="_blank" class="text-success font-weight-bold">Terms & Conditions</a> and Privacy Policy.
-    </label>
-</div>
+        {{-- Subscription Plan Selection (Optional) --}}
+        <div class="form-group mb-3">
+            <label>Choose Subscription Plan (Optional)</label>
+            <select name="subscription_plan_id" class="form-control">
+                <option value="">Start with Free Demo Plan</option>
+                @php
+                    $plans = \App\Models\SubscriptionPlan::where('active', true)->get();
+                @endphp
+                @forelse($plans as $plan)
+                    @if($plan->price > 0)
+                        <option value="{{ $plan->id }}" {{ old('subscription_plan_id') == $plan->id ? 'selected' : '' }}>
+                            {{ $plan->name }} - {{ $plan->currency }} {{ number_format($plan->price, 2) }}
+                        </option>
+                    @endif
+                @empty
+                @endforelse
+            </select>
+            <small class="text-muted" style="display: block; margin-top: 4px;">You can always upgrade or change your plan later</small>
+        </div>
 
-<button type="submit" class="btn btn-gradient shadow-sm">REGISTER ACCOUNT</button>
+        {{-- Terms and Conditions Checkbox --}}
+        <div class="custom-control custom-checkbox mb-4">
+            <input type="checkbox" class="custom-control-input" id="terms" name="terms" required>
+            <label class="custom-control-label small text-muted" for="terms" style="cursor: pointer;">
+                I agree to the <a href="{{ route('terms') }}" target="_blank" class="text-success font-weight-bold">Terms & Conditions</a> and <a href="{{ route('privacy') }}" target="_blank" class="text-success font-weight-bold">Privacy Policy</a>
+            </label>
+        </div>
+
+        <button type="submit" id="registerBtn" class="btn btn-gradient shadow-sm" disabled>REGISTER ACCOUNT</button>
 
         <div class="login-prompt">
             Already have an account? <a href="{{ route('login') }}" class="login-link">Login here</a>
@@ -295,6 +344,20 @@
                 timeOut: 5000
             });
         @endif
+        
+        // Handle Register button enable/disable based on terms checkbox
+        const termsCheckbox = document.getElementById('terms');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        if (termsCheckbox && registerBtn) {
+            // Enable/disable button on checkbox change
+            termsCheckbox.addEventListener('change', function() {
+                registerBtn.disabled = !this.checked;
+            });
+            
+            // Set initial state
+            registerBtn.disabled = !termsCheckbox.checked;
+        }
     });
 </script>
 @endsection

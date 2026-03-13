@@ -45,6 +45,14 @@ class Account extends Model
     ];
 
     /**
+     * Relationship: Account has many TradeLog records
+     */
+    public function tradeLogs()
+    {
+        return $this->hasMany(TradeLog::class);
+    }
+
+    /**
      * Relationship: Account belongs to a User
      */
     public function user(): BelongsTo

@@ -12,9 +12,9 @@
     
     /* Reduced Row Height & Padding */
     .table-clean thead th { 
-        background: #f9fafb; padding: 8px 12px !important; 
+        background: #2A3F54; padding: 8px 12px !important; 
         border-bottom: 1px solid #eee; font-size: 10px; 
-        text-transform: uppercase; color: #73879C; 
+        text-transform: uppercase; color: #fff; 
     }
     .table-clean td { 
         vertical-align: middle !important; padding: 6px 12px !important; 
@@ -41,8 +41,48 @@
 
     <div class="row mb-4 align-items-center">
         <div class="col-md-8 col-12">
-            <h3 class="mb-1" style="font-weight: 700; color: #2A3F54;">Trading Signals</h3>
-            <p class="text-muted mb-0">History of WhatsApp signals processed by the execution engine.</p>
+            <h3 class="mb-1" style="font-weight: 700; color: #2A3F54;">Trade History</h3>
+            <p class="text-muted mb-0">All executed trades from your connected trading accounts.</p>
+        </div>
+        <div class="col-md-4 col-12">
+            <div style="background: #f9fafb; padding: 12px; border-radius: 6px; display: flex; gap: 20px; align-items: center;">
+                <!-- Daily -->
+                <div style="flex: 1; border-right: 1px solid #e5e7eb; padding-right: 15px;">
+                    <small class="text-muted d-block" style="font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Today</small>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div class="font-weight-bold {{ $dailyNet >= 0 ? 'text-success' : 'text-danger' }}" style="font-size: 13px;">
+                            {{ $dailyNet >= 0 ? '+' : '' }}{{ number_format($dailyNet, 2) }}
+                        </div>
+                        <small style="font-size: 9px; color: #999;">
+                            <span class="text-success">+{{ number_format($dailyProfit, 2) }}</span> / <span class="text-danger">-{{ number_format($dailyLoss, 2) }}</span>
+                        </small>
+                    </div>
+                </div>
+                <!-- Weekly -->
+                <div style="flex: 1; border-right: 1px solid #e5e7eb; padding-right: 15px;">
+                    <small class="text-muted d-block" style="font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Week</small>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div class="font-weight-bold {{ $weeklyNet >= 0 ? 'text-success' : 'text-danger' }}" style="font-size: 13px;">
+                            {{ $weeklyNet >= 0 ? '+' : '' }}{{ number_format($weeklyNet, 2) }}
+                        </div>
+                        <small style="font-size: 9px; color: #999;">
+                            <span class="text-success">+{{ number_format($weeklyProfit, 2) }}</span> / <span class="text-danger">-{{ number_format($weeklyLoss, 2) }}</span>
+                        </small>
+                    </div>
+                </div>
+                <!-- Monthly -->
+                <div style="flex: 1;">
+                    <small class="text-muted d-block" style="font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Month</small>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div class="font-weight-bold {{ $monthlyNet >= 0 ? 'text-success' : 'text-danger' }}" style="font-size: 13px;">
+                            {{ $monthlyNet >= 0 ? '+' : '' }}{{ number_format($monthlyNet, 2) }}
+                        </div>
+                        <small style="font-size: 9px; color: #999;">
+                            <span class="text-success">+{{ number_format($monthlyProfit, 2) }}</span> / <span class="text-danger">-{{ number_format($monthlyLoss, 2) }}</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -53,7 +93,7 @@
                 <div class="row g-2 align-items-end">
                     <div class="col-md-3">
                         <label class="small font-weight-bold text-muted mb-1">Search</label>
-                        <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm" placeholder="Sender, Symbol...">
+                        <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm" placeholder="Ticket, Symbol...">
                     </div>
                     <div class="col-md-2">
                         <label class="small font-weight-bold text-muted mb-1">Symbol</label>
@@ -68,7 +108,7 @@
                         <label class="small font-weight-bold text-muted mb-1">Status</label>
                         <select name="status" class="form-control form-control-sm">
                             <option value="">All Status</option>
-                            @foreach(['pending','executed','expired','failed'] as $st)
+                            @foreach(['open','closed','cancelled'] as $st)
                                 <option value="{{ $st }}" {{ $status===$st ? 'selected' : '' }}>{{ ucfirst($st) }}</option>
                             @endforeach
                         </select>
@@ -90,76 +130,73 @@
                     <thead>
                         <tr>
                             <th class="no-sort">#</th>
-                            <th>Received</th>
+                            <th>Date</th>
+                            <th>Ticket</th>
                             <th>Symbol</th>
                             <th>Type</th>
+                            <th>Lots</th>
                             <th>Entry</th>
                             <th>SL</th>
                             <th>TP</th>
-                            <th>Sender</th>
                             <th>Status</th>
-                            <th class="text-right">Execs</th>
+                            <th>Profit</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($signals as $i => $sig)
+                        @forelse($trades as $i => $trade)
                             @php
-                                $statusClass = match($sig->status){
-                                    'pending' => 'bg-warning-light',
-                                    'executed' => 'bg-success-light',
-                                    'failed' => 'bg-danger-light',
+                                $statusClass = match($trade->status){
+                                    'open' => 'bg-warning-light',
+                                    'closed' => 'bg-success-light',
+                                    'cancelled' => 'bg-danger-light',
                                     default => 'bg-gray-light'
                                 };
+                                $typeColor = $trade->type === 'buy' ? 'text-success' : 'text-danger';
+                                $profitColor = $trade->profit > 0 ? 'text-success' : ($trade->profit < 0 ? 'text-danger' : 'text-muted');
                             @endphp
                             <tr>
-                                <td class="index-cell">{{ $signals->firstItem() + $i }}</td>
+                                <td class="index-cell">{{ $trades->firstItem() + $i }}</td>
+                                <td class="text-muted" style="font-size: 12px;">{{ optional($trade->created_at)->format('d M, Y H:i') }}</td>
+                                <td class="font-weight-bold">{{ $trade->ticket }}</td>
+                                <td class="font-weight-bold text-primary">{{ $trade->symbol }}</td>
                                 <td>
-                                    <div class="font-weight-bold" style="color:#2A3F54;">{{ optional($sig->received_at)->format('d M, H:i') }}</div>
-                                    <small class="text-muted" style="font-size: 9px;">ID: {{ Str::limit($sig->group_id, 10) }}</small>
-                                </td>
-                                <td class="font-weight-bold text-primary">{{ $sig->symbol }}</td>
-                                <td>
-                                    <span class="badge {{ $sig->type==='BUY' ? 'text-success' : 'text-danger' }}" style="font-weight: 800; font-size: 10px;">
-                                        <i class="fa fa-caret-{{ $sig->type==='BUY' ? 'up' : 'down' }} mr-1"></i>{{ $sig->type }}
+                                    <span class="badge {{ $typeColor }}" style="font-weight: 800; font-size: 10px;">
+                                        <i class="fa fa-caret-{{ $trade->type === 'buy' ? 'up' : 'down' }} mr-1"></i>{{ ucfirst($trade->type) }}
                                     </span>
                                 </td>
-                                <td class="font-weight-bold">{{ $sig->entry }}</td>
-                                <td class="text-danger">{{ $sig->stop_loss }}</td>
-                                <td class="text-success">
-                                    @php $tps = is_array($sig->take_profit) ? $sig->take_profit : []; @endphp
-                                    {{ count($tps) ? implode(', ', $tps) : '—' }}
-                                </td>
-                                <td><small class="text-muted">{{ Str::limit($sig->sender, 15) }}</small></td>
+                                <td class="font-weight-bold">{{ $trade->lots }}</td>
+                                <td class="font-weight-bold">{{ $trade->open_price }}</td>
+                                <td class="text-danger">{{ $trade->sl }}</td>
+                                <td class="text-success">{{ $trade->tp }}</td>
                                 <td>
                                     <span class="badge-status {{ $statusClass }}">
-                                        {{ $sig->status }}
+                                        {{ ucfirst($trade->status) }}
                                     </span>
                                 </td>
-                                <td class="text-right">
-                                    <span class="badge badge-secondary" style="font-size: 10px; border-radius: 10px;">{{ $sig->executions()->count() }}</span>
+                                <td class="font-weight-bold {{ $profitColor }}">
+                                    @if($trade->profit)
+                                        @if($trade->profit > 0)
+                                            <i class="fa fa-arrow-up mr-1"></i>Profit: +{{ number_format($trade->profit, 2) }}
+                                        @else
+                                            <i class="fa fa-arrow-down mr-1"></i>Loss: {{ number_format($trade->profit, 2) }}
+                                        @endif
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
                                 </td>
                             </tr>
-                            @if($sig->raw_text)
-                            <tr class="raw-text-row">
-                                <td colspan="10">
-                                    <div class="text-muted italic" style="font-size: 10.5px; border-left: 2px solid #e0e0e0; padding-left: 10px;">
-                                        <i class="fa fa-whatsapp mr-1"></i> {{ $sig->raw_text }}
-                                    </div>
-                                </td>
-                            </tr>
-                            @endif
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center py-5 text-muted">No signals recorded yet.</td>
+                                <td colspan="11" class="text-center py-5 text-muted">No trades recorded yet.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
-        @if($signals->hasPages())
+        @if($trades->hasPages())
         <div class="card-footer bg-white border-top-0 py-3">
-            {{ $signals->links() }}
+            {{ $trades->links() }}
         </div>
         @endif
     </div>
@@ -172,15 +209,49 @@
 
 <script>
 $(document).ready(function() {
-    $('#signalsTable').DataTable({
-        "paging": false,       // Disable DT pagination (Laravel handles this)
-        "searching": false,    // Disable DT search (Your Filter form handles this)
-        "info": false,         // Hide "Showing 1 to 10" text
+    let dataTable = $('#signalsTable').DataTable({
+        "paging": true,
+        "pageLength": 10,
+        "searching": true,
+        "info": true,
         "lengthChange": false,
         "columnDefs": [
-            { "orderable": false, "targets": [0, 9] } // Disable sorting on # and Execs
+            { "orderable": false, "targets": [0, 10] }
         ]
     });
+
+    // Auto-refresh table every 5 seconds
+    setInterval(function() {
+        let currentUrl = new URL(window.location.href);
+        let queryString = currentUrl.search;
+        
+        fetch(window.location.pathname + queryString + (queryString ? '&' : '?') + '_ajax=1')
+            .then(response => response.text())
+            .then(html => {
+                let parser = new DOMParser();
+                let newDoc = parser.parseFromString(html, 'text/html');
+                let newTable = newDoc.querySelector('#signalsTable tbody');
+                
+                if (newTable) {
+                    // Update table body with new data
+                    document.querySelector('#signalsTable tbody').innerHTML = newTable.innerHTML;
+                    
+                    // Reinitialize DataTable
+                    dataTable.destroy();
+                    dataTable = $('#signalsTable').DataTable({
+                        "paging": true,
+                        "pageLength": 10,
+                        "searching": true,
+                        "info": true,
+                        "lengthChange": false,
+                        "columnDefs": [
+                            { "orderable": false, "targets": [0, 10] }
+                        ]
+                    });
+                }
+            })
+            .catch(error => console.log('Auto-refresh error:', error));
+    }, 5000); // Refresh every 5 seconds
 });
 </script>
 @endpush

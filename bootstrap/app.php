@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'user.active' => \App\Http\Middleware\CheckUserActive::class,
+            'payment.secure' => \App\Http\Middleware\EnsurePaymentSecure::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

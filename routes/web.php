@@ -77,10 +77,13 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::resource('/password', UserPasswordController::class);
 
     Route::resource('/subscriptions', UserSubscriptionController::class);
+    Route::post('/subscriptions/payment', [UserSubscriptionController::class,'payment'])->name('subscriptions.payment');
     Route::resource('/payments', UserPaymentController::class);
 
     Route::resource('/signals', UserSignalController::class);
     Route::get('/executions', [UserSignalController::class,'executions'])->name('executions.index');
+    Route::get('/weekly-report', [UserSignalController::class,'weeklyReport'])->name('weekly-report.index');
+    Route::post('/weekly-payment', [UserSignalController::class,'storePayment'])->name('weekly-payment.store');
 
     // Trading activity pages (create controllers later)
     Route::get('/trades/open', [UserTradeController::class,'open'])->name('trades.open');
