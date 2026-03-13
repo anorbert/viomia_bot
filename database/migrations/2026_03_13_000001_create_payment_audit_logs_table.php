@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('reason')->nullable();
             $table->ipAddress('ip_address')->nullable();
             $table->text('user_agent')->nullable();
-            $table->json('metadata')->nullable(); // Store webhook payload, signature details, etc.
+            $table->json('metadata')->nullable();
             $table->timestamps();
 
             $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');

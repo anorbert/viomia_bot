@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class RegisterController extends Controller
@@ -49,6 +50,7 @@ class RegisterController extends Controller
         ]);
 
         $user = User::create([
+            'uuid' => Str::uuid(),
             'name' => $request->name,
             'country_code' => $request->country_code,
             'phone_number' => $request->phone_number,

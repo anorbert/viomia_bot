@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes; 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,12 +13,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasUuids, SoftDeletes; 
+    use HasFactory, Notifiable, SoftDeletes; 
 
     /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'uuid',
         'name',
         'email',
         'password',
@@ -27,7 +27,6 @@ class User extends Authenticatable
         'phone_number',
         'role_id',
         'otp',
-        'zone_id',
         'profile_photo',
         'is_active',
         'is_default_pin',
