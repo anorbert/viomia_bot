@@ -252,7 +252,7 @@
             <select name="subscription_plan_id" class="form-control">
                 <option value="">Start with Free Demo Plan</option>
                 @php
-                    $plans = \App\Models\SubscriptionPlan::where('active', true)->get();
+                    $plans = \App\Models\SubscriptionPlan::where('is_active', true)->get();
                 @endphp
                 @forelse($plans as $plan)
                     @if($plan->price > 0)
