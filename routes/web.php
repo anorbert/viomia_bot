@@ -46,6 +46,7 @@ Route::get('/', function () {
     return view('index', compact('subscriptionPlans'));
 });
 Route::view('/terms', 'terms')->name('terms');
+Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/risk-disclosure', 'risk-disclosure')->name('risk-disclosure');
 Route::view('/technology', 'technology')->name('technology');
 Route::view('/help', 'help.index')->name('help');
