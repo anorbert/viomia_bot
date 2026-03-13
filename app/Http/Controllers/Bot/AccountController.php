@@ -81,20 +81,44 @@ class AccountController extends Controller
 
         // Validate
         $validated = validator($data, [
-            'account'    => 'required|string',
-            'balance'    => 'required|numeric',
-            'equity' => 'required|numeric',
-            'margin'     => 'required|numeric',
-            'free_margin'        => 'required|numeric',
+            'account'     => 'required|string',
+            'balance'     => 'required|numeric',
+            'equity'      => 'required|numeric',
+            'margin'      => 'required|numeric',
+            'free_margin' => 'required|numeric',
         ])->validate();
 
-        // ⛔ Prevent duplicate tickets
-        if (!Account::where('account', $validated['account'])->exists()) {
+        // Find account
+        $account = Account::where('account', $validated['account'])->first();
+
+        if (!$account) {
             return response()->json([
                 'message' => 'No Account Related!'
             ], 200);
         }
 
+        // Check if snapshot already exists
+        if (AccountSnapshot::where('account_id', $account->id)->exists()) {
+            return response()->json([
+                'message' => 'Account Snapshot already exists',
+                'account_id' => $account->id
+            ], 200);
+        }
+
+        // Create snapshot
+        $snapshot = AccountSnapshot::create([
+            'account_id'      => $account->id,
+            'initial_balance' => $validated['balance'],
+            'balance'         => $validated['balance'],
+            'equity'          => $validated['equity'],
+            'margin'          => $validated['margin'],
+            'free_margin'     => $validated['free_margin'],
+        ]);
+
+        return response()->json([
+            'message' => 'Snapshot created',
+            'data' => $snapshot
+        ], 201);
     }
 
     /**
