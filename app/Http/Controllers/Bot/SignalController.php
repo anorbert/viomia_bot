@@ -53,6 +53,7 @@ class SignalController extends Controller
 
         // Step 2: Validate incoming data
         $validated = validator($data, [
+            'account'   => 'required|numeric',
             'ticket'    => 'required|string',
             'symbol'    => 'required|string|max:10',
             'direction' => 'required|in:buy,sell',
@@ -91,9 +92,20 @@ class SignalController extends Controller
                 ->where('id', '!=', $signal->id)
                 ->where('active', true)
                 ->update(['active' => false]);
+            
+            //check the Account number exists
+            $accountExists = Account::where('login', $validated['account'])->exists();
+            if(!$accountExists){
+                DB::rollBack();
+                return response()->json([
+                    'error' => 'Account number does not exist',
+                    'account' => $validated['account']
+                ], 400);
+            }
 
             // Create TradeLog
             $tradeLog = TradeLog::create([
+                'account_id'  => $accountExists->id, 
                 'ticket'      => $validated['ticket'],
                 'symbol'      => $validated['symbol'],
                 'type'        => $validated['direction'],

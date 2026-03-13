@@ -4,7 +4,7 @@
 <div class="container-fluid py-2"> {{-- Reduced padding --}}
 
     {{-- Header Section --}}
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="justify-content-between align-items-center mb-3">
         <div>
             <h5 class="mb-0 font-weight-bold text-dark">Client Management</h5>
             <div class="text-muted" style="font-size: 0.7rem;">Monitor client bot activity, trading accounts, and subscription status.</div>

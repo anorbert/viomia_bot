@@ -2,16 +2,6 @@
 
 @section('content')
 <div class="container-fluid py-3">
-
-    {{-- Nav --}}
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb bg-transparent p-0 small">
-            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}" class="text-success font-weight-bold">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.accounts.index') }}" class="text-success font-weight-bold">Trading Accounts</a></li>
-            <li class="breadcrumb-item active text-muted" aria-current="page">Add New</li>
-        </ol>
-    </nav>
-
     {{-- Bolder Compact Alerts --}}
     @if(session('success'))
         <div class="alert alert-success border-0 shadow-sm py-2 px-3 mb-3 small d-flex align-items-center text-white" style="background: #1a7e33; border-radius: 6px;">
@@ -22,7 +12,7 @@
     @endif
 
     {{-- Header Section --}}
-    <div class="d-flex justify-content-between align-items-end mb-3">
+    <div class="justify-content-between align-items-end mb-3">
         <div>
             <h5 class="font-weight-bold text-dark mb-0">Add Trading Account</h5>
             <p class="text-muted mb-0" style="font-size: 0.75rem;">Link a new MT4/MT5 terminal to the dashboard.</p>
@@ -72,11 +62,11 @@
                         <label class="small font-weight-bold text-dark mb-1">Trading Platform *</label>
                         <div class="d-flex">
                             <div class="custom-control custom-radio mr-4 mt-1">
-                                <input type="radio" id="mt4" name="platform" value="mt4" class="custom-control-input" {{ old('platform', 'mt4') == 'mt4' ? 'checked' : '' }}>
+                                <input type="radio" id="mt4" name="platform" value="mt4" dissabled class="custom-control-input" {{ old('platform') == 'mt4' ? 'checked' : '' }}>
                                 <label class="custom-control-label small font-weight-bold text-info" for="mt4"><i class="fa fa-windows mr-1"></i> MT4</label>
                             </div>
                             <div class="custom-control custom-radio mt-1">
-                                <input type="radio" id="mt5" name="platform" value="mt5" class="custom-control-input" {{ old('platform') == 'mt5' ? 'checked' : '' }}>
+                                <input type="radio" id="mt5" name="platform" value="mt5" class="custom-control-input" {{ old('platform', 'mt5') == 'mt5' ? 'checked' : '' }}>
                                 <label class="custom-control-label small font-weight-bold text-primary" for="mt5"><i class="fa fa-windows mr-1"></i> MT5</label>
                             </div>
                         </div>

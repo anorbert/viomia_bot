@@ -11,9 +11,39 @@ class AccountController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // Validate that account param is present
+        $request->validate([
+            'account' => 'required|numeric',
+        ]);
+
+        $account = Account::where('login', $request->account)->first();
+
+        // Account not found in DB
+        if (!$account) {
+            return response()->json([
+                'active' => false,
+                'debug'  => false,
+                'reason' => 'Account not found',
+            ], 404);
+        }
+
+        // Account found but inactive → EA will stop trading
+        if (!$account->active) {
+            return response()->json([
+                'active' => false,
+                'debug'  => false,
+                'reason' => 'Account is inactive',
+            ], 200); // ✅ 200 not 404 — account exists, just disabled
+        }
+
+        // Account is active → return real debug flag from DB
+        return response()->json([
+            'active' => true,
+            'debug'  => true,
+            'reason' => 'OK',
+        ], 200);
     }
 
     /**

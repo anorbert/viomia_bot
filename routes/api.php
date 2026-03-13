@@ -17,6 +17,9 @@ use App\Http\Controllers\Bot\WhatsappSignalController;
 use App\Middleware\CheckApiKey;
 
 Route::prefix('bot')->middleware(CheckApiKey::class)->group(function () {
+    //====System settings check =======//
+    Route::get('/account/settings', [AccountController::class, 'index']); 
+
     // ===== Signals =====
     Route::get('/signal', [SignalController::class, 'getActive']);
     Route::post('/signal', [SignalController::class, 'store']);
