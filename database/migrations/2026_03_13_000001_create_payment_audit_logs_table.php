@@ -18,8 +18,6 @@ return new class extends Migration
             $table->enum('action', ['webhook_received', 'manual_confirmation', 'status_update', 'webhook_failed', 'signature_validation_failed']);
             $table->enum('old_status', ['pending', 'paid', 'failed', 'cancelled'])->nullable();
             $table->enum('new_status', ['pending', 'paid', 'failed', 'cancelled'])->nullable();
-            $table->char('confirmed_by_user_id', 36)->nullable();
-            $table->char('confirmed_by_admin_id', 36)->nullable();
             $table->text('reason')->nullable();
             $table->ipAddress('ip_address')->nullable();
             $table->text('user_agent')->nullable();
@@ -28,8 +26,6 @@ return new class extends Migration
 
             $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
             $table->foreign('payment_transaction_id')->references('id')->on('payment_transactions')->onDelete('cascade');
-            $table->foreign('confirmed_by_user_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('confirmed_by_admin_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
