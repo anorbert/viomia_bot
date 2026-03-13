@@ -118,7 +118,7 @@
                 <div class="content-limit">
                     @yield('content')
                 </div>
-                @include('partials.footer')
+                @include('partials.users.footer')
             </div>
         </main>
     </div>

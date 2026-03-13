@@ -90,14 +90,14 @@
 
     <div class="container body">
         <div class="main_container">            
-            @include('partials.topnav')
-            @include('partials.sidebar')
+            @include('partials.admin.topnav')
+            @include('partials.admin.sidebar')
 
             <div class="right_col" role="main" style="min-height: 100vh;">
                 @yield('content')
             </div>
 
-            @include('partials.footer')
+            @include('partials.admin.footer')
         </div>
     </div>
 
