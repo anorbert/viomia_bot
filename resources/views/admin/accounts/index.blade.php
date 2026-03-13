@@ -13,7 +13,7 @@
     @endif
 
     {{-- Header Section --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="justify-content-between align-items-center mb-4">
         <div>
             <h4 class="mb-1 font-weight-bold text-dark">Trading Accounts</h4>
             <nav aria-label="breadcrumb">

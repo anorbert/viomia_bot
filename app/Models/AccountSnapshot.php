@@ -8,6 +8,7 @@ class AccountSnapshot extends Model
 {
     //
     protected $fillable = [
+        'initial_balance',
         'account_id',
         'balance',
         'equity',

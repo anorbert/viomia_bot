@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid py-3">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="justify-content-between align-items-center mb-3">
         <div>
             <h4 class="mb-0 font-weight-bold">Admin Users</h4>
             <div class="text-muted small">Manage system users and their roles.</div>

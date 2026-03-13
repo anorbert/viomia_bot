@@ -47,6 +47,46 @@ class AccountController extends Controller
             'account_type'  => 'required|string|max:50'
         ]);
 
+        //check if the client has an existing account
+        $accountExists = Account::where('user_id', $request->client_id)->exists();
+        if($accountExists){
+            return back()
+                ->withInput()
+                ->withErrors(['client_id' => 'This client already has registered account.']);
+        }
+
+        //check if login is unique
+        $loginExists = Account::where('login', $request->account_number)->exists();
+        if($loginExists){
+            return back()
+                ->withInput()
+                ->withErrors(['account_number' => 'This account number is already registered.']);
+        }
+        //check if client has role of user 
+        // If is user check if has subscription plan active
+        $client = User::find($request->client_id);
+        if(!$client->hasRole('user')){
+            //check if client has active subscription plan
+            $hasActiveSubscription = $client->subscriptions()->where('status', 'active')->exists();
+            if(!$hasActiveSubscription){
+            //create subscription for client
+               $subscription= UserSubscription::create([
+                    'user_id' => $client->id,
+                    'subscription_plan_id' => 1, // Assuming you have a default plan with ID 1
+                    'status' => 'active',
+                    'starts_at' => now(),
+                    'auto_renew' => false,
+                    'amount' => 0, // Set to 0 for free subscription
+                    'notes' => 'Automatically created subscription for account creation',
+                ]);
+                if(!$subscription){
+                    return back()
+                        ->withInput()
+                        ->withErrors(['error' => 'Failed to create subscription for client. Please try again.']);
+                } 
+            } 
+        }
+        
         $account=Account::create([
             'user_id'       => $request->client_id,
             'platform'      => $request->platform,
