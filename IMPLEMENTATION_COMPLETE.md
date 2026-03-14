@@ -115,7 +115,7 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_ENCRYPTION=tls
 MAIL_USERNAME=geniussoftware.rw@gmail.com
-MAIL_PASSWORD=crxdpodrbdpzdhcv
+MAIL_PASSWORD=<your-app-specific-password>
 SUPPORT_EMAIL=geniussoftware.rw@gmail.com
 ```
 

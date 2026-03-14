@@ -412,7 +412,7 @@
 
     .strategy-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 30px;
         margin-bottom: 30px;
     }
@@ -556,7 +556,7 @@
 
     .support-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 30px;
     }
 
@@ -757,6 +757,32 @@
 
         .contact-form {
             margin-top: 30px;
+        }
+
+        .support-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bots-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .strategy-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .support-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bots-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .strategy-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 </style>
@@ -1007,7 +1033,7 @@
                         <div class="price">
                             <span class="amount">
                                 @if($plan->price == 0 || $plan->price == null)
-                                    Custom
+                                    0$
                                 @else
                                     {{ $plan->currency ?? '$' }}{{ number_format($plan->price, 0) }}
                                 @endif

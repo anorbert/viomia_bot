@@ -63,8 +63,10 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_ENCRYPTION=tls
 MAIL_USERNAME=geniussoftware.rw@gmail.com
-MAIL_PASSWORD=crxdpodrbdpzdhcv
+MAIL_PASSWORD=<your-app-specific-password>
 ```
+
+**⚠️ SECURITY NOTE:** Never commit actual passwords to git. Use `.env` file only (add to .gitignore).
 
 ### 5. ✅ WhatsApp Integration
 - WhatsApp number: **0787373722**
@@ -237,7 +239,7 @@ protected $fillable = [
 
 ### Gmail SMTP Configuration
 - **Address**: geniussoftware.rw@gmail.com
-- **Password**: crxdpodrbdpzdhcv (app-specific password)
+- **Password**: Use your Gmail App-specific password (stored in `.env` only)
 - **Host**: smtp.gmail.com
 - **Port**: 587
 - **Encryption**: TLS
