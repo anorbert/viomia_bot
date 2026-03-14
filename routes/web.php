@@ -84,6 +84,8 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 
     Route::resource('/subscriptions', UserSubscriptionController::class);
     Route::post('/subscriptions/payment', [UserSubscriptionController::class,'payment'])->name('subscriptions.payment');
+    Route::get('/subscriptions/payment-pending/{reference}', [UserSubscriptionController::class,'paymentPending'])->name('subscriptions.payment-pending');
+    Route::get('/subscriptions/payment-status/{reference}', [UserSubscriptionController::class,'paymentStatus'])->name('subscriptions.payment-status');
     Route::resource('/payments', UserPaymentController::class);
 
     Route::resource('/signals', UserSignalController::class);

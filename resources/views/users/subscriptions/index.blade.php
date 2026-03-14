@@ -591,111 +591,131 @@
 
 })();
 
-// Subscription Payment Modal Handling
-document.addEventListener('DOMContentLoaded', function() {
-  var completePaymentBtn = document.getElementById('completePaymentBtn');
-  var paymentModal = document.getElementById('subscriptionPaymentModal');
-  var closePaymentModal = document.getElementById('closeSubscriptionPaymentModal');
-  var cancelPayment = document.getElementById('cancelSubscriptionPayment');
-  var confirmPaymentBtn = document.getElementById('confirmSubscriptionPaymentBtn');
-  
-  if (!completePaymentBtn) return;
-  
-  // Open modal on button click
-  completePaymentBtn.addEventListener('click', function() {
+  // Subscription Payment Modal Handling
+  document.addEventListener('DOMContentLoaded', function() {
+    var completePaymentBtn = document.getElementById('completePaymentBtn');
+    var paymentModal = document.getElementById('subscriptionPaymentModal');
+    var closePaymentModal = document.getElementById('closeSubscriptionPaymentModal');
+    var cancelPayment = document.getElementById('cancelSubscriptionPayment');
+    var confirmPaymentBtn = document.getElementById('confirmSubscriptionPaymentBtn');
+    
+    if (!completePaymentBtn) return;
+    
+    // Open modal on button click
+    completePaymentBtn.addEventListener('click', function() {
+      if (paymentModal) {
+        paymentModal.style.display = 'flex';
+      }
+    });
+    
+    // Close modal functions
+    function closeModal() {
+      if (paymentModal) {
+        paymentModal.style.display = 'none';
+      }
+    }
+    
+    if (closePaymentModal) {
+      closePaymentModal.addEventListener('click', closeModal);
+    }
+    
+    if (cancelPayment) {
+      cancelPayment.addEventListener('click', closeModal);
+    }
+    
+    // Close when clicking outside modal
     if (paymentModal) {
-      paymentModal.style.display = 'flex';
+      paymentModal.addEventListener('click', function(e) {
+        if (e.target === paymentModal) {
+          closeModal();
+        }
+      });
+    }
+    
+    // Payment confirmation
+    if (confirmPaymentBtn) {
+      confirmPaymentBtn.addEventListener('click', function() {
+        var selectedMethod = document.querySelector('input[name="subPaymentMethod"]:checked').value;
+        
+        if (!selectedMethod) {
+          alert('Please select a payment method');
+          return;
+        }
+        
+        if (selectedMethod !== 'momo') {
+          alert('This payment method is coming soon. Only MOMO is available now.');
+          return;
+        }
+        
+        var momoPhone = document.getElementById('subMomoPhone').value.trim();
+        var momoName = document.getElementById('subMomoName').value.trim();
+        
+        if (!momoPhone) {
+          alert('Please enter MOMO phone number');
+          return;
+        }
+        
+        if (!momoName) {
+          alert('Please enter account name');
+          return;
+        }
+        
+        // Show loading state
+        confirmPaymentBtn.disabled = true;
+        confirmPaymentBtn.textContent = 'Processing...';
+        
+        // Send payment request to server
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        fetch('{{ route("user.subscriptions.payment") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+          },
+          body: JSON.stringify({
+            subscription_id: '{{ $subscription->id ?? "" }}',
+            payment_method: selectedMethod,
+            momo_phone: momoPhone,
+            momo_name: momoName,
+            amount: parseFloat('{{ $subscription->plan->price ?? 0 }}')
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Payment initiated successfully
+            closeModal();
+            
+            // Show success message
+            alert(data.message || 'Payment request has been sent to your phone. Please complete the payment.');
+            
+            // Redirect to payment pending page if redirect_url is provided
+            if (data.redirect_url) {
+              setTimeout(() => {
+                location.href = data.redirect_url;
+              }, 1500);
+            } else {
+              // Reload page
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            }
+          } else {
+            // Payment initiation failed
+            confirmPaymentBtn.disabled = false;
+            confirmPaymentBtn.textContent = 'Pay Now';
+            alert('Error: ' + (data.message || 'Failed to initiate payment. Please try again.'));
+          }
+        })
+        .catch(error => {
+          confirmPaymentBtn.disabled = false;
+          confirmPaymentBtn.textContent = 'Pay Now';
+          console.error('Error:', error);
+          alert('Error processing payment: ' + (error.message || 'Please try again'));
+        });
+      });
     }
   });
-  
-  // Close modal functions
-  function closeModal() {
-    if (paymentModal) {
-      paymentModal.style.display = 'none';
-    }
-  }
-  
-  if (closePaymentModal) {
-    closePaymentModal.addEventListener('click', closeModal);
-  }
-  
-  if (cancelPayment) {
-    cancelPayment.addEventListener('click', closeModal);
-  }
-  
-  // Close when clicking outside modal
-  if (paymentModal) {
-    paymentModal.addEventListener('click', function(e) {
-      if (e.target === paymentModal) {
-        closeModal();
-      }
-    });
-  }
-  
-  // Payment confirmation
-  if (confirmPaymentBtn) {
-    confirmPaymentBtn.addEventListener('click', function() {
-      var selectedMethod = document.querySelector('input[name="subPaymentMethod"]:checked').value;
-      
-      if (!selectedMethod) {
-        alert('Please select a payment method');
-        return;
-      }
-      
-      if (selectedMethod !== 'momo') {
-        alert('This payment method is coming soon. Only MOMO is available now.');
-        return;
-      }
-      
-      var momoPhone = document.getElementById('subMomoPhone').value.trim();
-      var momoName = document.getElementById('subMomoName').value.trim();
-      
-      if (!momoPhone) {
-        alert('Please enter MOMO phone number');
-        return;
-      }
-      
-      if (!momoName) {
-        alert('Please enter account name');
-        return;
-      }
-      
-      // Show loading state
-      confirmPaymentBtn.disabled = true;
-      confirmPaymentBtn.textContent = 'Processing...';
-      
-      // Send payment request to server
-      var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-      
-      fetch('{{ route("user.subscriptions.payment") }}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({
-          subscription_id: '{{ $subscription->id ?? "" }}',
-          payment_method: selectedMethod,
-          momo_phone: momoPhone,
-          momo_name: momoName,
-          amount: parseFloat('{{ $subscription->plan->price ?? 0 }}')
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        closeModal();
-        alert('Payment initiated successfully!');
-        setTimeout(function() {
-          location.reload();
-        }, 1500);
-      })
-      .catch(error => {
-        confirmPaymentBtn.disabled = false;
-        confirmPaymentBtn.textContent = 'Pay Now';
-        alert('Error processing payment: ' + (error.message || 'Please try again'));
-      });
-    });
-  }
-});
 </script>
 @endpush

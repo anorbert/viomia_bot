@@ -198,30 +198,65 @@
       $paymentType = null;
       
       if (Auth::check()) {
-        // Check for active paid subscription
-        $subscription = \App\Models\UserSubscription::where('user_id', Auth::id())->first();
+        $user = Auth::user();
+        $userId = Auth::id();
+        
+        // Check 1: User must have at least one registered account with trades
+        // TradeLog belongs to Account, Account belongs to User
+        $hasAccountWithTrades = \App\Models\TradeLog::whereHas('account', function ($query) use ($userId) {
+          $query->where('user_id', $userId);
+        })->exists();
+        
+        // Check 2: User must have active paid subscription
+        $subscription = \App\Models\UserSubscription::where('user_id', $userId)
+          ->where('status', 'active')
+          ->first();
         $paidSubscription = null;
         
         if ($subscription && $subscription->plan) {
-          $paidSubscription = \App\Models\PaymentTransaction::where('user_id', Auth::id())
+          $paidSubscription = \App\Models\PaymentTransaction::where('user_id', $userId)
             ->where('subscription_plan_id', $subscription->plan->id)
-            ->where('status', 'paid')
+            ->whereIn('status', ['paid', 'success'])
             ->first();
         }
         
-        // Check for unpaid weekly payments (past weeks only)
-        $unpaidWeekly = \App\Models\WeeklyPayment::where('user_id', Auth::id())
-          ->where('status', 'pending')
-          ->where('week_end', '<', now())
-          ->exists();
+        // Check 3: Calculate if more than 1 week has passed since account registration or subscription start
+        $weekHasPassed = false;
+        $referenceDate = null;
         
-        // Bot is active if: has paid subscription AND no unpaid weekly payments
-        if ($paidSubscription && !$unpaidWeekly) {
+        if ($subscription && $subscription->starts_at) {
+          $referenceDate = $subscription->starts_at;
+        } else {
+          $referenceDate = $user->created_at;
+        }
+        
+        if ($referenceDate) {
+          $weekHasPassed = $referenceDate->addWeek()->lessThanOrEqualTo(now());
+        }
+        
+        // Check 4: Only enforce weekly payment check if 1+ week has passed
+        $unpaidWeekly = false;
+        if ($weekHasPassed) {
+          $unpaidWeekly = \App\Models\WeeklyPayment::where('user_id', $userId)
+            ->where('status', 'pending')
+            ->where('week_end', '<', now())
+            ->exists();
+        }
+        
+        // Bot is active if:
+        // - Has registered account (trades exist)
+        // - Has paid subscription
+        // - AND either: less than 1 week passed OR (1+ week passed AND no unpaid weekly payments)
+        if ($hasAccountWithTrades && $paidSubscription && (!$weekHasPassed || !$unpaidWeekly)) {
           $botIsActive = true;
         } else {
           $needsPayment = true;
-          if ($unpaidWeekly) {
+          if ($weekHasPassed && $unpaidWeekly) {
             $paymentType = 'weekly';
+          } elseif (!$paidSubscription) {
+            $paymentType = 'subscription';
+          } elseif (!$hasAccountWithTrades) {
+            $paymentType = 'account';
           } else {
             $paymentType = 'subscription';
           }
@@ -234,9 +269,21 @@
       <span>Bot System: @if($botIsActive) <strong>Active</strong> @else <strong>Inactive</strong> @endif</span>
       
       @if($needsPayment)
+        @php
+          $paymentRoute = match($paymentType) {
+            'weekly' => route('user.weekly-report.index'),
+            'account' => route('user.accounts.index'),
+            default => route('user.subscriptions.index'),
+          };
+          $paymentLabel = match($paymentType) {
+            'weekly' => 'Pay Weekly',
+            'account' => 'Add Account',
+            default => 'Subscribe',
+          };
+        @endphp
         <button style="margin-left: 8px; padding: 2px 8px; background: #dc2626; color: #fff; border: none; border-radius: 4px; font-size: 10px; font-weight: 600; cursor: pointer; white-space: nowrap;"
-                onclick="window.location.href = '{{ $paymentType === 'weekly' ? route('user.weekly-report.index') : route('user.subscriptions.index') }}'">
-          <i class="fa fa-credit-card"></i> Pay Now
+                onclick="window.location.href = '{{ $paymentRoute }}'">
+          <i class="fa fa-credit-card"></i> {{ $paymentLabel }}
         </button>
       @endif
     </div>
