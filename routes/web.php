@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Authentication\LoginController;
 use App\Http\Controllers\Authentication\RegisterController;
 use App\Http\Controllers\Authentication\StaffController;
+use App\Http\Controllers\SupportController;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EditorController;
@@ -50,6 +51,14 @@ Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/risk-disclosure', 'risk-disclosure')->name('risk-disclosure');
 Route::view('/technology', 'technology')->name('technology');
 Route::view('/help', 'help.index')->name('help');
+
+// Support routes (require auth)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/support', [SupportController::class, 'create'])->name('support.create');
+    Route::post('/support', [SupportController::class, 'store'])->name('support.store');
+    Route::get('/support/tickets', [SupportController::class, 'userTickets'])->name('support.tickets');
+});
+
 Route::resource('user_login',LoginController::class);
 Route::resource('user_register',RegisterController::class);
 Route::get('/user_register', [RegisterController::class, 'index'])->name('user_register');
@@ -87,6 +96,8 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/subscriptions/payment-pending/{reference}', [UserSubscriptionController::class,'paymentPending'])->name('subscriptions.payment-pending');
     Route::get('/subscriptions/payment-status/{reference}', [UserSubscriptionController::class,'paymentStatus'])->name('subscriptions.payment-status');
     Route::resource('/payments', UserPaymentController::class);
+    Route::get('/payments/{id}/pdf', [UserPaymentController::class, 'downloadPDF'])->name('payments.pdf');
+    Route::get('/payments-export/pdf', [UserPaymentController::class, 'exportPDF'])->name('payments.export-pdf');
 
     Route::resource('/signals', UserSignalController::class);
     Route::get('/executions', [UserSignalController::class,'executions'])->name('executions.index');

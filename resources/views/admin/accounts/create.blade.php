@@ -44,38 +44,44 @@
                     </div>
 
                     <div class="col-md-4 px-2 mb-2">
-                        <label class="small font-weight-bold text-dark mb-1">Account Category *</label>
-                        <select class="form-control form-control-sm font-weight-bold text-success" name="account_type" style="background-color: #f0fff4;">
+                        <label class="small font-weight-bold text-dark mb-1">
+                            <span style="color:#dc2626;">*</span> Trading Platform
+                            <span style="font-size:9px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+                        </label>
+                        <div class="d-flex">
+                            <div class="custom-control custom-radio mr-4 mt-1">
+                                <input type="radio" id="mt4" name="platform" value="mt4" class="custom-control-input" {{ old('platform') == 'mt4' ? 'checked' : '' }}>
+                                <label class="custom-control-label small font-weight-bold text-info" for="mt4"><i class="fa fa-windows mr-1"></i> MT4</label>
+                            </div>
+                            <div class="custom-control custom-radio mt-1">
+                                <input type="radio" id="mt5" name="platform" value="mt5" class="custom-control-input" {{ old('platform', 'mt5') == 'mt5' ? 'checked' : '' }} required>
+                                <label class="custom-control-label small font-weight-bold text-primary" for="mt5"><i class="fa fa-windows mr-1"></i> MT5 (Default)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 px-2 mb-2">
+                        <label class="small font-weight-bold text-dark mb-1">
+                            <span style="color:#dc2626;">*</span> Account Category
+                            <span style="font-size:9px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+                        </label>
+                        <select class="form-control form-control-sm font-weight-bold text-success" name="account_type" required style="background-color: #f0fff4;">
                             <option value="Real" {{ old('account_type') == 'Real' ? 'selected' : '' }}>Real (Live)</option>
                             <option value="Demo" {{ old('account_type') == 'Demo' ? 'selected' : '' }}>Trial (Demo)</option>
                         </select>
                     </div>
 
                     <div class="col-md-4 px-2 mb-2">
-                        <label class="small font-weight-bold text-dark mb-1">Login ID / Account # *</label>
-                        <input type="text" name="account_number" class="form-control form-control-sm @error('account_number') is-invalid @enderror" 
-                               value="{{ old('account_number') }}" placeholder="102938..." style="font-family: monospace; font-weight: bold;">
-                        @error('account_number') <span class="text-danger font-weight-bold" style="font-size: 10px;">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div class="col-md-4 px-2 mb-2">
-                        <label class="small font-weight-bold text-dark mb-1">Trading Platform *</label>
-                        <div class="d-flex">
-                            <div class="custom-control custom-radio mr-4 mt-1">
-                                <input type="radio" id="mt4" name="platform" value="mt4" dissabled class="custom-control-input" {{ old('platform') == 'mt4' ? 'checked' : '' }}>
-                                <label class="custom-control-label small font-weight-bold text-info" for="mt4"><i class="fa fa-windows mr-1"></i> MT4</label>
-                            </div>
-                            <div class="custom-control custom-radio mt-1">
-                                <input type="radio" id="mt5" name="platform" value="mt5" class="custom-control-input" {{ old('platform', 'mt5') == 'mt5' ? 'checked' : '' }}>
-                                <label class="custom-control-label small font-weight-bold text-primary" for="mt5"><i class="fa fa-windows mr-1"></i> MT5</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 px-2 mb-2">
-                        <label class="small font-weight-bold text-dark mb-1">Broker Server *</label>
+                        <label class="small font-weight-bold text-dark mb-1">
+                            <span style="color:#dc2626;">*</span> Broker Server
+                            <span style="font-size:9px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+                        </label>
                         <input type="text" name="broker_server" class="form-control form-control-sm @error('broker_server') is-invalid @enderror" 
-                               value="{{ old('broker_server') }}" placeholder="e.g. IC-Markets-Live">
+                               value="{{ old('broker_server') }}" placeholder="e.g. FBS-Real or FBS-Demo">
+                        <small style="font-size:10px;color:#10b981;font-weight:500;">
+                            <i class="fa fa-check-circle" style="color:#10b981;"></i>
+                            Examples: FBS-Real, FBS-Demo, FBS-Real-MetaTrader 5
+                        </small>
                     </div>
 
                     <div class="col-md-4 px-2 mb-2">

@@ -1,264 +1,315 @@
-@extends('layouts.general')
+@extends('layouts.user')
 
 @section('content')
-<div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; padding: 40px 20px;">
-    <div class="container" style="max-width: 700px;">
-        <a href="{{ route('user.profile.index') }}" class="btn btn-light btn-sm mb-4 shadow-sm" style="border-radius: 20px;">
-            <i class="fa fa-arrow-left mr-2"></i> Back to Profile
-        </a>
-
-        <div class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
-            <div class="card-header p-4" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                <h3 class="mb-0 font-weight-bold d-flex align-items-center">
-                    <i class="fa fa-lock mr-3" style="font-size: 24px;"></i> Change Password
-                </h3>
-                <p class="mt-2 mb-0" style="opacity: 0.9; font-size: 14px;">Secure your account with a strong new password</p>
-            </div>
-
-            <div class="card-body p-5">
-                @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 10px; border: none; margin-bottom: 20px;">
-                        <h5 class="alert-heading mb-3"><i class="fa fa-exclamation-circle mr-2"></i> Validation Errors</h5>
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li class="mb-1">{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="top: 12px;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                @endif
-
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 10px; border: none; margin-bottom: 20px;">
-                        <i class="fa fa-check-circle mr-2"></i> {{ session('success') }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                @endif
-
-                <div class="card mb-4" style="background: #fef3f5; border: none; border-radius: 10px; border-left: 4px solid #f5576c;">
-                    <div class="card-body p-3">
-                        <h6 class="mb-3 font-weight-bold" style="color: #2c3e50;"><i class="fa fa-shield mr-2"></i> Password Requirements</h6>
-                        <ul class="mb-0 pl-3" style="list-style: none;">
-                <form action="{{ route('user.profile.update-password', Auth::user()->id) }}" method="POST">
-                    @csrf
-                    @method('POST')
-
-                    <!-- Current Password -->
-                    <div class="form-group mb-4">
-                        <label for="current_password" class="font-weight-bold" style="color: #2c3e50;">
-                            <i class="fa fa-key mr-2"></i> Current Password
-                        </label>
-                        <div class="input-group" style="border-radius: 8px; overflow: hidden;">
-                            <input type="password" class="form-control @error('current_password') is-invalid @enderror" 
-                                   id="current_password" name="current_password" required
-                                   style="padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 8px;">
-                            <div class="input-group-append">
-                                <button class="btn" type="button" onclick="togglePassword('current_password')" 
-                                        style="background: white; border: 1px solid #e5e5e5; color: #f5576c; border-left: none; border-radius: 0 8px 8px 0;">
-                                    <i class="fa fa-eye" id="icon-current"></i>
-                                </button>
-                            </div>
-                        </div>
-                        @error('current_password')
-                            <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- New Password -->
-                    <div class="form-group mb-4">
-                        <label for="password" class="font-weight-bold" style="color: #2c3e50;">
-                            <i class="fa fa-lock mr-2"></i> New Password
-                        </label>
-                        <div class="input-group" style="border-radius: 8px; overflow: hidden;">
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" name="password" required onkeyup="checkPasswordRequirements(); checkPasswordStrength();"
-                                   style="padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 8px;">
-                            <div class="input-group-append">
-                                <button class="btn" type="button" onclick="togglePassword('password')" 
-                                        style="background: white; border: 1px solid #e5e5e5; color: #f5576c; border-left: none; border-radius: 0 8px 8px 0;">
-                                    <i class="fa fa-eye" id="icon-password"></i>
-                                </button>
-                            </div>
-                        </div>
-                        @error('password')
-                            <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
-                        @enderror
-
-                        <!-- Password Strength Meter -->
-                        <div id="strength-meter" class="mt-3" style="display: none;">
-                            <small class="text-muted d-block mb-2">Password Strength:</small>
-                            <div class="progress" style="height: 8px; border-radius: 4px;">
-                                <div id="strength-bar" class="progress-bar" role="progressbar" style="width: 0%; transition: all 0.3s ease; border-radius: 4px;"></div>
-                            </div>
-                            <small id="strength-text" class="d-block mt-2" style="font-weight: bold;"></small>
-                        </div>
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="form-group mb-5">
-                        <label for="password_confirmation" class="font-weight-bold" style="color: #2c3e50;">
-                            <i class="fa fa-check-circle mr-2"></i> Confirm Password
-                        </label>
-                        <div class="input-group" style="border-radius: 8px; overflow: hidden;">
-                            <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" 
-                                   id="password_confirmation" name="password_confirmation" required
-                                   style="padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 8px;">
-                            <div class="input-group-append">
-                                <button class="btn" type="button" onclick="togglePassword('password_confirmation')" 
-                                        style="background: white; border: 1px solid #e5e5e5; color: #f5576c; border-left: none; border-radius: 0 8px 8px 0;">
-                                    <i class="fa fa-eye" id="icon-confirm"></i>
-                                </button>
-                            </div>
-                        </div>
-                        @error('password_confirmation')
-                            <div class="invalid-feedback d-block mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Security Tips -->
-                    <div class="card mb-4" style="background: #f0f8ff; border: none; border-radius: 10px; border-left: 4px solid #4facfe;">
-                        <div class="card-body p-3">
-                            <h6 class="mb-3 font-weight-bold" style="color: #2c3e50;"><i class="fa fa-lightbulb mr-2" style="color: #ffc107;"></i> Security Tips</h6>
-                            <ul class="mb-0 pl-3" style="list-style: none; font-size: 13px;">
-                                <li class="mb-2" style="color: #555;"><i class="fa fa-shield mr-2"></i> Use a unique password you haven't used before</li>
-                                <li class="mb-2" style="color: #555;"><i class="fa fa-shield mr-2"></i> Avoid using personal information in your password</li>
-                                <li style="color: #555;"><i class="fa fa-shield mr-2"></i> Change your password regularly for better security</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="row" style="margin-top: 30px; padding-top: 30px; border-top: 2px solid #e5e5e5;">
-                        <div class="col-sm-6 mb-2">
-        </div>
-    </div>
-</div>
-
-<script>
-function togglePassword(fieldId) {
-    const field = document.getElementById(fieldId);
-    const icon = document.getElementById('icon-' + fieldId);
-    
-    if (field.type === 'password') {
-        field.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        field.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    }
-}
-
-function checkPasswordRequirements() {
-    const password = document.getElementById('password').value;
-    
-    const requirements = {
-        length: password.length >= 8,
-        case: /[a-z]/.test(password) && /[A-Z]/.test(password),
-        number: /[0-9]/.test(password),
-        special: /[^a-zA-Z0-9]/.test(password)
-    };
-    
-    updateRequirement('req-length', requirements.length);
-    updateRequirement('req-case', requirements.case);
-    updateRequirement('req-number', requirements.number);
-    updateRequirement('req-special', requirements.special);
-}
-
-function updateRequirement(elementId, met) {
-    const element = document.getElementById(elementId);
-    if (met) {
-        element.style.color = '#28a745';
-    } else {
-        element.style.color = '#666';
-    }
-}
-
-function checkPasswordStrength() {
-    const password = document.getElementById('password').value;
-    const strengthMeter = document.getElementById('strength-meter');
-    const strengthBar = document.getElementById('strength-bar');
-    const strengthText = document.getElementById('strength-text');
-    
-    if (password.length === 0) {
-        strengthMeter.style.display = 'none';
-        return;
-    }
-    
-    strengthMeter.style.display = 'block';
-    
-    let strength = 0;
-    if (password.length >= 8) strength++;
-    if (password.length >= 12) strength++;
-    if (/[a-z]/.test(password)) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^a-zA-Z0-9]/.test(password)) strength++;
-    
-    const percentage = (strength / 6) * 100;
-    strengthBar.style.width = percentage + '%';
-    
-    const strengthEmojis = ['⚠️', '🔓', '🔑', '✓'];
-    
-    if (percentage <= 33) {
-        strengthBar.className = 'progress-bar bg-danger';
-        strengthText.textContent = '⚠️ Weak - Please add more characters and variety';
-        strengthText.className = 'text-danger';
-    } else if (percentage <= 66) {
-        strengthBar.className = 'progress-bar bg-warning';
-        strengthText.textContent = '⚡ Fair - Good, but could be stronger';
-        strengthText.className = 'text-warning';
-    } else {
-        strengthBar.className = 'progress-bar bg-success';
-        strengthText.textContent = '✓ Strong - Excellent password!';
-        strengthText.className = 'text-success';
-    }
-}
-</script>
-
 <style>
-    .form-control:focus {
-        border-color: #f5576c !important;
-        box-shadow: 0 0 0 0.2rem rgba(245, 87, 108, 0.15) !important;
+    /* Change Password Page Styling */
+    .ln-card { 
+        background: #fff; border-radius: 10px; border: 1px solid #e0e0e0; 
+        margin-bottom: 15px; box-shadow: 0 0.15rem 0.5rem rgba(0,0,0,0.05); 
+    }
+    
+    .form-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #8a939f;
+        margin-bottom: 6px;
+        display: block;
     }
     
     .form-control {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 13px;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #1ABB9C;
+        box-shadow: 0 0 0 3px rgba(26, 187, 156, 0.1);
+    }
+    
+    .password-strength {
+        height: 4px;
+        border-radius: 4px;
+        margin-top: 6px;
         transition: all 0.3s ease;
     }
-
-    .btn-outline-secondary:hover {
-        border-color: #f5576c;
-        color: #f5576c;
+    
+    .strength-weak { background: #dc3545; }
+    .strength-fair { background: #ffc107; }
+    .strength-strong { background: #28a745; }
+    
+    .requirement-item {
+        font-size: 12px;
+        padding: 6px 0;
+        color: #8a939f;
     }
+    
+    .requirement-item.met {
+        color: #28a745;
+    }
+    
+    .requirement-item i {
+        margin-right: 6px;
+        width: 14px;
+        text-align: center;
+    }
+    
+    .info-box {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8eaf6 100%);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+        border-left: 3px solid #1ABB9C;
+    }
+    
+    .info-box small {
+        color: #2A3F54;
+        font-size: 11px;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 2px;
+    }
+    
+    .info-box span {
+        color: #8a939f;
+        font-size: 10px;
+        display: block;
+    }
+</style>
 
-    .form-control.is-invalid {
-        border-color: #dc3545
+<div class="container-fluid">
+    {{-- Header Section --}}
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6 col-12">
+            <h3 style="font-weight: 700; color: #2A3F54; margin: 0; font-size: 20px;">
+                <i class="fa fa-lock text-primary mr-2"></i>Change Password
+            </h3>
+        </div>
+        <div class="col-md-6 col-12 text-md-right mt-3 mt-md-0">
+            <a href="{{ route('user.profile.index') }}" style="color: #1ABB9C; font-weight: 600; text-decoration: none;">
+                <i class="fa fa-arrow-left mr-1"></i> Back to Profile
+            </a>
+        </div>
+    </div>
+
+    {{-- Alerts --}}
+    @if ($errors->any())
+        <div class="ln-card" style="padding: 12px 15px; background: #fee2e2; border-left: 3px solid #dc3545; margin-bottom: 15px;">
+            <div style="color: #b91c1c; font-size: 12px; font-weight: 600;">
+                <i class="fa fa-exclamation-circle mr-2"></i>Validation Errors
+            </div>
+            <ul style="margin: 6px 0 0 20px; padding: 0; color: #7f1d1d; font-size: 11px;">
+                @foreach ($errors->all() as $error)
+                    <li style="margin-bottom: 3px;">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="ln-card" style="padding: 12px 15px; background: #dcfce7; border-left: 3px solid #28a745; margin-bottom: 15px;">
+            <div style="color: #15803d; font-size: 12px; font-weight: 600;">
+                <i class="fa fa-check-circle mr-2"></i>{{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    <div class="row">
+        <!-- Main Form -->
+        <div class="col-lg-8">
+            <form action="{{ route('user.profile.update-password', Auth::user()->id) }}" method="POST" class="ln-card" id="form-password">
+                @csrf
+                @method('POST')
+                
+                <div style="padding: 20px;">
+                    {{-- Current Password --}}
+                    <div style="margin-bottom: 15px;">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control @error('current_password') is-invalid @enderror" 
+                               name="current_password" id="current_password" required>
+                        @error('current_password')
+                            <small style="color: #dc3545; font-size: 11px; margin-top: 3px; display: block;">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                    <hr style="border-top: 1px solid #e0e0e0; margin: 15px 0;">
+
+                    {{-- New Password --}}
+                    <div style="margin-bottom: 15px;">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                               name="password" id="new_password" required onkeyup="checkPassword();">
+                        
+                        <!-- Password Strength Meter -->
+                        <div id="strength-meter" style="display: none; margin-top: 6px;">
+                            <div class="password-strength" id="strength-bar"></div>
+                            <small id="strength-text" style="font-size: 11px; margin-top: 3px; display: block; font-weight: 600;"></small>
+                        </div>
+
+                        @error('password')
+                            <small style="color: #dc3545; font-size: 11px; margin-top: 3px; display: block;">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                    {{-- Confirm Password --}}
+                    <div style="margin-bottom: 15px;">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" 
+                               name="password_confirmation" id="confirm_password" required>
+                        @error('password_confirmation')
+                            <small style="color: #dc3545; font-size: 11px; margin-top: 3px; display: block;">{{ $message }}</small>
+                        @enderror
+                    </div>
+                </div>
+            </form>
+
+            {{-- Password Requirements --}}
+            <div class="ln-card">
+                <div style="background: linear-gradient(135deg, #1ABB9C 0%, #16a085 100%); color: #fff; padding: 12px 15px; border-radius: 10px 10px 0 0;">
+                    <h5 style="font-weight: 700; margin: 0; font-size: 13px;">
+                        <i class="fa fa-shield mr-2"></i>Password Requirements
+                    </h5>
+                </div>
+                <div style="padding: 15px;">
+                    <div class="requirement-item" id="req-length">
+                        <i class="fa fa-times"></i>At least 8 characters
+                    </div>
+                    <div class="requirement-item" id="req-uppercase">
+                        <i class="fa fa-times"></i>One uppercase letter (A-Z)
+                    </div>
+                    <div class="requirement-item" id="req-lowercase">
+                        <i class="fa fa-times"></i>One lowercase letter (a-z)
+                    </div>
+                    <div class="requirement-item" id="req-number">
+                        <i class="fa fa-times"></i>One number (0-9)
+                    </div>
+                    <div class="requirement-item" id="req-special">
+                        <i class="fa fa-times"></i>One special character (!@#$%^&*)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            {{-- Security Tips --}}
+            <div class="ln-card">
+                <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: #fff; padding: 12px 15px; border-radius: 10px 10px 0 0;">
+                    <h5 style="font-weight: 700; margin: 0; font-size: 13px;">
+                        <i class="fa fa-lightbulb mr-2"></i>Security Tips
+                    </h5>
+                </div>
+                <div style="padding: 15px;">
+                    <div class="info-box">
+                        <small><i class="fa fa-check-circle"></i> Use unique passwords</small>
+                        <span>Don't reuse passwords from other accounts</span>
+                    </div>
+                    <div class="info-box">
+                        <small><i class="fa fa-check-circle"></i> Avoid personal info</small>
+                        <span>Don't use your name, email, or birth date</span>
+                    </div>
+                    <div class="info-box">
+                        <small><i class="fa fa-check-circle"></i> Mix character types</small>
+                        <span>Use uppercase, lowercase, numbers, and symbols</span>
+                    </div>
+                    <div class="info-box">
+                        <small><i class="fa fa-check-circle"></i> Keep it secret</small>
+                        <span>Never share your password with anyone</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Action Buttons --}}
+            <div class="ln-card">
+                <div style="padding: 15px;">
+                    <button type="submit" form="form-password" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #1ABB9C 0%, #16a085 100%); color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 600; font-size: 12px; margin-bottom: 8px;">
+                        <i class="fa fa-save mr-2"></i>Update Password
+                    </button>
+                    <a href="{{ route('user.profile.index') }}" class="btn btn-outline-secondary w-100" style="color: #8a939f; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 16px; font-weight: 600; font-size: 12px;">
+                        <i class="fa fa-times mr-2"></i>Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function checkPassword() {
+    const password = document.getElementById('new_password').value;
+    
+    // Check requirements
+    const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    };
+    
+    // Update requirement display
+    updateRequirementUI('req-length', requirements.length);
+    updateRequirementUI('req-uppercase', requirements.uppercase);
+    updateRequirementUI('req-lowercase', requirements.lowercase);
+    updateRequirementUI('req-number', requirements.number);
+    updateRequirementUI('req-special', requirements.special);
+    
+    // Update strength meter
+    updateStrengthMeter(password, requirements);
+}
+
+function updateRequirementUI(elementId, met) {
+    const element = document.getElementById(elementId);
+    if (met) {
+        element.classList.add('met');
+        element.innerHTML = element.innerHTML.replace('fa-times', 'fa-check');
     } else {
-        strengthBar.className = 'progress-bar bg-success';
-        strengthText.textContent = 'Strong';
-        strengthText.className = 'text-success';
+        element.classList.remove('met');
+        element.innerHTML = element.innerHTML.replace('fa-check', 'fa-times');
+    }
+}
+
+function updateStrengthMeter(password, requirements) {
+    const meter = document.getElementById('strength-meter');
+    const bar = document.getElementById('strength-bar');
+    const text = document.getElementById('strength-text');
+    
+    if (password.length === 0) {
+        meter.style.display = 'none';
+        return;
+    }
+    
+    meter.style.display = 'block';
+    
+    // Calculate strength
+    let strength = 0;
+    if (requirements.length) strength += 20;
+    if (requirements.uppercase) strength += 20;
+    if (requirements.lowercase) strength += 20;
+    if (requirements.number) strength += 20;
+    if (requirements.special) strength += 20;
+    
+    bar.style.width = strength + '%';
+    
+    if (strength <= 40) {
+        bar.className = 'password-strength strength-weak';
+        text.textContent = '⚠️ Weak - Add more variety';
+        text.style.color = '#dc3545';
+    } else if (strength <= 70) {
+        bar.className = 'password-strength strength-fair';
+        text.textContent = '⚡ Fair - Good progress';
+        text.style.color = '#ffc107';
+    } else {
+        bar.className = 'password-strength strength-strong';
+        text.textContent = '✓ Strong - Excellent!';
+        text.style.color = '#28a745';
     }
 }
 </script>
 
-<style>
-    .bg-gradient-danger {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-    
-    .rounded-lg {
-        border-radius: 8px;
-    }
-    
-    .form-control:focus,
-    .btn-outline-secondary:focus {
-        border-color: #f5576c;
-        box-shadow: 0 0 0 0.2rem rgba(245, 87, 108, 0.25);
-    }
-</style>
 @endsection

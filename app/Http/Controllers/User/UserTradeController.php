@@ -71,14 +71,54 @@ class UserTradeController extends Controller
 
     public function open(Request $request)
     {
-        // Placeholder collection for now
-        $positions = collect([]);
-
-        // Example filters (ready for DB later)
         $symbol = $request->get('symbol');
         $type   = $request->get('type');
 
-        return view('users.trades.open', compact('positions','symbol','type'));
+        // Get current user's account IDs
+        $accountIds = Account::where('user_id', auth()->id())->pluck('id');
+
+        // Get open positions (where status is not 'closed')
+        $query = TradeLog::whereIn('account_id', $accountIds)
+            ->where('status', '!=', 'closed');
+
+        // Filter by symbol
+        if (!empty($symbol)) {
+            $query->where('symbol', $symbol);
+        }
+
+        // Filter by type (BUY/SELL)
+        if (!empty($type)) {
+            $query->where('type', $type);
+        }
+
+        $positions = $query->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->appends($request->except('page'));
+
+        // Get unique symbols for filter dropdown
+        $symbols = TradeLog::whereIn('account_id', $accountIds)
+            ->where('status', '!=', 'closed')
+            ->select('symbol')
+            ->distinct()
+            ->orderBy('symbol')
+            ->pluck('symbol');
+
+        // Calculate statistics
+        $totalProfit = TradeLog::whereIn('account_id', $accountIds)
+            ->where('status', '!=', 'closed')
+            ->sum('profit') ?? 0;
+
+        $buyCount = TradeLog::whereIn('account_id', $accountIds)
+            ->where('status', '!=', 'closed')
+            ->where('type', 'BUY')
+            ->count();
+
+        $sellCount = TradeLog::whereIn('account_id', $accountIds)
+            ->where('status', '!=', 'closed')
+            ->where('type', 'SELL')
+            ->count();
+
+        return view('users.trades.open', compact('positions', 'symbols', 'symbol', 'type', 'totalProfit', 'buyCount', 'sellCount'));
     }
 
     /**

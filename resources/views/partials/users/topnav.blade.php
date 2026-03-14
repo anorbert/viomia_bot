@@ -201,11 +201,8 @@
         $user = Auth::user();
         $userId = Auth::id();
         
-        // Check 1: User must have at least one registered account with trades
-        // TradeLog belongs to Account, Account belongs to User
-        $hasAccountWithTrades = \App\Models\TradeLog::whereHas('account', function ($query) use ($userId) {
-          $query->where('user_id', $userId);
-        })->exists();
+        // Check 1: User must have at least one registered account connected
+        $hasRegisteredAccount = \App\Models\Account::where('user_id', $userId)->exists();
         
         // Check 2: User must have active paid subscription
         $subscription = \App\Models\UserSubscription::where('user_id', $userId)
@@ -244,10 +241,10 @@
         }
         
         // Bot is active if:
-        // - Has registered account (trades exist)
+        // - Has registered account connected
         // - Has paid subscription
         // - AND either: less than 1 week passed OR (1+ week passed AND no unpaid weekly payments)
-        if ($hasAccountWithTrades && $paidSubscription && (!$weekHasPassed || !$unpaidWeekly)) {
+        if ($hasRegisteredAccount && $paidSubscription && (!$weekHasPassed || !$unpaidWeekly)) {
           $botIsActive = true;
         } else {
           $needsPayment = true;
@@ -255,7 +252,7 @@
             $paymentType = 'weekly';
           } elseif (!$paidSubscription) {
             $paymentType = 'subscription';
-          } elseif (!$hasAccountWithTrades) {
+          } elseif (!$hasRegisteredAccount) {
             $paymentType = 'account';
           } else {
             $paymentType = 'subscription';

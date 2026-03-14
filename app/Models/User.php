@@ -28,6 +28,7 @@ class User extends Authenticatable
         'role_id',
         'otp',
         'profile_photo',
+        'bio',
         'is_active',
         'is_default_pin',
     ];
@@ -108,5 +109,13 @@ public function currentSubscription(): HasOne
     return $this->hasOne(UserSubscription::class, 'user_id')
         ->where('status', 'active')
         ->latestOfMany();
+}
+
+/**
+ * Relationship with Support Tickets
+ */
+public function supportTickets(): HasMany
+{
+    return $this->hasMany(SupportTicket::class, 'user_id');
 }
 }

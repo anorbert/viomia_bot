@@ -2,23 +2,6 @@
 
 @section('content')
 <style>
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #0f0f0f;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #00a884;
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #00c896;
-    }
-
     body, .help-page {
         background: #0f0f0f;
         color: #b0b0b0;
@@ -26,78 +9,264 @@
 
     .help-header {
         background: linear-gradient(135deg, #006d5b 0%, #002b24 100%);
-        padding: 30px 20px;
+        padding: 40px 20px;
         text-align: center;
         margin-bottom: 30px;
     }
 
     .help-header h1 {
-        font-size: 2em;
+        font-size: 2.5em;
         color: white;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
         font-weight: 700;
     }
 
     .help-header p {
-        font-size: 0.9em;
+        font-size: 1.1em;
         color: rgba(255, 255, 255, 0.85);
         max-width: 600px;
         margin: 0 auto;
     }
 
-    .faq-container {
-        max-width: 1000px;
+    .help-container {
+        max-width: 900px;
         margin: 0 auto;
         padding: 0 20px 40px;
     }
 
-    .faq-section {
-        margin-bottom: 35px;
-    }
-
-    .faq-section-title {
-        font-size: 1.3em;
-        color: white;
-        margin-bottom: 5px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .faq-section-title i {
-        color: #00a884;
-        font-size: 1.3em;
-    }
-
-    .faq-section-divider {
-        width: 50px;
-        height: 3px;
-        background: linear-gradient(90deg, #006d5b, #00a884);
-        border-radius: 2px;
-        margin-bottom: 15px;
-    }
-
-    .faq-item {
+    .support-card {
         background: #1a1a1a;
         border: 1px solid #333;
-        border-radius: 6px;
-        margin-bottom: 8px;
-        overflow: hidden;
+        border-radius: 10px;
+        padding: 30px;
+        margin-bottom: 20px;
         transition: all 0.3s ease;
-    }
-
-    .faq-item:hover {
-        border-color: #00a884;
-        box-shadow: 0 2px 8px rgba(0, 168, 132, 0.1);
-    }
-
-    .faq-question {
-        padding: 12px 15px;
-        cursor: pointer;
         display: flex;
-        justify-content: space-between;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .support-card:hover {
+        border-color: #00a884;
+        box-shadow: 0 4px 12px rgba(0, 168, 132, 0.1);
+    }
+
+    .support-icon {
+        font-size: 2.5em;
+        color: #00a884;
+        flex-shrink: 0;
+    }
+
+    .support-content h3 {
+        color: white;
+        font-size: 1.3em;
+        margin: 0 0 10px;
+        font-weight: 700;
+    }
+
+    .support-content p {
+        color: #b0b0b0;
+        font-size: 0.95em;
+        line-height: 1.6;
+        margin: 0 0 15px;
+    }
+
+    .support-button {
+        display: inline-flex;
         align-items: center;
+        gap: 8px;
+        background: #00a884;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9em;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .support-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 168, 132, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .support-button.whatsapp {
+        background: #25d366;
+    }
+
+    .support-button.whatsapp:hover {
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+
+    .faq-links {
+        background: linear-gradient(135deg, #006d5b 0%, #002b24 100%);
+        border-radius: 10px;
+        padding: 30px;
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .faq-links h2 {
+        color: white;
+        font-size: 1.4em;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .faq-links p {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.95em;
+        margin-bottom: 20px;
+    }
+
+    .quick-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .quick-links a {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .quick-links a:hover {
+        background: white;
+        color: #006d5b;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .help-header h1 {
+            font-size: 1.8em;
+        }
+
+        .support-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .support-icon {
+            font-size: 2em;
+        }
+
+        .quick-links {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="help-page">
+    <!-- Header -->
+    <div class="help-header">
+        <h1>🆘 Help & Support</h1>
+        <p>We're here to help! Choose your preferred way to contact us.</p>
+    </div>
+
+    <div class="help-container">
+        <!-- Support Options -->
+        <div class="support-card">
+            <div class="support-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="support-content">
+                <h3>Email Support Form</h3>
+                <p>Submit a detailed support request through our secure form. Our team will respond within 24 hours with a solution or next steps.</p>
+                <p><strong>Best for:</strong> Technical issues, billing questions, account concerns, and detailed problems.</p>
+                @auth
+                    <a href="{{ route('support.create') }}" class="support-button">
+                        <i class="far fa-paper-plane"></i> Submit Support Request
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="support-button">
+                        <i class="fas fa-sign-in-alt"></i> Login to Submit Request
+                    </a>
+                @endauth
+            </div>
+        </div>
+
+        <div class="support-card">
+            <div class="support-icon">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <div class="support-content">
+                <h3>WhatsApp Chat Support</h3>
+                <p>Get immediate help via WhatsApp! Chat directly with our support team for quick troubleshooting and urgent issues.</p>
+                <p><strong>Best for:</strong> Urgent issues, quick questions, real-time assistance.</p>
+                <a href="https://wa.me/0787373722?text=Hi%20Viomia%20support%2C%20I%20need%20help%20with..." target="_blank" class="support-button whatsapp">
+                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp: 0787373722
+                </a>
+            </div>
+        </div>
+
+        <div class="support-card">
+            <div class="support-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <div class="support-content">
+                <h3>Technical Documentation</h3>
+                <p>Explore our technical resources, API documentation, and detailed guides to solve problems yourself.</p>
+                <p><strong>Best for:</strong> Learning how to use features, API integration, technical reference.</p>
+                <a href="{{ route('technology') }}" class="support-button">
+                    <i class="fas fa-book"></i> View Technology & Docs
+                </a>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-links">
+            <h2>Common Questions?</h2>
+            <p>Most questions can be answered quickly through our knowledge base:</p>
+            <div class="quick-links">
+                <a href="javascript:void(0)" onclick="alert('Please use the support form above for account security questions.')">
+                    <i class="fas fa-lock"></i> Account Security
+                </a>
+                <a href="javascript:void(0)" onclick="alert('Please use the support form above for billing questions.')">
+                    <i class="fas fa-credit-card"></i> Billing & Payments
+                </a>
+                <a href="javascript:void(0)" onclick="alert('Please use the support form above for trading questions.')">
+                    <i class="fas fa-chart-line"></i> Trading & Bots
+                </a>
+                <a href="javascript:void(0)" onclick="alert('Please use the support form above for technical issues.')">
+                    <i class="fas fa-cogs"></i> Technical Issues
+                </a>
+            </div>
+        </div>
+
+        <!-- Additional Resources -->
+        <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 30px; margin-top: 30px; text-align: center;">
+            <h3 style="color: white; margin-top: 0;">Other Resources</h3>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ route('terms') }}" style="color: #00a884; text-decoration: none; font-weight: 600;">Terms of Service</a>
+                <span style="color: #333;">|</span>
+                <a href="{{ route('privacy') }}" style="color: #00a884; text-decoration: none; font-weight: 600;">Privacy Policy</a>
+                <span style="color: #333;">|</span>
+                <a href="{{ route('risk-disclosure') }}" style="color: #00a884; text-decoration: none; font-weight: 600;">Risk Disclosure</a>
+                <span style="color: #333;">|</span>
+                <a href="{{ route('technology') }}" style="color: #00a884; text-decoration: none; font-weight: 600;">Technology</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Optional: Auto-focus form on page load for logged-in users
+    document.addEventListener('DOMContentLoaded', function() {
+        // Page ready
+    });
+</script>
+
+<style>
         background: #1a1a1a;
         transition: all 0.3s ease;
         user-select: none;

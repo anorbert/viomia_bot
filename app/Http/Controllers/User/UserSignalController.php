@@ -151,7 +151,7 @@ class UserSignalController extends Controller
                     // Check if payment was made for this subscription
                     $hasPayment = PaymentTransaction::where('user_id', auth()->user()->id)
                         ->where('subscription_plan_id', $userSubscription->subscription_plan_id)
-                        ->where('status', 'paid')
+                        ->whereIn('status', ['paid', 'success'])
                         ->exists();
                     
                     if (!$hasPayment) {

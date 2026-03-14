@@ -251,7 +251,7 @@
               if ($subscription && $subscription->plan) {
                 $paidSubscription = \App\Models\PaymentTransaction::where('user_id', Auth::id())
                   ->where('subscription_plan_id', $subscription->plan->id)
-                  ->where('status', 'paid')
+                  ->whereIn('status', ['paid', 'success'])
                   ->first();
               }
               
@@ -662,18 +662,28 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
+        <div id="addPlatformWarning" class="alert alert-warning border-0 d-none mb-3" role="alert" style="border-radius:8px;padding:10px 12px;font-size:12px;">
+          <i class="fa fa-exclamation-circle mr-2"></i>
+          <strong>Unsupported Platform</strong> — We currently only support MetaTrader 5 (MT5). Please select MT5 to continue.
+        </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Trading Platform</label>
-            <select class="form-control" name="platform" required style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
-              <option value="MT5">MetaTrader 5 (MT5)</option>
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">
+              <span style="color:#dc2626;">*</span> Trading Platform
+              <span style="font-size:10px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+            </label>
+            <select class="form-control addPlatformSelect" name="platform" required style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
+              <option value="MT5" selected>MetaTrader 5 (MT5)</option>
               <option value="MT4">MetaTrader 4 (MT4)</option>
               <option value="cTrader">cTrader</option>
             </select>
           </div>
           <div class="col-md-6 mb-3">
-            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Account Type</label>
-            <select class="form-control" name="account_type" style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">
+              <span style="color:#dc2626;">*</span> Account Type
+              <span style="font-size:10px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+            </label>
+            <select class="form-control" name="account_type" required style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
               <option value="">Select Type</option>
               <option value="Real">Real Account</option>
               <option value="Demo">Demo Account</option>
@@ -681,9 +691,15 @@
           </div>
         </div>
         <div class="mb-3">
-          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Server Address</label>
-          <input class="form-control" name="server" required placeholder="e.g., RoboForex-Demo" value="{{ old('server') }}" style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
-          <small class="text-muted" style="font-size:11px;">Enter the server name provided by your broker</small>
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">
+            <span style="color:#dc2626;">*</span> Server Address
+            <span style="font-size:10px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+          </label>
+          <input class="form-control" name="server" required placeholder="e.g., FBS-Real or FBS-Demo" value="{{ old('server') }}" style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
+          <small style="font-size:11px;color:#10b981;font-weight:500;">
+            <i class="fa fa-check-circle" style="color:#10b981;margin-right:4px;"></i>
+            Examples: FBS-Real, FBS-Demo, FBS-Real-MetaTrader 5. Check your broker's account details.
+          </small>
         </div>
         <div class="mb-3">
           <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Account Login</label>
@@ -725,18 +741,28 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
+        <div id="editPlatformWarning" class="alert alert-warning border-0 d-none mb-3" role="alert" style="border-radius:8px;padding:10px 12px;font-size:12px;">
+          <i class="fa fa-exclamation-circle mr-2"></i>
+          <strong>Unsupported Platform</strong> — We currently only support MetaTrader 5 (MT5). Please select MT5 to continue.
+        </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Trading Platform</label>
-            <select class="form-control" name="platform" id="accpEditPlatform" required style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
-              <option value="MT5">MetaTrader 5 (MT5)</option>
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">
+              <span style="color:#dc2626;">*</span> Trading Platform
+              <span style="font-size:10px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+            </label>
+            <select class="form-control editPlatformSelect" name="platform" id="accpEditPlatform" required style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
+              <option value="MT5" selected>MetaTrader 5 (MT5)</option>
               <option value="MT4">MetaTrader 4 (MT4)</option>
               <option value="cTrader">cTrader</option>
             </select>
           </div>
           <div class="col-md-6 mb-3">
-            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Account Type</label>
-            <select class="form-control" name="account_type" id="accpEditType" style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">
+              <span style="color:#dc2626;">*</span> Account Type
+              <span style="font-size:10px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+            </label>
+            <select class="form-control" name="account_type" id="accpEditType" required style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
               <option value="">Select Type</option>
               <option value="Real">Real Account</option>
               <option value="Demo">Demo Account</option>
@@ -744,8 +770,15 @@
           </div>
         </div>
         <div class="mb-3">
-          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Server Address</label>
-          <input class="form-control" name="server" id="accpEditServer" required style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
+          <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">
+            <span style="color:#dc2626;">*</span> Server Address
+            <span style="font-size:10px;color:#ef4444;font-weight:700;">(REQUIRED)</span>
+          </label>
+          <input class="form-control" name="server" id="accpEditServer" required placeholder="e.g., FBS-Real or FBS-Demo" style="border-radius:8px;border:1px solid #e2e8f0;font-size:13px;">
+          <small style="font-size:11px;color:#10b981;font-weight:500;">
+            <i class="fa fa-check-circle" style="color:#10b981;margin-right:4px;"></i>
+            Examples: FBS-Real, FBS-Demo, FBS-Real-MetaTrader 5. Check your broker's account details.
+          </small>
         </div>
         <div class="mb-3">
           <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:5px;">Account Login</label>
@@ -834,6 +867,65 @@ document.addEventListener('DOMContentLoaded', function () {
   (function () {
     'use strict';
 
+    /* ── PLATFORM VALIDATION ── */
+    var addPlatformSelect = document.querySelector('.addPlatformSelect');
+    var addPlatformWarning = document.getElementById('addPlatformWarning');
+    var addAccountForm = document.querySelector('form[action="{{ route("user.accounts.store") }}"]');
+    
+    var editPlatformSelect = document.querySelector('.editPlatformSelect');
+    var editPlatformWarning = document.getElementById('editPlatformWarning');
+    var editAccountForm = document.getElementById('accpEditForm');
+
+    function validatePlatform(platformValue, warningEl) {
+      if (platformValue === 'MT4' || platformValue === 'cTrader') {
+        warningEl.classList.remove('d-none');
+        return false;
+      } else {
+        warningEl.classList.add('d-none');
+        return true;
+      }
+    }
+
+    // Add Modal Platform Change
+    if (addPlatformSelect) {
+      addPlatformSelect.addEventListener('change', function () {
+        validatePlatform(this.value, addPlatformWarning);
+      });
+    }
+
+    // Edit Modal Platform Change
+    if (editPlatformSelect) {
+      editPlatformSelect.addEventListener('change', function () {
+        validatePlatform(this.value, editPlatformWarning);
+      });
+    }
+
+    // Add Modal Form Submit Prevention
+    if (addAccountForm) {
+      addAccountForm.addEventListener('submit', function (e) {
+        var platform = addPlatformSelect ? addPlatformSelect.value : null;
+        if (platform && (platform === 'MT4' || platform === 'cTrader')) {
+          e.preventDefault();
+          addPlatformWarning.classList.remove('d-none');
+          addPlatformSelect.focus();
+          return false;
+        }
+      });
+    }
+
+    // Edit Modal Form Submit Prevention
+    if (editAccountForm) {
+      editAccountForm.addEventListener('submit', function (e) {
+        var platform = editPlatformSelect ? editPlatformSelect.value : null;
+        if (platform && (platform === 'MT4' || platform === 'cTrader')) {
+          e.preventDefault();
+          editPlatformWarning.classList.remove('d-none');
+          editPlatformSelect.focus();
+          return false;
+        }
+      });
+    }
+
     /* ── EXPANDABLE ROWS ── */
   document.querySelectorAll('.accp-row').forEach(function (row) {
     row.addEventListener('click', function (e) {
@@ -872,6 +964,14 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('accpEditCurrency').value = this.dataset.currency || '';
       document.getElementById('accpEditLeverage').value = this.dataset.leverage || '';
       document.getElementById('accpEditForm').action    = "{{ url('user/accounts') }}/" + this.dataset.id;
+      
+      // Show warning if existing account has unsupported platform
+      var platformValue = this.dataset.platform || 'MT5';
+      if (platformValue === 'MT4' || platformValue === 'cTrader') {
+        document.getElementById('editPlatformWarning').classList.remove('d-none');
+      } else {
+        document.getElementById('editPlatformWarning').classList.add('d-none');
+      }
     });
   });
 

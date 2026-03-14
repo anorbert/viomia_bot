@@ -4,15 +4,18 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserPasswordController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the password change form.
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        return view('users.profile.change-password', compact('user'));
     }
 
     /**
@@ -20,7 +23,7 @@ class UserPasswordController extends Controller
      */
     public function create()
     {
-        //
+        return $this->index();
     }
 
     /**
@@ -28,7 +31,19 @@ class UserPasswordController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'current_password' => 'required|current_password',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['password'])
+        ]);
+
+        return redirect()->route('user.profile.index')
+            ->with('success', 'Password changed successfully!');
     }
 
     /**
@@ -36,7 +51,7 @@ class UserPasswordController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return $this->index();
     }
 
     /**
@@ -44,7 +59,7 @@ class UserPasswordController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return $this->index();
     }
 
     /**
@@ -52,7 +67,7 @@ class UserPasswordController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        return $this->store($request);
     }
 
     /**
@@ -63,3 +78,4 @@ class UserPasswordController extends Controller
         //
     }
 }
+

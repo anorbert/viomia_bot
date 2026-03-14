@@ -115,4 +115,15 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Support Email Address
+    |--------------------------------------------------------------------------
+    |
+    | Email address where support tickets will be sent.
+    |
+    */
+    
+    'support_email' => env('SUPPORT_EMAIL', 'geniussoftware.rw@gmail.com'),
+
 ];
