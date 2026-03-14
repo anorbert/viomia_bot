@@ -36,6 +36,23 @@ class ClientController extends Controller
 
         return view('admin.clients.index', compact('clients'));
     }
+
+    /**
+     * Show form to create new client.
+     */
+    public function create()
+    {
+        return view('admin.clients.create');
+    }
+
+    /**
+     * Show form to edit existing client.
+     */
+    public function edit(User $client)
+    {
+        return view('admin.clients.edit', compact('client'));
+    }
+
     /**
      * Store a newly created client.
      */

@@ -9,6 +9,11 @@
 
     <link href="{{ asset('logo.png') }}" rel="icon">
 
+    {{-- ── FONT: DM Sans (must load before anything else) ── --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     {{-- Core --}}
     <link href="{{ asset('gentelella/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('gentelella/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
@@ -31,26 +36,25 @@
     <link href="{{ asset('gentelella/vendors/select2/dist/css/select2.min.css') }}" rel="stylesheet">
 
     <style>
-        /* ── VIOMIA ADMIN — GLOBAL LAYOUT OVERRIDES ── */
+        /* ════════════════════════════════════════
+           VIOMIA ADMIN — GLOBAL LAYOUT OVERRIDES
+           ════════════════════════════════════════ */
 
-        /* Font stack */
+        /* Font everywhere */
         body, .nav-md, .container.body, .right_col,
-        h1, h2, h3, h4, h5, h6,
+        h1, h2, h3, h4, h5, h6, p, span, div,
         .site_title, .nav.side-menu > li > a,
         input, button, select, textarea {
-            font-family: 'DM Sans', 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+            font-family: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
         }
 
         /* ── PRELOADER ── */
         #preloader {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: #fff;
             z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             gap: 16px;
             transition: opacity 0.4s ease;
         }
@@ -68,7 +72,7 @@
         .vl-brand {
             display: flex; align-items: center; gap: 8px;
             font-size: 13px; font-weight: 700;
-            color: #0d1117; letter-spacing: 0.3px;
+            color: #0d1117;
         }
         .vl-brand-dot {
             width: 8px; height: 8px; border-radius: 50%;
@@ -80,108 +84,45 @@
             50%      { transform: scale(1.4); opacity: 0.6; }
         }
 
-        /* ── LAYOUT SHELL ── */
-        .container.body { background: #f0f2f5; }
+        /* ── LAYOUT SHELL ──
+           NOTE: no background set here — let individual pages control it.
+           Default light pages work because Gentelella already sets light bg.
+           Dark pages (like the AI dashboard) will set their own bg via @push('styles').
+        */
+        .container.body { background: transparent; }
 
-        /* Right column spacing & background */
+        /* Default right_col — NO !important so dark pages can override cleanly */
         .right_col {
-            background: #f0f2f5 !important;
-            padding: 24px 28px !important;
+            background: #f0f2f5;
+            padding: 24px 28px;
             min-height: 100vh;
         }
 
-        /* ── PAGE HEADER convention ── */
+        /* ── PAGE HEADER ── */
         .v-page-header {
-            margin-bottom: 24px;
-            padding-bottom: 16px;
+            margin-bottom: 24px; padding-bottom: 16px;
             border-bottom: 1px solid #e8eaed;
-            display: flex;
-            align-items: flex-start;
+            display: flex; align-items: flex-start;
             justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
+            gap: 16px; flex-wrap: wrap;
         }
-        .v-page-title {
-            font-size: 20px; font-weight: 800;
-            color: #0d1117; line-height: 1.2;
-            letter-spacing: -0.3px;
-        }
-        .v-page-sub {
-            font-size: 13px; color: #6b7584; margin-top: 2px;
-        }
-        .v-breadcrumb {
-            display: flex; align-items: center; gap: 6px;
-            font-size: 12px; color: #8a939f; margin-top: 4px;
-        }
-        .v-breadcrumb a {
-            color: #1ABB9C; text-decoration: none; font-weight: 600;
-        }
-        .v-breadcrumb a:hover { text-decoration: underline; }
-        .v-breadcrumb-sep { color: #c8cdd6; font-size: 10px; }
+        .v-page-title { font-size: 20px; font-weight: 800; color: #0d1117; line-height: 1.2; }
+        .v-page-sub   { font-size: 13px; color: #6b7584; margin-top: 2px; }
 
         /* ── CARD ── */
         .v-card {
-            background: #fff;
-            border: 1px solid #e8eaed;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            background: #fff; border: 1px solid #e8eaed;
+            border-radius: 12px; padding: 24px;
+            margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
         .v-card-title {
-            font-size: 14px; font-weight: 700;
-            color: #0d1117; margin-bottom: 16px;
-            display: flex; align-items: center; gap: 8px;
+            font-size: 14px; font-weight: 700; color: #0d1117;
+            margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
         }
         .v-card-title::before {
-            content: '';
-            width: 3px; height: 16px;
-            border-radius: 2px;
-            background: #1ABB9C;
-            display: block;
+            content: ''; width: 3px; height: 16px;
+            border-radius: 2px; background: #1ABB9C; display: block;
         }
-
-        /* ── STAT CARDS ── */
-        .v-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .v-stat-card {
-            background: #fff;
-            border: 1px solid #e8eaed;
-            border-radius: 12px;
-            padding: 18px 20px;
-            position: relative;
-            overflow: hidden;
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-        .v-stat-card:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            transform: translateY(-1px);
-        }
-        .v-stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--stat-color, #1ABB9C);
-        }
-        .v-stat-label {
-            font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 1px;
-            color: #8a939f; margin-bottom: 8px;
-        }
-        .v-stat-value {
-            font-size: 26px; font-weight: 800;
-            color: #0d1117; line-height: 1;
-        }
-        .v-stat-delta {
-            font-size: 11px; margin-top: 6px; font-weight: 600;
-        }
-        .v-stat-delta.up   { color: #16a34a; }
-        .v-stat-delta.down { color: #dc2626; }
 
         /* ── BADGE UTILITIES ── */
         .v-badge-success { background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; }
@@ -199,11 +140,9 @@
             transition: all 0.15s; text-decoration: none !important;
         }
         .v-btn-primary  { background: #1ABB9C; color: #fff; }
-        .v-btn-primary:hover { background: #15a085; color: #fff; box-shadow: 0 4px 12px rgba(26,187,156,0.3); }
+        .v-btn-primary:hover { background: #15a085; color: #fff; }
         .v-btn-outline  { background: transparent; color: #1ABB9C; border: 1.5px solid #1ABB9C; }
-        .v-btn-outline:hover { background: rgba(26,187,156,0.06); color: #1ABB9C; }
         .v-btn-danger   { background: #ef4444; color: #fff; }
-        .v-btn-danger:hover { background: #dc2626; color: #fff; }
         .v-btn-sm { padding: 5px 11px; font-size: 11.5px; border-radius: 6px; }
 
         /* ── TABLE OVERRIDES ── */
@@ -211,44 +150,34 @@
         .v-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .v-table thead tr { background: #0d1117; }
         .v-table thead th {
-            padding: 10px 14px;
-            font-size: 10.5px; font-weight: 700;
+            padding: 10px 14px; font-size: 10.5px; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1px;
-            color: rgba(255,255,255,0.55);
-            text-align: left; border: none;
+            color: rgba(255,255,255,0.55); text-align: left; border: none;
         }
         .v-table tbody td {
-            padding: 11px 14px;
-            border-bottom: 1px solid #f0f2f5;
+            padding: 11px 14px; border-bottom: 1px solid #f0f2f5;
             color: #1e2530; vertical-align: middle;
         }
         .v-table tbody tr:last-child td { border-bottom: none; }
         .v-table tbody tr:hover td { background: #f7f8fa; }
 
-        /* ── SELECT2 THEME ── */
+        /* ── SELECT2 ── */
         .select2-container--default .select2-selection--single {
-            border: 1px solid #e8eaed !important;
-            border-radius: 8px !important;
-            height: 38px !important;
-            display: flex !important; align-items: center !important;
+            border: 1px solid #e8eaed !important; border-radius: 8px !important;
+            height: 38px !important; display: flex !important; align-items: center !important;
         }
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: 36px !important; color: #0d1117 !important; padding-left: 12px !important;
         }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px !important;
-        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 36px !important; }
         .select2-dropdown { border: 1px solid #e8eaed !important; border-radius: 8px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.1) !important; overflow: hidden; }
         .select2-container--default .select2-results__option--highlighted { background: #1ABB9C !important; }
 
-        /* ── TOASTR OVERRIDES ── */
+        /* ── TOASTR ── */
         #toast-container > div {
-            opacity: 1 !important;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important;
-            border-radius: 10px !important;
-            border: none !important;
-            font-size: 13px !important;
-            padding: 14px 18px !important;
+            opacity: 1 !important; box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important;
+            border-radius: 10px !important; border: none !important;
+            font-size: 13px !important; padding: 14px 18px !important;
         }
         #toast-container > .toast-success { background: #0f8a73 !important; }
         #toast-container > .toast-error   { background: #dc2626 !important; }
@@ -256,17 +185,14 @@
         #toast-container > .toast-info    { background: #1d4ed8 !important; }
 
         /* ── ANIMATIONS ── */
-        @keyframes vFadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes vFadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         .v-animate { animation: vFadeUp 0.3s ease both; }
         .v-animate-d1 { animation-delay: 0.05s; }
         .v-animate-d2 { animation-delay: 0.10s; }
         .v-animate-d3 { animation-delay: 0.15s; }
         .v-animate-d4 { animation-delay: 0.20s; }
 
-        /* scrollbar global */
+        /* scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
@@ -302,7 +228,7 @@
         </div>
     </div>
 
-    {{-- ── SCRIPTS ── --}}
+    {{-- SCRIPTS ── order matters: jQuery first, then everything that depends on it ── --}}
     <script src="{{ asset('gentelella/vendors/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('gentelella/vendors/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
 
@@ -318,11 +244,11 @@
     <script src="{{ asset('gentelella/vendors/moment/min/moment.min.js') }}"></script>
     <script src="{{ asset('gentelella/vendors/fullcalendar/dist/fullcalendar.min.js') }}"></script>
 
-    {{-- Gentelella core (after jQuery) --}}
+    {{-- Gentelella core (needs jQuery above) --}}
     <script src="{{ asset('gentelella/build/js/custom.min.js') }}"></script>
 
     <script>
-        /* ── Preloader ── */
+        /* Preloader */
         $(window).on('load', function () {
             var $p = $('#preloader');
             setTimeout(function () {
@@ -331,43 +257,35 @@
             }, 200);
         });
 
-        /* ── Toastr config ── */
+        /* Toastr */
         toastr.options = {
-            closeButton:   true,
-            progressBar:   true,
+            closeButton: true, progressBar: true,
             positionClass: "toast-top-right",
-            timeOut:       "5000",
-            extendedTimeOut: "2000",
-            newestOnTop:   true,
+            timeOut: "5000", extendedTimeOut: "2000", newestOnTop: true,
         };
-
         @if(Session::has('success')) toastr.success("{{ Session::get('success') }}"); @endif
         @if(Session::has('error'))   toastr.error("{{ Session::get('error') }}"); @endif
         @if(Session::has('info'))    toastr.info("{{ Session::get('info') }}"); @endif
         @if(Session::has('warning')) toastr.warning("{{ Session::get('warning') }}"); @endif
 
-        /* ── Fullscreen toggle ── */
+        /* Fullscreen */
         function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen?.();
-            } else {
-                document.exitFullscreen?.();
-            }
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen?.(); }
+            else { document.exitFullscreen?.(); }
         }
 
-        /* ── CSRF for all AJAX ── */
+        /* CSRF for AJAX */
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
         });
 
-        /* ── Auto-init DataTables ── */
+        /* Auto DataTables + Select2 */
         $(function () {
             if ($.fn.DataTable) {
                 $('table.v-datatable').DataTable({
-                    responsive:  true,
-                    pageLength:  25,
+                    responsive: true, pageLength: 25,
                     language: {
-                        search:         '<i class="fa fa-search"></i>',
+                        search: '<i class="fa fa-search"></i>',
                         searchPlaceholder: 'Search...',
                         paginate: {
                             previous: '<i class="fa fa-chevron-left"></i>',
@@ -377,11 +295,7 @@
                     dom: '<"v-dt-top d-flex justify-content-between align-items-center mb-3"fl>rt<"v-dt-bot d-flex justify-content-between align-items-center mt-3"ip>',
                 });
             }
-
-            /* Auto-init Select2 */
-            if ($.fn.select2) {
-                $('.v-select2').select2({ width: '100%' });
-            }
+            if ($.fn.select2) { $('.v-select2').select2({ width: '100%' }); }
         });
     </script>
 
