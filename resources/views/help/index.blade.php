@@ -266,7 +266,158 @@
     });
 </script>
 
+<!-- FAQ Section -->
+<div class="faq-container">
+    <h2 class="faq-title">Frequently Asked Questions</h2>
+    <p class="faq-subtitle">Find answers to common questions about Viomia Trading Bot</p>
+    
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">What is Viomia Trading Bot?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Viomia is an automated trading bot that uses advanced algorithms to execute trades on your behalf. It analyzes market conditions and executes trades 24/7 without requiring you to monitor the markets constantly.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">Is my money safe with Viomia?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Yes, your funds remain in your exchange account. Viomia never has direct access to your money - it only has permission to place trades on your behalf. You maintain full control of your account and can revoke access at any time.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">How much does Viomia cost?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            <p>Viomia offers flexible pricing plans:</p>
+            <ul>
+                <li><strong>Free Plan</strong> - Basic bot with limited features</li>
+                <li><strong>Starter Plan</strong> - $29/month for advanced features</li>
+                <li><strong>Professional Plan</strong> - $99/month with priority support</li>
+                <li><strong>Enterprise Plan</strong> - Custom pricing for teams</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">Can I use Viomia with my existing exchange account?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Yes! Viomia works with all major exchanges including Binance, Kraken, Coinbase, and more. Simply connect your exchange API keys and you're ready to start trading. No need to transfer your funds - Viomia trades directly from your account.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">What are the risks involved?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            <p>Trading involves risk. While Viomia uses advanced algorithms to minimize losses, there is no guarantee of profits. Please review our <a href="{{ route('risk-disclosure') }}">Risk Disclosure</a> page for complete details. We always recommend:</p>
+            <ul>
+                <li>Start with small amounts if you're new to trading</li>
+                <li>Understand the market before using automated trading</li>
+                <li>Set appropriate risk limits and stop losses</li>
+                <li>Never invest more than you can afford to lose</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">How do I get started?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Getting started is easy:
+            <ol>
+                <li>Create a free account on Viomia</li>
+                <li>Connect your exchange API keys</li>
+                <li>Configure your trading preferences</li>
+                <li>Start automated trading!</li>
+            </ol>
+            For detailed setup instructions, visit our <a href="{{ route('technology') }}">Technology & Docs</a> page.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">What customer support is available?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            We offer 24/7 support through multiple channels:
+            <ul>
+                <li><strong>Email Support</strong> - 24-hour response time</li>
+                <li><strong>WhatsApp Chat</strong> - Instant messaging support</li>
+                <li><strong>Documentation</strong> - Comprehensive guides and tutorials</li>
+                <li><strong>Community Forum</strong> - Connect with other users</li>
+            </ul>
+            Click "Help & Support" above to reach us.
+        </div>
+    </div>
+
+    <div class="faq-item">
+        <div class="faq-question">
+            <p class="faq-question-text">Can I pause or stop the bot anytime?</p>
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Absolutely! You have complete control. You can pause the bot in your dashboard at any time. You can also revoke API access to your exchange account at any time, and Viomia will immediately stop all trading activity.
+        </div>
+    </div>
+</div>
+
 <style>
+    .faq-container {
+        max-width: 900px;
+        margin: 40px auto 0;
+        padding: 40px 20px;
+    }
+
+    .faq-title {
+        text-align: center;
+        color: white;
+        font-size: 2em;
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+
+    .faq-subtitle {
+        text-align: center;
+        color: #b0b0b0;
+        margin-bottom: 40px;
+        font-size: 1em;
+    }
+
+    .faq-item {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        border-color: #00a884;
+        box-shadow: 0 4px 12px rgba(0, 168, 132, 0.1);
+    }
+
+    .faq-question {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        cursor: pointer;
         background: #1a1a1a;
         transition: all 0.3s ease;
         user-select: none;
@@ -299,12 +450,12 @@
 
     .faq-answer {
         display: none;
-        padding: 12px 15px;
+        padding: 15px;
         background: #0f0f0f;
         color: #b0b0b0;
         line-height: 1.6;
         border-top: 1px solid #333;
-        font-size: 0.85em;
+        font-size: 0.9em;
     }
 
     .faq-item.active .faq-answer {
@@ -334,584 +485,75 @@
         text-decoration: underline;
     }
 
-    .help-cta {
-        background: linear-gradient(135deg, #006d5b 0%, #002b24 100%);
-        padding: 30px 20px;
-        border-radius: 8px;
-        text-align: center;
-        margin-top: 50px;
-    }
-
-    .help-cta h2 {
-        color: white;
-        font-size: 1.4em;
-        margin-bottom: 10px;
-        font-weight: 700;
-    }
-
-    .help-cta p {
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 0.9em;
-        margin-bottom: 20px;
-    }
-
-    .help-cta-buttons {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .help-cta-btn {
-        background: white;
-        color: #006d5b;
-        padding: 10px 20px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.9em;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .help-cta-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 168, 132, 0.3);
-    }
-
-    .help-cta-btn.whatsapp {
-        background: #25d366;
-        color: white;
-    }
-
     @media (max-width: 768px) {
-        .help-header h1 {
+        .faq-title {
             font-size: 1.5em;
         }
 
-        .faq-question {
-            padding: 10px 12px;
+        .faq-subtitle {
+            font-size: 0.9em;
         }
 
         .faq-question-text {
-            font-size: 0.9em;
+            font-size: 0.85em;
+        }
+
+        .faq-answer {
+            font-size: 0.8em;
+        }
+
+        .faq-container {
+            padding: 30px 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .faq-title {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .faq-question {
+            padding: 12px;
+        }
+
+        .faq-toggle {
+            font-size: 1em;
+        }
+
+        .faq-question-text {
+            font-size: 0.8em;
+        }
+
+        .faq-item {
+            margin-bottom: 10px;
         }
 
         .faq-answer {
             padding: 10px 12px;
-            font-size: 0.8em;
-        }
-
-        .help-cta {
-            padding: 20px 15px;
-        }
-
-        .help-cta-buttons {
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .help-cta-btn {
-            width: 100%;
-            justify-content: center;
-            padding: 8px 15px;
+            font-size: 0.75em;
         }
     }
 </style>
 
-<div class="help-page">
-    <!-- Header -->
-    <div class="help-header">
-        <h1>Help & Support</h1>
-        <p>Find answers to common questions about Viomia Trading Bot</p>
-    </div>
-
-    <div class="faq-container">
-        <!-- Getting Started Section -->
-        <div class="faq-section">
-            <h2 class="faq-section-title">
-                <i class="fas fa-rocket"></i>
-                Getting Started
-            </h2>
-            <div class="faq-section-divider"></div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What is Viomia Trading Bot?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Viomia Trading Bot is an automated cryptocurrency trading platform that helps you execute trading strategies on exchanges like Binance. Our bots use advanced algorithms to monitor markets 24/7 and execute trades based on your configured strategies, without requiring you to be online.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">How do I get started with Viomia?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Getting started is easy:
-                    <ol>
-                        <li>Create an account on our platform</li>
-                        <li>Link your exchange account (API keys)</li>
-                        <li>Choose a trading strategy or create your own</li>
-                        <li>Set your parameters (risk level, trade size, etc.)</li>
-                        <li>Start trading and monitor your bot</li>
-                    </ol>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">Is my account secure when using Viomia?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Yes, security is our top priority. We use industry-standard encryption for all data, API keys are stored securely in encrypted vaults, and we never have access to your exchange funds. We only execute trades on your behalf with the permissions you grant. We recommend using API keys with restricted trading permissions only.
-                </div>
-            </div>
-        </div>
-
-        <!-- Bot Management Section -->
-        <div class="faq-section">
-            <h2 class="faq-section-title">
-                <i class="fas fa-robot"></i>
-                Bot Management
-            </h2>
-            <div class="faq-section-divider"></div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What trading strategies does Viomia support?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Viomia supports multiple professional trading strategies:
-                    <ul>
-                        <li><strong>Grid Trading</strong> - Profit from price volatility in sideways markets</li>
-                        <li><strong>DCA (Dollar Cost Averaging)</strong> - Accumulate assets over time at regular intervals</li>
-                        <li><strong>Momentum Trading</strong> - Follow market trends and ride momentum waves</li>
-                        <li><strong>Mean Reversion</strong> - Exploit price deviations from moving averages</li>
-                        <li><strong>Custom Strategies</strong> - Create your own rules and conditions</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">How do I configure bot settings?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Configure your bot by navigating to the bot settings page where you can customize:
-                    <ul>
-                        <li><strong>Risk Level</strong> - Conservative, Moderate, or Aggressive</li>
-                        <li><strong>Trading Pairs</strong> - Select which symbols to trade</li>
-                        <li><strong>Time Frames</strong> - 1M, 5M, 15M, 1H, 4H, Daily</li>
-                        <li><strong>Position Size</strong> - Lot size and maximum exposure</li>
-                        <li><strong>Stop Loss & Take Profit</strong> - Risk management levels</li>
-                    </ul>
-                    Click <strong>Save</strong> to apply changes. They take effect immediately.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">Can I pause or stop the bot?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! You have full control over your bots. You can:
-                    <ul>
-                        <li><strong>Pause Bot</strong> - Stop trading temporarily while keeping positions open</li>
-                        <li><strong>Stop Bot</strong> - Close all positions and stop trading</li>
-                        <li><strong>Resume Bot</strong> - Start trading again whenever you want</li>
-                    </ul>
-                    Changes take effect immediately. There's no penalty for pausing or stopping.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">How do I monitor bot performance?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Viomia provides comprehensive performance tracking and analytics:
-                    <ul>
-                        <li><strong>Real-time Dashboard</strong> - Monitor active bots and open positions</li>
-                        <li><strong>Performance Charts</strong> - Visualize profit/loss over time</li>
-                        <li><strong>Win Rate Statistics</strong> - See your bot's accuracy and success ratio</li>
-                        <li><strong>Trade History</strong> - Detailed logs of every executed trade</li>
-                        <li><strong>Risk Analysis</strong> - Maximum drawdown, Sharpe ratio, and other metrics</li>
-                        <li><strong>Export Reports</strong> - Download performance data for records</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What is the minimum trading balance required?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    There's no mandatory minimum balance to start using Viomia. However, for best results we recommend:
-                    <ul>
-                        <li><strong>Minimum $100</strong> - To see meaningful results with most strategies</li>
-                        <li><strong>Recommended $500+</strong> - Allows for better risk management</li>
-                        <li><strong>Optimal $1000+</strong> - Maximum flexibility and strategy options</li>
-                    </ul>
-                    You can start with any amount and increase your trading capital later. Risk management tools adjust automatically.
-                </div>
-            </div>
-        </div>
-
-        <!-- Pricing & Plans Section -->
-        <div class="faq-section">
-            <h2 class="faq-section-title">
-                <i class="fas fa-credit-card"></i>
-                Pricing & Plans
-            </h2>
-            <div class="faq-section-divider"></div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">How much does it cost to use Viomia?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Viomia offers flexible subscription plans to suit different traders:
-                    <ul>
-                        <li><strong>Starter Plan</strong> - Access to basic bot features and strategies</li>
-                        <li><strong>Professional Plan</strong> - Advanced strategies and priority support</li>
-                        <li><strong>Enterprise Plan</strong> - Unlimited bots, custom strategies, and dedicated support</li>
-                    </ul>
-                    All plans are monthly subscriptions with no hidden fees. Visit the <strong>Pricing section</strong> to see detailed features and current pricing.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">Can I cancel my subscription anytime?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Yes, you can cancel your subscription at any time. Cancellation is effective immediately, and no refunds are issued for the current billing period. Your bots will stop once the subscription ends. You can reactivate anytime by choosing a new plan.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">Is there a money-back guarantee?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! We offer a <strong>30-day money-back guarantee</strong> on all subscription plans. If you're not satisfied with our service, contact us within 30 days of purchase for a full refund, no questions asked. Your satisfaction is our priority.
-                </div>
-            </div>
-        </div>
-
-        <!-- Technical Section -->
-        <div class="faq-section">
-            <h2 class="faq-section-title">
-                <i class="fas fa-cogs"></i>
-                Technical & Advanced
-            </h2>
-            <div class="faq-section-divider"></div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">Does Viomia have an API?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! Viomia provides a comprehensive REST API for advanced users. You can:
-                    <ul>
-                        <li>Programmatically create and manage bots</li>
-                        <li>Access historical trade data</li>
-                        <li>Retrieve performance metrics and analytics</li>
-                        <li>Integrate with your own applications</li>
-                    </ul>
-                    Visit <strong>Settings → API Documentation</strong> to get your API keys and explore available endpoints.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">How long does it take for a bot to execute trades?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Trade execution speed depends on several factors:
-                    <ul>
-                        <li><strong>Signal Detection</strong> - Milliseconds (typically less than 100ms)</li>
-                        <li><strong>API Latency</strong> - Depends on exchange and internet connection</li>
-                        <li><strong>Market Conditions</strong> - Can affect slippage and execution price</li>
-                        <li><strong>Average Execution Time</strong> - Most trades execute within 1-5 seconds</li>
-                    </ul>
-                    We use direct exchange APIs to minimize latency and ensure fast execution.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">Is backtesting available?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! Viomia includes a powerful backtesting feature that allows you to:
-                    <ul>
-                        <li>Test strategies using historical market data</li>
-                        <li>See how your strategy would have performed in the past</li>
-                        <li>Optimize parameters before live trading</li>
-                        <li>Analyze win rates and risk metrics</li>
-                        <li>Adjust strategies based on results</li>
-                    </ul>
-                    Access backtesting from <strong>Tools → Strategy Backtester</strong> for any date range.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What exchanges are supported?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Viomia currently supports these major cryptocurrency exchanges:
-                    <ul>
-                        <li><strong>Binance</strong> - Spot trading and futures</li>
-                        <li><strong>Coinbase Pro</strong> - Spot trading</li>
-                        <li><strong>Kraken</strong> - Spot trading and margin</li>
-                        <li><strong>Bybit</strong> - Futures trading</li>
-                        <li><strong>Kucoin</strong> - Spot trading</li>
-                    </ul>
-                    We're constantly adding support for more exchanges. Check back regularly for updates.
-                </div>
-            </div>
-        </div>
-
-        <!-- Strategy & SMC Section -->
-        <div class="faq-section">
-            <h2 class="faq-section-title">
-                <i class="fas fa-lightbulb"></i>
-                Trading Strategy (SMC)
-            </h2>
-            <div class="faq-section-divider"></div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What is Smart Money Concepts (SMC)?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Smart Money Concepts is an advanced trading methodology that focuses on institutional order flow and market structure rather than traditional retail indicators.
-                    <p>The SMC strategy identifies how institutional traders (the "smart money") move the market through:</p>
-                    <ul>
-                        <li><strong>Market Structure Analysis</strong> - Identifying key support and resistance zones</li>
-                        <li><strong>Liquidity Sweeps</strong> - Detecting when price breaks levels to trigger stop-loss orders</li>
-                        <li><strong>Break of Structure (BOS)</strong> - Confirming shifts in market control</li>
-                        <li><strong>Trend Confirmation</strong> - Ensuring trades align with the broader trend</li>
-                    </ul>
-                    This approach allows traders to enter positions <strong>after institutional manipulation</strong> rather than before it, leading to higher-probability trades.
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What are liquidity sweeps and why do they matter?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    A liquidity sweep occurs when price briefly breaks below a support level or above a resistance level, triggering retail stop-loss orders, before reversing.
-                    <p><strong>Why they matter:</strong></p>
-                    <ul>
-                        <li>Institutional traders use these sweeps to accumulate positions at better prices</li>
-                        <li>Smart Money collects liquidity from panicked retail traders</li>
-                        <li>After the sweep, price typically moves strongly in the opposite direction</li>
-                        <li>Viomia detects these sweeps and enters trades <em>after</em> the reversal for better risk-reward</li>
-                    </ul>
-                    <p><strong>Example:</strong> Price drops to $50,000 (triggering sell stops), then reverses to $52,000. Viomia would enter a BUY after confirming the reversal.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What is Break of Structure (BOS)?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Break of Structure (BOS) is the confirmation that market control has shifted to the other side.
-                    <p><strong>Definition:</strong> If the market was making lower lows (downtrend), a BOS would be an uptrend where price makes a higher low and breaks above the previous structure.</p>
-                    <p><strong>Why it's important:</strong></p>
-                    <ul>
-                        <li>BOS confirms that the direction is changing</li>
-                        <li>It provides high-conviction trade setup confirmation</li>
-                        <li>Combined with other filters, it gives excellent risk-reward entries</li>
-                        <li>Viomia uses BOS as a core entry signal</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">How does Viomia approach risk management?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Risk management is the foundation of the Viomia trading system. Multiple layers of protection are implemented:
-                    <ul>
-                        <li><strong>Fixed Risk Per Trade:</strong> Each trade risks only 1-2% of account equity</li>
-                        <li><strong>Risk-Reward Ratio:</strong> Minimum 1:3 (you win $3 for every $1 risked)</li>
-                        <li><strong>Maximum Daily Loss:</strong> Trading stops if daily losses exceed 30%</li>
-                        <li><strong>Consecutive Loss Protection:</strong> Pauses after 3 consecutive losses</li>
-                        <li><strong>Position Limits:</strong> Maximum 1 open trade at a time to prevent overexposure</li>
-                        <li><strong>Cooldown Periods:</strong> 1-hour minimum between trades to avoid overtrading</li>
-                    </ul>
-                    <p>This structure means <strong>even with a 40-50% win rate, the system remains profitable</strong> due to the asymmetric risk-reward ratio.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What market protection filters does Viomia use?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Viomia avoids trading during unfavorable market conditions using multiple filters:
-                    <ul>
-                        <li><strong>News Filter:</strong> Trading pauses 30 minutes before/after high-impact economic events</li>
-                        <li><strong>Session Filter:</strong> Only trades during active market sessions (London, New York)</li>
-                        <li><strong>Spread Filter:</strong> Rejects trades when spreads are too wide</li>
-                        <li><strong>Correlation Filter:</strong> Prevents clustering of trades in the same direction</li>
-                        <li><strong>Volatility Filter:</strong> Requires minimum volatility threshold for setups</li>
-                    </ul>
-                    <p>These filters protect your account from explosive volatility and slippage during unpredictable events.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What performance metrics should I track?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    To evaluate Viomia's performance, monitor these key metrics:
-                    <ul>
-                        <li><strong>Win Rate:</strong> Percentage of profitable trades (target: 40-55%)</li>
-                        <li><strong>Profit Factor:</strong> Gross profit divided by gross loss (target: > 1.5)</li>
-                        <li><strong>Risk-Reward Ratio:</strong> Average win size vs. average loss size (target: 1:3)</li>
-                        <li><strong>Maximum Drawdown:</strong> Largest peak-to-trough decline (target: < 20%)</li>
-                        <li><strong>Sharpe Ratio:</strong> Risk-adjusted returns (higher is better)</li>
-                        <li><strong>Trade Frequency:</strong> Typically 5-15 trades per week (quality over quantity)</li>
-                        <li><strong>Average Trade Duration:</strong> How long positions remain open</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Technology Stack Section -->
-        <div class="faq-section">
-            <h2 class="faq-section-title">
-                <i class="fas fa-server"></i>
-                Technology & Infrastructure
-            </h2>
-            <div class="faq-section-divider"></div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">What technology powers Viomia?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Viomia is built on a professional trading architecture combining:
-                    <ul>
-                        <li><strong>MetaTrader 5 (MT5):</strong> The trading execution platform</li>
-                        <li><strong>MQL5:</strong> Advanced programming language for algorithmic strategies</li>
-                        <li><strong>Laravel:</strong> Cloud backend for monitoring, analytics, and signal distribution</li>
-                        <li><strong>REST APIs:</strong> Secure communication between trading platform and cloud infrastructure</li>
-                    </ul>
-                    <p>Learn more on our <a href="/technology" style="color: #00a884; font-weight: 600;">Technology page</a> or download the full <a href="#" style="color: #00a884; font-weight: 600;">technical whitepaper</a>.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">How does Viomia monitor my trading?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    The cloud infrastructure synchronizes with your trading bot in real-time, tracking:
-                    <ul>
-                        <li><strong>Trade Data:</strong> Every trade opened, closed, and position update</li>
-                        <li><strong>Account Metrics:</strong> Balance, equity, margin, and open positions</li>
-                        <li><strong>Performance Analytics:</strong> Daily profit, win rate, trade count</li>
-                        <li><strong>System Alerts:</strong> Risk limit triggers, filter blocks, errors</li>
-                    </ul>
-                    <p>This enables you to monitor your bot 24/7 from the Viomia dashboard.</p>
-                </div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h3 class="faq-question-text">Is the system secure?</h3>
-                    <span class="faq-toggle">▼</span>
-                </div>
-                <div class="faq-answer">
-                    Yes. Viomia implements institutional-grade security:
-                    <ul>
-                        <li><strong>API Key Authentication:</strong> Secure credential management</li>
-                        <li><strong>Encrypted Communication:</strong> All data transmitted securely via REST APIs</li>
-                        <li><strong>No Fund Access:</strong> Viomia never has access to your exchange funds</li>
-                        <li><strong>Restricted Permissions:</strong> We recommend using API keys with trading-only permissions</li>
-                        <li><strong>Retry Logic & Error Handling:</strong> Robust protection against network failures</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CTA Section -->
-    <div class="faq-container">
-        <div class="help-cta">
-            <h2>Still have questions?</h2>
-            <p>Our support team is here to help. Choose your preferred contact method below.</p>
-            <div class="help-cta-buttons">
-                <a href="https://wa.me/0787373722?text=I%20need%20help%20with%20Viomia" target="_blank" class="help-cta-btn whatsapp">
-                    <i class="fas fa-comments"></i> WhatsApp Support
-                </a>
-                <a href="mailto:support@viomia.com" class="help-cta-btn">
-                    <i class="fas fa-envelope"></i> Email Support
-                </a>
-                <a href="/" class="help-cta-btn">
-                    <i class="fas fa-home"></i> Back to Home
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-    function toggleFaq(element) {
-        const faqItem = element.closest('.faq-item');
-        faqItem.classList.toggle('active');
-    }
-
-    // Close other items when opening a new one (optional)
-    document.querySelectorAll('.faq-question').forEach(question => {
-        question.addEventListener('click', function() {
-            const allItems = document.querySelectorAll('.faq-item');
-            allItems.forEach(item => {
-                if (item !== this.closest('.faq-item')) {
-                    item.classList.remove('active');
-                }
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', function() {
+                faqItems.forEach(other => {
+                    if (other !== item) {
+                        other.classList.remove('active');
+                    }
+                });
+                item.classList.toggle('active');
             });
         });
     });
 </script>
+
+@include('partials.cta')
+@include('partials.footer')
 
 @endsection

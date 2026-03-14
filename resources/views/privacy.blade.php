@@ -70,4 +70,8 @@
         </div>
     </div>
 </div>
+
+@include('partials.cta')
+@include('partials.footer')
+
 @endsection

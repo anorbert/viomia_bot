@@ -517,4 +517,8 @@
         margin-top: 80px;
     }
 </style>
+
+@include('partials.cta')
+@include('partials.footer')
+
 @endsection

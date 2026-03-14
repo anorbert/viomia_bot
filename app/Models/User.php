@@ -31,6 +31,11 @@ class User extends Authenticatable
         'bio',
         'is_active',
         'is_default_pin',
+        'last_login_at',
+        'previous_login_at',
+        'total_login_count',
+        'total_session_minutes',
+        'last_activity_at',
     ];
 
     /**
@@ -117,5 +122,111 @@ public function currentSubscription(): HasOne
 public function supportTickets(): HasMany
 {
     return $this->hasMany(SupportTicket::class, 'user_id');
+}
+
+/**
+ * Get formatted last login time
+ * 
+ * @return string Formatted date time or "Never" if user hasn't logged in
+ */
+public function getLastLoginDisplay(): string
+{
+    if (!$this->last_login_at) {
+        return 'Never';
+    }
+    return $this->last_login_at->format('M d, Y - h:i A');
+}
+
+/**
+ * Get formatted previous login time
+ * 
+ * @return string Formatted date time or "N/A" if no previous login
+ */
+public function getPreviousLoginDisplay(): string
+{
+    if (!$this->previous_login_at) {
+        return 'N/A';
+    }
+    return $this->previous_login_at->format('M d, Y - h:i A');
+}
+
+/**
+ * Get human-readable time usage
+ * 
+ * @return string Formatted time (e.g., "2h 30m" or "45m")
+ */
+public function getTotalTimeUsedDisplay(): string
+{
+    $minutes = $this->total_session_minutes ?? 0;
+    
+    if ($minutes < 60) {
+        return $minutes . 'm';
+    }
+    
+    $hours = intdiv($minutes, 60);
+    $mins = $minutes % 60;
+    
+    if ($mins === 0) {
+        return $hours . 'h';
+    }
+    
+    return $hours . 'h ' . $mins . 'm';
+}
+
+/**
+ * Get days since last login
+ * 
+ * @return int Number of days since last login
+ */
+public function getDaysSinceLastLogin(): int
+{
+    if (!$this->last_login_at) {
+        return -1; // Never logged in
+    }
+    
+    return now()->diffInDays($this->last_login_at);
+}
+
+/**
+ * Record a login for this user
+ */
+public function recordLogin(): void
+{
+    // Move current login to previous
+    if ($this->last_login_at) {
+        $this->previous_login_at = $this->last_login_at;
+    }
+    
+    // Set new login time
+    $this->last_login_at = now();
+    
+    // Increment login count
+    $this->total_login_count = ($this->total_login_count ?? 0) + 1;
+    
+    // Update last activity
+    $this->last_activity_at = now();
+    
+    $this->save();
+}
+
+/**
+ * Record session end (calculate time used)
+ */
+public function recordSessionEnd(): void
+{
+    if (!$this->last_login_at) {
+        return;
+    }
+    
+    // Calculate minutes since login
+    $minutesUsed = now()->diffInMinutes($this->last_login_at);
+    
+    // Add to total session minutes
+    $this->total_session_minutes = ($this->total_session_minutes ?? 0) + $minutesUsed;
+    
+    // Update last activity
+    $this->last_activity_at = now();
+    
+    $this->save();
 }
 }

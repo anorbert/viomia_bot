@@ -230,5 +230,8 @@
         @if(session('success')) toastr.success('{{ session('success') }}'); @endif
         @if(session('warning')) toastr.warning('{{ session('warning') }}'); @endif
     </script>
+
+    <!-- Auto-Logout Activity Tracker (10 minute inactivity timeout) -->
+    <script src="{{ asset('js/activity-tracker.js') }}"></script>
 </body>
 </html>

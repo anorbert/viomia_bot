@@ -38,7 +38,7 @@ use App\Http\Controllers\User\UserPaymentController;
 use App\Http\Controllers\User\UserSignalController;
 use App\Http\Controllers\User\UserTradeController;
 use App\Http\Controllers\User\UserAccountController;
-use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\ActivityTrackerController;
 
 Route::get('/', function () {
     $subscriptionPlans = \App\Models\SubscriptionPlan::where('is_active', true)
@@ -59,6 +59,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/support/tickets', [SupportController::class, 'userTickets'])->name('support.tickets');
 });
 
+// Activity Tracking Routes (require auth) - for auto-logout prevention
+Route::middleware(['auth'])->group(function () {
+    Route::post('/activity/track', [ActivityTrackerController::class, 'trackActivity'])->name('activity.track');
+    Route::get('/activity/remaining-time', [ActivityTrackerController::class, 'getRemainingTime'])->name('activity.remaining-time');
+    Route::post('/activity/logout', [ActivityTrackerController::class, 'forceLogout'])->name('activity.logout');
+});
+
 Route::resource('user_login',LoginController::class);
 Route::resource('user_register',RegisterController::class);
 Route::get('/user_register', [RegisterController::class, 'index'])->name('user_register');
@@ -77,6 +84,8 @@ Route::get('/register', [RegisterController::class, 'index'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    // Apply cross-role prevention and user-only middleware
+    Route::middleware(['prevent-cross-role', 'prevent-admin-user-access', 'verify-ownership'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/metrics', [UserDashboardController::class, 'metrics'])
@@ -120,11 +129,12 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/checkout/{plan:slug}', [CheckoutController::class, 'start'])->name('checkout.start');
     Route::get('/checkout/pending/{reference}', [CheckoutController::class, 'pending'])->name('checkout.pending');
     Route::get('/checkout/status/{reference}', [CheckoutController::class, 'status'])->name('checkout.status');
+    });
 });
 
-//Admin Routes - Protected by role middleware
+//Admin Routes - Protected by role middleware & cross-role access prevention
 Route::prefix('admin')
-    ->middleware(['auth', 'role:admin'])
+    ->middleware(['auth', 'role:admin', 'prevent-cross-role', 'admin-only'])
     ->name('admin.')
     ->group(function () {
 

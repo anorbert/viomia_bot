@@ -18,6 +18,9 @@
         </div>
     @endif
 
+    {{-- ── USER LOGIN TRACKING CARD ── --}}
+    @include('components.login-info-card', ['user' => $user])
+
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white py-2">
             <h6 class="mb-0 text-primary font-weight-bold">Account Details: {{ $user->name }}</h6>

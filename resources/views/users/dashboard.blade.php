@@ -97,6 +97,11 @@
     </div>
   </div>
 
+  {{-- ── LOGIN INFO CARD ── --}}
+  <div style="margin-bottom: 18px;">
+    @include('components.login-info-card')
+  </div>
+
   {{-- ── PRIMARY KPIs ── --}}
   <div class="db-grid4">
     @php

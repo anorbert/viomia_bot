@@ -73,8 +73,8 @@ class LoginController extends Controller
         // Login user
         Auth::login($user, $request->boolean('remember'));
 
-        // Update login timestamp
-        $user->update(['last_login_at' => now()]);
+        // Record login timestamp and increment login count
+        $user->recordLogin();
 
         // Force default PIN change
         if ($user->is_default_pin) {
@@ -126,6 +126,9 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         if (Auth::check()) {
+            // Record session end and calculate time used
+            Auth::user()->recordSessionEnd();
+            
             Log::info('User logged out. User ID: ' . Auth::id());
         }
 

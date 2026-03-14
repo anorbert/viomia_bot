@@ -27,6 +27,7 @@
                         <th class="text-uppercase small font-weight-bold text-secondary">User Information</th>
                         <th class="text-uppercase small font-weight-bold text-secondary">Contact</th>
                         <th class="text-uppercase small font-weight-bold text-secondary">Email Address</th>
+                        <th class="text-uppercase small font-weight-bold text-secondary">Last Login</th>
                         <th class="text-uppercase small font-weight-bold text-secondary">Access Level</th>
                         <th class="text-uppercase small font-weight-bold text-secondary text-right px-3">Management</th>
                     </tr>
@@ -59,6 +60,18 @@
                         </td>
                         <td>
                             <span class="text-muted">{{ $u->email ?? 'N/A' }}</span>
+                        </td>
+                        <td>
+                            <div style="font-size: 0.85rem;">
+                                <div style="color: #1e293b; font-weight: 600;">
+                                    {{ $u->getLastLoginDisplay() }}
+                                </div>
+                                <div style="color: #64748b; font-size: 0.75rem; margin-top: 2px;">
+                                    @if($u->getDaysSinceLastLogin() >= 0)
+                                        {{ $u->getDaysSinceLastLogin() }} day{{ $u->getDaysSinceLastLogin() !== 1 ? 's' : '' }} ago
+                                    @endif
+                                </div>
+                            </div>
                         </td>
                         <td>
                             {{-- Professional Status Badge --}}

@@ -1227,29 +1227,8 @@
         </div>
     </section>
 
-    <!-- CTA -->
-    <section class="cta-section">
-        <div class="section-container">
-            <div class="cta-box">
-                <h2>Ready to Start Trading Smarter?</h2>
-                <p>Join hundreds of traders using Viomia to automate their trading and generate consistent profits. Get started in minutes with our simple setup process.</p>
-                <a href="{{ route('user_register') }}" class="btn-primary">Create Free Account</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="page-footer">
-        <div class="section-container">
-            <p>&copy; {{ date('Y') }} Viomia Trading Bot. All rights reserved. | Secure • Automated • Transparent</p>
-            <p style="font-size: 12px; margin-top: 10px; color: #999;">
-                <a href="/terms" style="color: #00a884; text-decoration: none;">Terms of Service</a> | 
-                <a href="/risk-disclosure" style="color: #00a884; text-decoration: none;">Risk Disclosure</a> | 
-                <a href="/technology" style="color: #00a884; text-decoration: none;">Technology</a> | 
-                <a href="/help" style="color: #00a884; text-decoration: none;">Help</a>
-            </p>
-        </div>
-    </footer>
+    @include('partials.cta')
+    @include('partials.footer')
 </div>
 
 <script>
