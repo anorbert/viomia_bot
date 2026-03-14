@@ -40,6 +40,15 @@ use App\Http\Controllers\User\UserTradeController;
 use App\Http\Controllers\User\UserAccountController;
 use App\Http\Controllers\User\CheckoutController;
 
+//AI Analytics Controllers
+use App\Http\Controllers\Admin\AI\AnalyticsController;
+use App\Http\Controllers\Admin\AI\CandleLogController;
+use App\Http\Controllers\Admin\AI\DecisionController;
+use App\Http\Controllers\Admin\AI\SignalLogController;
+use App\Http\Controllers\Admin\AI\TradeExecutionController;
+use App\Http\Controllers\Admin\AI\TradeOutcomeController;
+
+
 Route::get('/', function () {
     $subscriptionPlans = \App\Models\SubscriptionPlan::where('is_active', true)
         ->orderBy('sort_order')
@@ -178,6 +187,23 @@ Route::prefix('admin')
         // Signals
         Route::resource('signals', SignalController::class);
 
+        //AI Analytics Routes
+        Route::prefix('ai')->name('ai.')->group(function () {
+            // AI Dashboard
+            Route::get('dashboard', [AnalyticsController::class, 'dashboard'])->name('dashboard');
+            // Market Data (Candles)
+            Route::resource('candles', CandleLogController::class);
+            // AI Decisions
+            Route::resource('decisions', DecisionController::class);
+            // Signals Sent
+            Route::resource('signal-logs', SignalLogController::class);
+            // Trade Executions
+            Route::resource('executions', TradeExecutionController::class);
+            // Trade Outcomes
+            Route::resource('outcomes', TradeOutcomeController::class);
+            // AI Performance
+            Route::get('performance', [AnalyticsController::class, 'performance'])->name('performance');
+        });
     });
 
 // Help & Support Page - Public route

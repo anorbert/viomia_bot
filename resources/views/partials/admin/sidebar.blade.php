@@ -122,6 +122,72 @@
             </ul>
           </li>
 
+          {{-- AI Analytics --}}
+          @php 
+          $aiOpen = $open([
+              'admin.ai.dashboard',
+              'admin.ai.candles',
+              'admin.ai.decisions',
+              'admin.ai.signals',
+              'admin.ai.executions',
+              'admin.ai.outcomes',
+              'admin.ai.performance',
+              'admin.ai.sessions'
+          ]); 
+          @endphp
+          <li class="{{ $aiOpen ? 'active' : '' }}">
+            <a class="d-flex justify-content-between align-items-center">
+              <span><i class="fa fa-brain"></i> AI Analytics</span>
+              <span class="fa fa-chevron-down small"></span>
+            </a>
+
+            <ul class="nav child_menu" style="{{ $aiOpen ? 'display:block;' : '' }}">
+
+              <li class="{{ $is('admin.ai.dashboard') ? 'current-page' : '' }}">
+                <a href="{{ route('admin.ai.dashboard') }}">
+                  <i class="fa fa-dashboard"></i> AI Dashboard
+                </a>
+              </li>
+
+              <li class="{{ $is('admin.ai.candles') ? 'current-page' : '' }}">
+                <a href="{{ route('admin.ai.candles.index') }}">
+                  <i class="fa fa-area-chart"></i> Market Data (Candles)
+                </a>
+              </li>
+
+              <li class="{{ $is('admin.ai.decisions.index') ? 'current-page' : '' }}">
+                <a href="{{ route('admin.ai.decisions.index') }}">
+                  <i class="fa fa-microchip"></i> AI Decisions
+                </a>
+              </li>
+
+              <li class="{{ $is('admin.ai.signals') ? 'current-page' : '' }}">
+                <a href="{{ route('admin.ai.signal-logs.index') }}">
+                  <i class="fa fa-bullhorn"></i> Signals Sent
+                </a>
+              </li>
+
+              <li class="{{ $is('admin.ai.executions') ? 'current-page' : '' }}">
+                <a href="{{ route('admin.ai.executions.index') }}">
+                  <i class="fa fa-exchange"></i> Trade Executions
+                </a>
+              </li>
+
+              <li class="{{ $is('admin.ai.outcomes') ? 'current-page' : '' }}">
+                <a href="{{ route('admin.ai.outcomes.index') }}">
+                  <i class="fa fa-trophy"></i> Trade Outcomes
+                </a>
+              </li>
+
+              <li class="{{ $is('admin.ai.performance') ? 'current-page' : '' }}">
+                <a href="{{ route('admin.ai.performance') }}">
+                  <i class="fa fa-line-chart"></i> AI Performance
+                </a>
+              </li>
+
+            </ul>
+          </li>
+
           {{-- Payments --}}
           @php $paymentsOpen = $open(['admin.payments.*','admin.banks.*','admin.subscription_plans.*']); @endphp
           <li class="{{ $paymentsOpen ? 'active' : '' }}">
@@ -189,3 +255,4 @@
     </div>
   </div>
 </div>
+
