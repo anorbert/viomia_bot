@@ -30,12 +30,33 @@
 .vi-btn:hover { transform: translateY(-2px); }
 .vi-btn-edit { background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.08) 100%); color: #fbbf24 !important; border: 1px solid rgba(245,158,11,0.3); }
 .vi-btn-edit:hover { background: linear-gradient(135deg, rgba(245,158,11,0.25) 0%, rgba(245,158,11,0.15) 100%); box-shadow: 0 4px 14px rgba(245,158,11,0.2); }
+.vi-btn-toggle-on { background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.08) 100%); color: #4ade80 !important; border: 1px solid rgba(34,197,94,0.3); }
+.vi-btn-toggle-on:hover { background: linear-gradient(135deg, rgba(34,197,94,0.25) 0%, rgba(34,197,94,0.15) 100%); box-shadow: 0 4px 14px rgba(34,197,94,0.2); }
+.vi-btn-toggle-off { background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(239,68,68,0.08) 100%); color: #fca5a5 !important; border: 1px solid rgba(239,68,68,0.3); }
+.vi-btn-toggle-off:hover { background: linear-gradient(135deg, rgba(239,68,68,0.25) 0%, rgba(239,68,68,0.15) 100%); box-shadow: 0 4px 14px rgba(239,68,68,0.2); }
+.vi-health-check { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; }
+.vi-health-connected { background: rgba(34,197,94,0.15); color: #4ade80; }
+.vi-health-syncing { background: rgba(59,158,255,0.15); color: #60a5fa; animation: pulse 2s infinite; }
+.vi-health-disconnected { background: rgba(239,68,68,0.15); color: #fca5a5; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 </style>
 @endpush
 
 @section('content')
 <div class="row">
   <div class="col-md-12">
+    @if(session('success'))
+        <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; color: #4ade80; font-size: 12px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa fa-check-circle"></i> {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; color: #fca5a5; font-size: 12px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
+        </div>
+    @endif
+
     <div class="vi-header">
       <div>
         <div style="font-size:11px; font-weight:800; color:#1ABB9C; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🏦 Account Management</div>
@@ -68,6 +89,7 @@
                                 <th>Type</th>
                                 <th>Platform</th>
                                 <th>Server</th>
+                                <th>Health</th>
                                 <th>Status</th>
                                 <th style="text-align:right;">Actions</th>
                             </tr>
@@ -77,7 +99,7 @@
                                 <tr style="transition: all 0.2s ease;">
                                     <td style="font-size:11px; color:#6b7a8a; font-weight:600;">{{ $key + 1 }}</td>
                                     <td class="td-sym">{{ $account->login }}</td>
-                                    <td style="font-size:11px;">{{ $account->User->name ?? 'N/A' }}</td>
+                                    <td style="font-size:11px;">{{ $account->user->name ?? 'N/A' }}</td>
                                     <td>
                                         @if(strtolower($account->account_type) === 'real')
                                             <span class="vi-badge vi-badge-real">REAL</span>
@@ -88,6 +110,21 @@
                                     <td style="font-weight:700;">{{ strtoupper($account->platform) }}</td>
                                     <td style="font-size:11px;">{{ $account->server }}</td>
                                     <td>
+                                        @if($account->connected)
+                                            <span class="vi-health-check vi-health-connected">
+                                                <i class="fa fa-signal"></i> Connected
+                                            </span>
+                                        @elseif($account->active)
+                                            <span class="vi-health-check vi-health-syncing">
+                                                <i class="fa fa-spinner fa-spin"></i> Syncing
+                                            </span>
+                                        @else
+                                            <span class="vi-health-check vi-health-disconnected">
+                                                <i class="fa fa-times-circle"></i> Offline
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         @if($account->active)
                                             <span class="vi-badge vi-badge-active">ACTIVE</span>
                                         @else
@@ -95,14 +132,28 @@
                                         @endif
                                     </td>
                                     <td style="text-align:right;">
-                                        <a href="{{ route('admin.accounts.edit', $account) }}" class="vi-btn vi-btn-edit">
-                                            <i class="fa fa-pencil"></i> Edit
-                                        </a>
+                                        <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                                            <form action="{{ route('admin.accounts.toggle', $account->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                @if($account->active)
+                                                    <button type="submit" class="vi-btn vi-btn-toggle-off" onclick="return confirm('Deactivate this account?')">
+                                                        <i class="fa fa-power-off"></i> Deactivate
+                                                    </button>
+                                                @else
+                                                    <button type="submit" class="vi-btn vi-btn-toggle-on" onclick="return confirm('Activate this account?')">
+                                                        <i class="fa fa-power-off"></i> Activate
+                                                    </button>
+                                                @endif
+                                            </form>
+                                            <a href="{{ route('admin.accounts.edit', $account) }}" class="vi-btn vi-btn-edit">
+                                                <i class="fa fa-pencil"></i> Edit
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" style="text-align:center; padding:20px;">No accounts found</td>
+                                    <td colspan="9" style="text-align:center; padding:20px;">No accounts found</td>
                                 </tr>
                             @endforelse
                         </tbody>

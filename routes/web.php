@@ -165,6 +165,7 @@ Route::prefix('admin')
         Route::get('accounts-pending', [AccountController::class, 'pending'])->name('accounts.pending');
         Route::post('accounts/{account}/verify', [AccountController::class, 'verifyAccount'])->name('accounts.verify');
         Route::post('accounts/{account}/reject', [AccountController::class, 'rejectAccount'])->name('accounts.reject');
+        Route::post('accounts/{account}/toggle', [AccountController::class, 'toggle'])->name('accounts.toggle');
 
         // Bots
         Route::resource('bots', BotController::class);

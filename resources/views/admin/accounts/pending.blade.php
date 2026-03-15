@@ -128,7 +128,15 @@
                             <span class="vi-detail-label">Password</span>
                             <span style="display:flex; align-items:center; gap:8px;">
                                 <code style="background-color:rgba(59,158,255,0.1); color:#3B9EFF; padding:2px 6px; border-radius:4px; font-size:10px;">
-                                    <span id="password-{{ $account->id }}" style="display:none;">{{ $account->password }}</span>
+                                    <span id="password-{{ $account->id }}" style="display:none;">
+                                        @php
+                                            try {
+                                                echo $account->password ?? '••••••••';
+                                            } catch (\Exception $e) {
+                                                echo '••••••••';
+                                            }
+                                        @endphp
+                                    </span>
                                     <span id="password-masked-{{ $account->id }}">••••••••</span>
                                 </code>
                                 <button type="button" class="vi-btn vi-btn-outline" style="padding:4px 8px; font-size:10px;" onclick="togglePassword({{ $account->id }})">

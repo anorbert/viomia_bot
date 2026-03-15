@@ -145,20 +145,23 @@ class AccountController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
         $request->validate([
-            'client_id' => 'required|exists:users,id',
+            'login' => 'required|string|max:255',
+            'platform' => 'required|in:mt4,mt5',
+            'server' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
+            'active' => 'required|in:0,1',
         ]);
+
         $account = Account::findOrFail($id);
         $account->update([
-            'user_id' => $request->client_id,
             'platform' => $request->platform,
             'server' => $request->server,
-            'login' => $request->login, // Ensure login is unique if needed
-            'password' => bcrypt($request->password), // Encrypt the password
-            'account_type' => $request->account_type,
-            'active' => $request->active ? true : false,
+            'login' => $request->login,
+            'password' => $request->password,
+            'active' => (bool) $request->active,
         ]);
+
         return redirect()->route('admin.accounts.index')->with('success', 'Account updated successfully');
     }
 
@@ -171,6 +174,20 @@ class AccountController extends Controller
         $account = Account::findOrFail($id);
         $account->delete();
         return redirect()->route('admin.accounts.index')->with('success', 'Account deleted successfully');
+    }
+
+    /**
+     * Toggle account active/inactive status
+     */
+    public function toggle(string $id)
+    {
+        $account = Account::findOrFail($id);
+        $account->active = !$account->active;
+        $account->save();
+
+        $status = $account->active ? 'activated' : 'deactivated';
+        return redirect()->route('admin.accounts.index')
+                       ->with('success', "Account has been $status successfully");
     }
 
     public function pending()

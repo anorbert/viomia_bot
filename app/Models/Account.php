@@ -77,9 +77,14 @@ class Account extends Model
         if (empty($value)) return null;
         
         try {
-            return Crypt::decrypt($value);
+            // Check if the value is already decrypted or needs decryption
+            if (strpos($value, 'eyJ') === 0) { // Check if it looks like Laravel encrypted string
+                return Crypt::decrypt($value);
+            }
+            return $value;
         } catch (\Exception $e) {
-            return "Error Decrypting"; 
+            // Return a placeholder if decryption fails
+            return null;
         }
     }
 
@@ -89,6 +94,8 @@ class Account extends Model
      */
     public function setPasswordAttribute($value)
     {
-        $this->attributes['password'] = Crypt::encrypt($value);
+        if (!empty($value)) {
+            $this->attributes['password'] = Crypt::encrypt($value);
+        }
     }
 }

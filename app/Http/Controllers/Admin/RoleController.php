@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -12,7 +13,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        $roles = Role::orderBy('id')->get();
+        return view('admin.roles.index', compact('roles'));
     }
 
     /**
@@ -20,7 +22,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.roles.create');
     }
 
     /**
@@ -28,7 +30,15 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|unique:roles,name|max:50',
+            'status' => 'required|in:Active,Inactive',
+        ]);
+
+        Role::create($validated);
+
+        return redirect()->route('admin.roles.index')
+                       ->with('success', 'Role created successfully!');
     }
 
     /**
@@ -44,7 +54,8 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        return view('admin.roles.edit', compact('role'));
     }
 
     /**
@@ -52,7 +63,17 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|unique:roles,name,' . $id . '|max:50',
+            'status' => 'required|in:Active,Inactive',
+        ]);
+
+        $role->update($validated);
+
+        return redirect()->route('admin.roles.index')
+                       ->with('success', 'Role updated successfully!');
     }
 
     /**
@@ -60,6 +81,17 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        // Prevent deletion of system roles
+        if (in_array($role->id, [1, 2, 3])) {
+            return redirect()->route('admin.roles.index')
+                           ->with('error', 'System roles cannot be deleted!');
+        }
+
+        $role->delete();
+
+        return redirect()->route('admin.roles.index')
+                       ->with('success', 'Role deleted successfully!');
     }
 }
