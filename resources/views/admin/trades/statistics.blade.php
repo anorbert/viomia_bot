@@ -1,493 +1,215 @@
-here we are
 @extends('layouts.admin')
 
+@section('title', 'Trade Statistics — ' . config('app.name'))
+
+@push('styles')
+<style>
+.right_col { background-color: #0a0e17 !important; }
+.vi-header { display: flex !important; align-items: center !important; flex-wrap: wrap; gap: 14px; background: linear-gradient(135deg, #1a2235 0%, #111827 100%) !important; border: 1px solid rgba(26,187,156,0.2) !important; border-top: 3px solid #1ABB9C !important; border-radius: 12px !important; padding: 20px 24px !important; margin-bottom: 20px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important; }
+.vi-header-title { font-size: 20px !important; font-weight: 900 !important; color: #f1f5f9 !important; }
+.vi-header-sub { font-size: 12px !important; color: #94a3b8 !important; margin-top: 4px; }
+.vi-panel { background-color: #111827 !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 12px !important; overflow: hidden; margin-bottom: 16px !important; box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important; }
+.vi-panel-head { display: flex !important; align-items: center !important; gap: 10px; padding: 14px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.07) !important; background-color: #1a2235 !important; }
+.vi-panel-title { font-size: 11.5px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 1.2px; color: #94a3b8 !important; flex: 1; }
+.vi-stat-card { background: linear-gradient(135deg, #1a2235 0%, #111827 100%); border: 1px solid rgba(26,187,156,0.2); border-radius: 10px; padding: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.3); transition: all 0.3s ease; }
+.vi-stat-card:hover { border-color: #1ABB9C; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,187,156,0.15) !important; }
+.vi-stat-label { color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.vi-stat-value { font-size: 28px; font-weight: 900; }
+.vi-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.vi-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.vi-table thead th { padding: 10px 14px; font-size: 9.5px !important; font-weight: 800 !important; letter-spacing: 1.2px; text-transform: uppercase; color: #4b5563 !important; text-align: left; background-color: #1a2235 !important; border-bottom: 1px solid rgba(255,255,255,0.07) !important; }
+.vi-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.07) !important; transition: all 0.2s; }
+.vi-table tbody tr:hover { background-color: #1a2235 !important; }
+.vi-table tbody td { padding: 11px 14px; color: #94a3b8 !important; vertical-align: middle; background-color: transparent !important; }
+.vi-table .td-sym { color: #f1f5f9 !important; font-weight: 600 !important; font-size: 12px; }
+.vi-badge { padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: 700; display: inline-block; }
+.vi-badge-success { background-color: rgba(34,197,94,0.13) !important; color: #22C55E !important; }
+.vi-badge-warning { background-color: rgba(251,146,60,0.13) !important; color: #FB923C !important; }
+.vi-badge-error { background-color: rgba(239,68,68,0.13) !important; color: #ef4444 !important; }
+.vi-btn { padding: 6px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; transition: all 0.15s; }
+.vi-btn-primary { background-color: #1ABB9C !important; color: #fff !important; }
+.vi-btn-primary:hover { background-color: #159d84 !important; box-shadow: 0 4px 14px rgba(26,187,156,0.32) !important; }
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.metric-item { background-color: #1a2235; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px; }
+.metric-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.metric-value { font-size: 20px; font-weight: 900; }
+.chart-placeholder { background-color: #1a2235; border: 1px dashed rgba(26,187,156,0.3); border-radius: 8px; padding: 40px 20px; text-align: center; color: #4b5563; }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid">
-    {{-- Header --}}
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="mb-2">
-                <i class="fa fa-chart-line text-primary"></i> Trading Statistics
-            </h2>
-            <p class="text-muted">Comprehensive trading performance analysis and metrics</p>
-        </div>
+
+<div class="vi-header">
+    <div>
+        <div style="font-size:11px; font-weight:800; color:#1ABB9C; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">📈 Analytics</div>
+        <div class="vi-header-title">Trade Statistics</div>
+        <div class="vi-header-sub">Comprehensive trading performance analysis</div>
+    </div>
+    <a href="{{ route('admin.trades.index') }}" class="vi-btn vi-btn-primary" style="margin-left:auto;">
+        <i class="fa fa-arrow-left"></i> Back to Trades
+    </a>
+</div>
+
+<!-- KPI Statistics Cards -->
+<div class="vi-stats-grid">
+    <div class="vi-stat-card">
+        <div class="vi-stat-label"><i class="fa fa-exchange" style="color:#1ABB9C;"></i> Total Trades</div>
+        <div class="vi-stat-value" style="color: #1ABB9C;">{{ $totalTrades ?? 0 }}</div>
     </div>
 
-    {{-- Top KPI Cards --}}
-    <div class="row mb-4">
-        <div class="col-md-2 col-sm-6 col-xs-12 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon bg-primary">
-                    <i class="fa fa-exchange"></i>
-                </div>
-                <div class="stat-content">
-                    <h4 class="stat-value">{{ $totalTrades }}</h4>
-                    <p class="stat-label">Total Trades</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-2 col-sm-6 col-xs-12 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                    <i class="fa fa-arrow-up"></i>
-                </div>
-                <div class="stat-content">
-                    <h4 class="stat-value">{{ $winningTrades }}</h4>
-                    <p class="stat-label">Winning Trades</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-2 col-sm-6 col-xs-12 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
-                    <i class="fa fa-arrow-down"></i>
-                </div>
-                <div class="stat-content">
-                    <h4 class="stat-value">{{ $losingTrades }}</h4>
-                    <p class="stat-label">Losing Trades</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-2 col-sm-6 col-xs-12 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                    <i class="fa fa-percent"></i>
-                </div>
-                <div class="stat-content">
-                    <h4 class="stat-value">{{ $winRate }}%</h4>
-                    <p class="stat-label">Win Rate</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-2 col-sm-6 col-xs-12 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
-                    <i class="fa fa-dollar"></i>
-                </div>
-                <div class="stat-content">
-                    <h4 class="stat-value">{{ number_format($totalProfit, 2) }}</h4>
-                    <p class="stat-label">Total Profit</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-2 col-sm-6 col-xs-12 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
-                    <i class="fa fa-cube"></i>
-                </div>
-                <div class="stat-content">
-                    <h4 class="stat-value">{{ number_format($totalLots, 2) }}</h4>
-                    <p class="stat-label">Total Lots</p>
-                </div>
-            </div>
-        </div>
+    <div class="vi-stat-card">
+        <div class="vi-stat-label"><i class="fa fa-check" style="color:#22C55E;"></i> Winning Trades</div>
+        <div class="vi-stat-value" style="color: #22C55E;">{{ $winningTrades ?? 0 }}</div>
     </div>
 
-    {{-- Detailed Metrics --}}
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2 style="margin-bottom: 0;">
-                        <i class="fa fa-info-circle text-info"></i> Average Metrics
-                    </h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <div class="metric-row">
-                        <span class="metric-label">Avg Profit/Trade</span>
-                        <span class="metric-value" style="color: {{ $avgProfit >= 0 ? '#10b981' : '#ef4444' }};">
-                            {{ number_format($avgProfit, 2) }}
-                        </span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Avg Win</span>
-                        <span class="metric-value" style="color: #10b981;">
-                            {{ number_format($avgWin, 2) }}
-                        </span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Avg Loss</span>
-                        <span class="metric-value" style="color: #ef4444;">
-                            {{ number_format($avgLoss, 2) }}
-                        </span>
-                    </div>
-                    <div class="metric-row" style="border-top: 1px solid #e5e7eb; padding-top: 8px; margin-top: 8px;">
-                        <span class="metric-label">Profit Factor</span>
-                        <span class="metric-value">
-                            {{ $avgLoss != 0 ? number_format(abs($avgWin / $avgLoss), 2) : 'N/A' }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Profit by Type Chart --}}
-        <div class="col-md-4">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2 style="margin-bottom: 0;">
-                        <i class="fa fa-pie-chart text-success"></i> Profit by Type
-                    </h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <canvas id="profitByTypeChart" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-
-        {{-- Trade Distribution --}}
-        <div class="col-md-5">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2 style="margin-bottom: 0;">
-                        <i class="fa fa-bar-chart text-warning"></i> Win/Loss Distribution
-                    </h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <canvas id="wlDistributionChart" height="200"></canvas>
-                </div>
-            </div>
-        </div>
+    <div class="vi-stat-card">
+        <div class="vi-stat-label"><i class="fa fa-times" style="color:#ef4444;"></i> Losing Trades</div>
+        <div class="vi-stat-value" style="color: #ef4444;">{{ $losingTrades ?? 0 }}</div>
     </div>
 
-    {{-- Daily Profit Chart --}}
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2 style="margin-bottom: 0;">
-                        <i class="fa fa-line-chart text-primary"></i> Daily Profit (Last 30 Days)
-                    </h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <canvas id="dailyProfitChart" height="60"></canvas>
-                </div>
-            </div>
-        </div>
+    <div class="vi-stat-card">
+        <div class="vi-stat-label"><i class="fa fa-percent" style="color:#FB923C;"></i> Win Rate</div>
+        <div class="vi-stat-value" style="color: #FB923C;">{{ number_format(($winRate ?? 0), 1) }}%</div>
     </div>
 
-    {{-- Profit by Symbol --}}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2 style="margin-bottom: 0;">
-                        <i class="fa fa-list text-info"></i> Profit by Symbol
-                    </h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead style="background: #f9fafb;">
-                                <tr>
-                                    <th style="color: #374151; font-weight: 600;">Symbol</th>
-                                    <th style="color: #374151; font-weight: 600; text-align: right;">Trades</th>
-                                    <th style="color: #374151; font-weight: 600; text-align: right;">Winning</th>
-                                    <th style="color: #374151; font-weight: 600; text-align: right;">Profit</th>
-                                    <th style="color: #374151; font-weight: 600; text-align: right;">Win Rate</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($profitBySymbol as $symbol)
-                                    <tr style="border-bottom: 1px solid #f3f4f6;">
-                                        <td style="color: #111827; font-weight: 600;">
-                                            {{ $symbol['symbol'] }}
-                                        </td>
-                                        <td style="text-align: right; color: #555;">
-                                            <span class="badge" style="background: #dbeafe; color: #1e40af;">
-                                                {{ $symbol['count'] }}
-                                            </span>
-                                        </td>
-                                        <td style="text-align: right; color: #10b981; font-weight: 600;">
-                                            {{ $symbol['wins'] }}
-                                        </td>
-                                        <td style="text-align: right; font-weight: 600; color: {{ $symbol['profit'] >= 0 ? '#10b981' : '#ef4444' }};">
-                                            {{ number_format($symbol['profit'], 2) }}
-                                        </td>
-                                        <td style="text-align: right;">
-                                            <span class="badge" style="background: {{ ($symbol['wins'] / $symbol['count'] * 100) >= 50 ? '#d1fae5' : '#fee2e2' }}; color: {{ ($symbol['wins'] / $symbol['count'] * 100) >= 50 ? '#065f46' : '#7f1d1d' }};">
-                                                {{ round(($symbol['wins'] / $symbol['count'] * 100), 1) }}%
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" style="text-align: center; color: #9ca3af; padding: 30px;">
-                                            <i class="fa fa-inbox" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
-                                            No trading data available
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="vi-stat-card">
+        <div class="vi-stat-label"><i class="fa fa-dollar" style="color:#1ABB9C;"></i> Total Profit</div>
+        <div class="vi-stat-value" style="color: {{ ($totalProfit ?? 0) >= 0 ? '#22C55E' : '#ef4444' }};">{{ number_format($totalProfit ?? 0, 2) }}</div>
+    </div>
+
+    <div class="vi-stat-card">
+        <div class="vi-stat-label"><i class="fa fa-cubes" style="color:#A78BFA;"></i> Total Lots</div>
+        <div class="vi-stat-value" style="color: #A78BFA;">{{ number_format($totalLots ?? 0, 2) }}</div>
+    </div>
+</div>
+
+<!-- Average Metrics -->
+<div class="vi-panel">
+    <div class="vi-panel-head">
+        <i class="fa fa-bar-chart" style="color:#1ABB9C; font-size:14px;"></i>
+        <div class="vi-panel-title">Average Metrics</div>
+    </div>
+    <div style="padding: 18px;">
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <div class="metric-label"><i class="fa fa-calculator"></i> Avg Profit/Trade</div>
+                <div class="metric-value" style="color: {{ ($avgProfit ?? 0) >= 0 ? '#22C55E' : '#ef4444' }};">{{ number_format($avgProfit ?? 0, 2) }}</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-label"><i class="fa fa-arrow-up"></i> Avg Win</div>
+                <div class="metric-value" style="color: #22C55E;">{{ number_format($avgWin ?? 0, 2) }}</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-label"><i class="fa fa-arrow-down"></i> Avg Loss</div>
+                <div class="metric-value" style="color: #ef4444;">{{ number_format($avgLoss ?? 0, 2) }}</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-label"><i class="fa fa-superscript"></i> Profit Factor</div>
+                <div class="metric-value" style="color: #FB923C;">{{ number_format($profitFactor ?? 0, 2) }}</div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .stat-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        border-left: 4px solid #e5e7eb;
-    }
+<!-- Profit by Type Section -->
+<div class="vi-panel">
+    <div class="vi-panel-head">
+        <i class="fa fa-pie-chart" style="color:#1ABB9C; font-size:14px;"></i>
+        <div class="vi-panel-title">Profit by Trade Type</div>
+    </div>
+    <div style="padding: 24px;">
+        <div class="chart-placeholder">
+            <i class="fa fa-line-chart" style="font-size: 32px; margin-bottom: 12px;"></i>
+            <p>Pie Chart - Buy vs Sell Profit Comparison</p>
+            <div style="margin-top: 10px; font-size: 11px; color: #4b5563;">Chart rendering area</div>
+        </div>
+    </div>
+</div>
 
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        border-left-color: #3b82f6;
-    }
+<!-- Win/Loss Distribution -->
+<div class="vi-panel">
+    <div class="vi-panel-head">
+        <i class="fa fa-bar-chart" style="color:#1ABB9C; font-size:14px;"></i>
+        <div class="vi-panel-title">Win/Loss Distribution</div>
+    </div>
+    <div style="padding: 24px;">
+        <div class="chart-placeholder">
+            <i class="fa fa-bar-chart" style="font-size: 32px; margin-bottom: 12px;"></i>
+            <p>Bar Chart - Win vs Loss Analysis</p>
+            <div style="margin-top: 10px; font-size: 11px; color: #4b5563;">Chart rendering area</div>
+        </div>
+    </div>
+</div>
 
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 24px;
-        flex-shrink: 0;
-    }
+<!-- Daily Profit Chart -->
+<div class="vi-panel">
+    <div class="vi-panel-head">
+        <i class="fa fa-line-chart" style="color:#1ABB9C; font-size:14px;"></i>
+        <div class="vi-panel-title">Daily Profit (Last 30 Days)</div>
+    </div>
+    <div style="padding: 24px;">
+        <div class="chart-placeholder">
+            <i class="fa fa-area-chart" style="font-size: 32px; margin-bottom: 12px;"></i>
+            <p>Line Chart - Daily Profit Trend</p>
+            <div style="margin-top: 10px; font-size: 11px; color: #4b5563;">Chart rendering area</div>
+        </div>
+    </div>
+</div>
 
-    .stat-content {
-        flex: 1;
-    }
+<!-- Profit by Symbol Table -->
+<div class="vi-panel">
+    <div class="vi-panel-head">
+        <i class="fa fa-table" style="color:#1ABB9C; font-size:14px;"></i>
+        <div class="vi-panel-title">Profit by Symbol</div>
+    </div>
 
-    .stat-value {
-        font-size: 24px;
-        font-weight: 700;
-        color: #111827;
-        margin: 0;
-    }
-
-    .stat-label {
-        font-size: 12px;
-        color: #9ca3af;
-        margin: 4px 0 0 0;
-        font-weight: 500;
-    }
-
-    .metric-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .metric-row:last-child {
-        border-bottom: none;
-    }
-
-    .metric-label {
-        color: #6b7280;
-        font-weight: 500;
-        font-size: 13px;
-    }
-
-    .metric-value {
-        font-weight: 700;
-        font-size: 16px;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .x_panel {
-        border-radius: 10px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        overflow: hidden;
-    }
-
-    .x_title {
-        padding: 16px;
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .x_title h2 {
-        margin: 0;
-        color: #111827;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .x_content {
-        padding: 20px;
-    }
-
-    .table {
-        margin-bottom: 0;
-    }
-
-    .table thead th {
-        padding: 12px 16px;
-        background: #f9fafb;
-        border: none;
-    }
-
-    .table tbody td {
-        padding: 14px 16px;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #f9fafb;
-    }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-<script>
-    // Profit by Type Chart
-    const profitByTypeData = {!! json_encode($profitByType) !!};
-    
-    if (profitByTypeData.length > 0) {
-        const typeCtx = document.getElementById('profitByTypeChart').getContext('2d');
-        const typeChart = new Chart(typeCtx, {
-            type: 'doughnut',
-            data: {
-                labels: profitByTypeData.map(d => d.type),
-                datasets: [{
-                    data: profitByTypeData.map(d => Math.abs(d.profit)),
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(16, 185, 129, 0.8)',
-                    ],
-                    borderColor: ['#3b82f6', '#10b981'],
-                    borderWidth: 2,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 15,
-                            font: { size: 13, weight: '600' },
-                            usePointStyle: true,
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Win/Loss Distribution
-    const wlData = {
-        wins: {{ $winningTrades }},
-        losses: {{ $losingTrades }}
-    };
-
-    const wlCtx = document.getElementById('wlDistributionChart').getContext('2d');
-    const wlChart = new Chart(wlCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Winning', 'Losing'],
-            datasets: [{
-                label: 'Trades',
-                data: [wlData.wins, wlData.losses],
-                backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'],
-                borderColor: ['#10b981', '#ef4444'],
-                borderWidth: 2,
-                borderRadius: 6,
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: { color: '#f3f4f6' }
-                },
-                y: {
-                    grid: { display: false }
-                }
-            }
-        }
-    });
-
-    // Daily Profit Chart
-    const dailyData = {!! json_encode($dailyProfit) !!};
-
-    if (dailyData.length > 0) {
-        const dailyCtx = document.getElementById('dailyProfitChart').getContext('2d');
-        const dailyChart = new Chart(dailyCtx, {
-            type: 'line',
-            data: {
-                labels: dailyData.map(d => d.date),
-                datasets: [{
-                    label: 'Daily Profit',
-                    data: dailyData.map(d => d.profit),
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointBackgroundColor: '#3b82f6',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 7,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            font: { size: 13, weight: '600' },
-                            padding: 15,
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        grid: { color: '#f3f4f6' },
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value.toFixed(2);
-                            }
-                        }
-                    },
-                    x: {
-                        grid: { display: false }
-                    }
-                }
-            }
-        });
-    }
-</script>
+    <div style="overflow-x:auto;">
+        <table class="vi-table">
+            <thead>
+                <tr>
+                    <th style="width:18%;">Symbol</th>
+                    <th style="width:15%;">Trade Count</th>
+                    <th style="width:15%;">Winning</th>
+                    <th style="width:15%;">Profit</th>
+                    <th style="width:15%;">Win Rate</th>
+                    <th style="text-align:right; width:22%;">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($symbolStats as $stat)
+                <tr>
+                    <td class="td-sym">{{ $stat->symbol ?? 'N/A' }}</td>
+                    <td>
+                        <span class="vi-badge vi-badge-success">{{ $stat->trade_count ?? 0 }}</span>
+                    </td>
+                    <td style="color: #22C55E; font-weight: 600;">{{ $stat->winning ?? 0 }}</td>
+                    <td style="color: {{ ($stat->total_profit ?? 0) >= 0 ? '#22C55E' : '#ef4444' }}; font-weight: 600;">
+                        {{ number_format($stat->total_profit ?? 0, 2) }}
+                    </td>
+                    <td>
+                        <span class="vi-badge vi-badge-warning">
+                            {{ number_format(($stat->win_rate ?? 0), 1) }}%
+                        </span>
+                    </td>
+                    <td style="text-align:right;">
+                        <span style="color: #94a3b8; font-size: 11px;">
+                            <i class="fa fa-info-circle"></i> View
+                        </span>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" style="padding: 40px; text-align: center;">
+                        <div style="color: #4b5563;">
+                            <i class="fa fa-inbox" style="font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
+                            <p>No symbol statistics available</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
 @endsection

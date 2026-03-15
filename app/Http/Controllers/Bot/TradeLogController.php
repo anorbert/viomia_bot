@@ -14,9 +14,16 @@ class TradeLogController extends Controller
      */
     public function index()
     {
-        //
-        $trades=TradeLog::latest()->paginate(50);
-        return view('admin.logs.trading',compact('trades'));
+        $trades = TradeLog::latest()->paginate(50);
+        
+        // Calculate summary statistics for stats cards
+        $allTrades = TradeLog::all();
+        $totalTrades = $allTrades->count();
+        $buyTrades = $allTrades->where('type', 'buy')->count();
+        $sellTrades = $allTrades->where('type', 'sell')->count();
+        $totalProfit = $allTrades->sum('profit');
+        
+        return view('admin.trades.index', compact('trades', 'totalTrades', 'buyTrades', 'sellTrades', 'totalProfit'));
     }
 
     /**
@@ -131,7 +138,8 @@ class TradeLogController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $trade = TradeLog::with(['account'])->findOrFail($id);
+        return view('admin.trades.show', compact('trade'));
     }
 
     /**

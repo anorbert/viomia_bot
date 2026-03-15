@@ -23,8 +23,10 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\SignalController;
+use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\ExitLogsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CheckoutController;
 
 //Bot Controllers
 use App\Http\Controllers\Bot\TradeLogController;
@@ -182,6 +184,8 @@ Route::prefix('admin')
         Route::resource('banks', BankController::class);
         Route::post('/banks/{id}/toggle', [BankController::class, 'toggle'])->name('banks.toggle'); // optional
         Route::resource('subscription_plans', SubscriptionPlanController::class);
+        Route::post('subscription_plans/reorder', [SubscriptionPlanController::class, 'reorder'])->name('subscription_plans.reorder');
+        Route::get('subscription_plans-comparison', [SubscriptionPlanController::class, 'comparison'])->name('subscription_plans.comparison');
 
         Route::resource('payments', PaymentController::class);
         Route::get('payment-plans', [PaymentController::class, 'plans'])->name('payments.plans');
@@ -196,6 +200,9 @@ Route::prefix('admin')
 
         // Signals
         Route::resource('signals', SignalController::class);
+
+        // Support Tickets
+        Route::resource('support_tickets', SupportTicketController::class);
 
         //AI Analytics Routes
         Route::prefix('ai')->name('ai.')->group(function () {

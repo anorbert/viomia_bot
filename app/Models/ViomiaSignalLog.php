@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ViomiaSignalLog extends Model
 {
-    //
     use HasFactory;
     protected $fillable = [
         'symbol',
@@ -16,5 +15,9 @@ class ViomiaSignalLog extends Model
         'push_status',
         'laravel_resp',
         'pushed_at',
+    ];
+
+    protected $casts = [
+        'pushed_at' => 'datetime',
     ];
 }

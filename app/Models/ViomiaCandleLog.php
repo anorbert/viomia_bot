@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ViomiaCandleLog extends Model
 {
-    //
     use HasFactory;
     protected $fillable = [
         'symbol',

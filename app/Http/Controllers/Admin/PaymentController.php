@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Bank;
+use App\Models\PaymentTransaction;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -16,8 +17,9 @@ class PaymentController extends Controller
     public function index()
     {
         //
+        $payments = PaymentTransaction::with(['user', 'plan'])->latest()->paginate(50);
         $banks = Bank::all();
-        return view('admin.payments.index', compact('banks'));
+        return view('admin.payments.index', compact('payments', 'banks'));
     }
 
     /**
@@ -110,5 +112,61 @@ class PaymentController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Display payment reports
+     */
+    public function reports(Request $request)
+    {
+        $query = \App\Models\PaymentTransaction::with(['user', 'plan']);
+
+        // Filter by status
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by provider
+        if ($request->has('provider') && $request->provider !== '') {
+            $query->where('provider', $request->provider);
+        }
+
+        // Filter by date range
+        if ($request->has('start_date') && $request->start_date !== '') {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->has('end_date') && $request->end_date !== '') {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // Search by reference or user email
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('reference', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($subQ) use ($search) {
+                      $subQ->where('email', 'like', "%{$search}%")
+                           ->orWhere('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $transactions = $query->orderBy('created_at', 'desc')->paginate(50);
+
+        // Calculate statistics
+        $stats = [
+            'total_transactions' => \App\Models\PaymentTransaction::count(),
+            'total_amount' => \App\Models\PaymentTransaction::sum('amount'),
+            'completed' => \App\Models\PaymentTransaction::where('status', 'completed')->count(),
+            'pending' => \App\Models\PaymentTransaction::where('status', 'pending')->count(),
+            'failed' => \App\Models\PaymentTransaction::where('status', 'failed')->count(),
+            'amount_by_provider' => \App\Models\PaymentTransaction::selectRaw('provider, SUM(amount) as total')
+                ->where('status', 'completed')
+                ->groupBy('provider')
+                ->get(),
+        ];
+
+        return view('admin.payments.reports', compact('transactions', 'stats'));
     }
 }

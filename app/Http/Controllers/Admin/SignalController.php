@@ -13,9 +13,15 @@ class SignalController extends Controller
      */
     public function index()
     {
-        //
         $signals = Signal::orderBy('created_at', 'desc')->paginate(25);
-        return view('admin.trades.signals', compact('signals'));
+        
+        // Calculate signal statistics
+        $totalSignals = Signal::count();
+        $todaySignals = Signal::whereDate('created_at', today())->count();
+        $buySignals = Signal::where('direction', 'buy')->count();
+        $sellSignals = Signal::where('direction', 'sell')->count();
+        
+        return view('admin.trades.signals', compact('signals', 'totalSignals', 'todaySignals', 'buySignals', 'sellSignals'));
     }
 
     /**

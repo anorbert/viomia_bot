@@ -12,8 +12,38 @@ class SubscriptionPlanController extends Controller
 {
     public function index()
     {
-        $plans = SubscriptionPlan::orderBy('sort_order')->orderByDesc('is_active')->paginate(20);
-        return view('admin.payments.subscriptions.plans', compact('plans'));
+        $query = SubscriptionPlan::query();
+
+        // Search filter
+        if (request('search')) {
+            $query->where('name', 'like', '%' . request('search') . '%');
+        }
+
+        // Status filter
+        if (request('status') === 'active') {
+            $query->where('is_active', true);
+        } elseif (request('status') === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        // Visibility filter
+        if (request('visibility') === 'visible') {
+            $query->where('is_visible', true);
+        } elseif (request('visibility') === 'hidden') {
+            $query->where('is_visible', false);
+        }
+
+        // Price range filter
+        if (request('price_min')) {
+            $query->where('price', '>=', request('price_min'));
+        }
+        if (request('price_max')) {
+            $query->where('price', '<=', request('price_max'));
+        }
+
+        $plans = $query->orderBy('sort_order')->orderByDesc('is_active')->paginate(20);
+        
+        return view('admin.subscription_plans.index', compact('plans'));
     }
 
     public function create()
@@ -82,6 +112,29 @@ class SubscriptionPlanController extends Controller
 
         return redirect()->route('admin.subscription_plans.index')
             ->with('success', 'Subscription plan deleted.');
+    }
+
+    public function reorder(Request $request)
+    {
+        $orders = $request->validate([
+            'orders' => 'required|array',
+            'orders.*.id' => 'required|exists:subscription_plans,id',
+            'orders.*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        foreach ($orders['orders'] as $order) {
+            SubscriptionPlan::where('id', $order['id'])->update([
+                'sort_order' => $order['sort_order']
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Plans reordered successfully']);
+    }
+
+    public function comparison()
+    {
+        $plans = SubscriptionPlan::orderBy('sort_order')->get();
+        return view('admin.subscription_plans.comparison', compact('plans'));
     }
 
     private function normalizeFeatures($features)

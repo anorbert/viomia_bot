@@ -112,10 +112,28 @@ public function statistic1(){
             ];
         })->sortBy('date')->take(30)->values();
         
+        // Profit factor
+        $profitFactor = $avgLoss != 0 ? round(abs($avgWin / $avgLoss), 2) : 0;
+        
+        // Symbol statistics - group by symbol with detailed metrics
+        $symbolStats = TradeLog::selectRaw(
+            'symbol, 
+            COUNT(*) as trade_count, 
+            SUM(CASE WHEN profit > 0 THEN 1 ELSE 0 END) as winning,
+            SUM(profit) as total_profit'
+        )
+        ->groupBy('symbol')
+        ->orderByDesc('total_profit')
+        ->get()
+        ->map(function ($stat) {
+            $stat->win_rate = $stat->trade_count > 0 ? round(($stat->winning / $stat->trade_count) * 100, 1) : 0;
+            return $stat;
+        });
+        
         return view('admin.trades.statistics', compact(
             'totalTrades', 'winningTrades', 'losingTrades', 'totalProfit', 
-            'totalLots', 'winRate', 'avgProfit', 'avgWin', 'avgLoss',
-            'profitBySymbol', 'profitByType', 'dailyProfit'
+            'totalLots', 'winRate', 'avgProfit', 'avgWin', 'avgLoss', 'profitFactor',
+            'profitBySymbol', 'profitByType', 'dailyProfit', 'symbolStats'
         ));
     }
     public function Check(){

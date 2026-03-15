@@ -1,196 +1,163 @@
 @extends('layouts.admin')
 
+@section('title', 'Bots Management — ' . config('app.name'))
+
+@push('styles')
+<style>
+.right_col { background-color: #0a0e17 !important; }
+.vi-header { display: flex !important; align-items: center !important; flex-wrap: wrap; gap: 14px; background-color: #111827 !important; border: 1px solid rgba(255,255,255,0.07) !important; border-top: 2.5px solid #3B9EFF !important; border-radius: 12px !important; padding: 18px 24px !important; margin-bottom: 20px !important; box-shadow: 0 2px 12px rgba(0,0,0,0.35) !important; }
+.vi-header-title { font-size: 18px !important; font-weight: 800 !important; color: #f1f5f9 !important; }
+.vi-header-sub { font-size: 12px !important; color: #94a3b8 !important; margin-top: 3px; }
+.vi-panel { background-color: #111827 !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 12px !important; overflow: hidden; margin-bottom: 16px !important; box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important; }
+.vi-panel-head { display: flex !important; align-items: center !important; gap: 10px; padding: 13px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.07) !important; background-color: #1a2235 !important; }
+.vi-panel-title { font-size: 11.5px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 1.2px; color: #94a3b8 !important; flex: 1; }
+.vi-panel-body { padding: 18px !important; }
+.vi-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.vi-table thead th { padding: 10px 14px; font-size: 9.5px !important; font-weight: 800 !important; letter-spacing: 1.2px; text-transform: uppercase; color: #4b5563 !important; text-align: left; background-color: #1a2235 !important; border-bottom: 1px solid rgba(255,255,255,0.07) !important; }
+.vi-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.07) !important; }
+.vi-table tbody tr:hover { background-color: #1a2235 !important; }
+.vi-table tbody td { padding: 11px 14px; color: #94a3b8 !important; vertical-align: middle; background-color: transparent !important; }
+.vi-table .td-sym { color: #f1f5f9 !important; font-weight: 800 !important; font-size: 13px; }
+.vi-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block; }
+.vi-badge-active { background-color: rgba(34,197,94,0.13) !important; color: #22C55E !important; }
+.vi-badge-inactive { background-color: rgba(107,114,128,0.13) !important; color: #9CA3AF !important; }
+.vi-btn { padding: 6px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; transition: all 0.15s; }
+.vi-btn-primary { background-color: #3B9EFF !important; color: #fff !important; }
+.vi-btn-primary:hover { background-color: #2986d9 !important; box-shadow: 0 4px 14px rgba(59,158,255,0.32) !important; }
+.vi-btn-settings { background-color: rgba(139,92,246,0.13) !important; color: #A78BFA !important; border: 1px solid rgba(139,92,246,0.25) !important; }
+.vi-btn-settings:hover { background-color: rgba(139,92,246,0.2) !important; }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid py-3">
 
-    {{-- Header --}}
-    <div class="justify-content-between align-items-center mb-3">
-        <div>
-            <h4 class="mb-0 font-weight-bold">Bots Management</h4>
-            <div class="text-muted small">
-                Manage trading bots, versions and health status.
-            </div>
-        </div>
-
-        {{-- GREEN GRADIENT BUTTON --}}
-        <button class="btn text-white btn-sm shadow-sm border-0"
-                style="background: linear-gradient(45deg, #1e7e34, #28a745); font-weight: 500;"
-                data-toggle="modal"
-                data-target="#createBotModal">
-            <i class="fa fa-plus-circle mr-1"></i> Add New Bot
-        </button>
+<div class="vi-header">
+    <div>
+        <div style="font-size:11px; font-weight:800; color:#3B9EFF; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🤖 Bot Management</div>
+        <div class="vi-header-title">Trading Bots</div>
+        <div class="vi-header-sub">Manage and monitor all trading bots and their performance</div>
     </div>
-
-    {{-- Card --}}
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-3">
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle mb-0"
-                       id="botsTable"
-                       style="width:100%">
-
-                    <thead style="background-color:#f8f9fa; border-bottom:2px solid #dee2e6;">
-                        <tr>
-                            <th class="text-uppercase small font-weight-bold text-secondary px-3" style="width:60px;">ID</th>
-                            <th class="text-uppercase small font-weight-bold text-secondary">Bot Information</th>
-                            <th class="text-uppercase small font-weight-bold text-secondary">Version</th>
-                            <th class="text-uppercase small font-weight-bold text-secondary">Address</th>
-                            <th class="text-uppercase small font-weight-bold text-secondary">Status</th>
-                            <th class="text-uppercase small font-weight-bold text-secondary text-right px-3">Management</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="bg-white">
-                        @foreach($bots as $bot)
-                        <tr style="transition: all 0.2s;">
-                            <td class="px-3 text-muted font-weight-bold">#{{ $bot->id }}</td>
-
-                            <td>
-                                <div>
-                                    <div class="font-weight-bold text-dark" style="font-size: 0.95rem;">
-                                        <i class="fa fa-robot text-success mr-1"></i>{{ $bot->name }}
-                                    </div>
-                                    <div class="text-muted extra-small" style="font-size: 0.75rem;">
-                                        Updated: {{ $bot->updated_at?->format('M d, Y') ?? '-' }}
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <span class="badge badge-pill badge-light border px-3 py-2" style="font-size:0.75rem;">
-                                    <i class="fa fa-code-branch mr-1"></i>{{ $bot->version }}
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="text-muted">
-                                    <i class="fa fa-map-marker-alt mr-1"></i>{{ $bot->address ?? 'Local' }}
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="badge badge-pill {{ $bot->status == 'Active' ? 'badge-success' : 'badge-danger' }} px-3 py-2" style="font-size:0.75rem;">
-                                    <i class="fa fa-circle mr-1" style="font-size:8px;"></i> {{ $bot->status }}
-                                </span>
-                            </td>
-
-                            <td class="text-right px-3">
-                                <div class="d-flex justify-content-end">
-                                    <a href="{{ route('admin.bots.edit', $bot) }}" class="btn btn-sm btn-outline-warning mr-2 border-0 shadow-sm" style="background-color:#fff9e6;" title="Edit Bot">
-                                        <i class="fa fa-pencil"></i>
-                                    </a>
-                                    <a href="{{ route('admin.bots.settings', $bot) }}" class="btn btn-sm btn-outline-info border-0 shadow-sm" style="background-color:#eef8ff;" title="Settings">
-                                        <i class="fa fa-cog"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-
-                </table>
-
-            </div>
-        </div>
-    </div>
-
+    <button class="vi-btn vi-btn-primary" data-toggle="modal" data-target="#createBotModal" style="margin-left:auto;">
+        <i class="fa fa-plus-circle"></i> Add New Bot
+    </button>
 </div>
 
+<div class="vi-panel">
+    <div class="vi-panel-head">
+        <i class="fa fa-list" style="color:#3B9EFF; font-size:14px;"></i>
+        <div class="vi-panel-title">Active Bots</div>
+    </div>
+    <div class="vi-panel-body">
+        <!-- Data Table -->
+        <div class="vi-table-container" style="overflow-x:auto;">
+            <table class="vi-table" id="botsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Bot Name</th>
+                        <th>Version</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($bots as $key => $bot)
+                        <tr>
+                            <td style="font-size:11px; color:#4b5563;">{{ $key + 1 }}</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div style="width:36px; height:36px; border-radius:8px; background-color:rgba(59,158,255,0.15); display:flex; align-items:center; justify-content:center; color:#3B9EFF; font-weight:800;">
+                                        <i class="fa fa-robot"></i>
+                                    </div>
+                                    <div>
+                                        <div class="td-sym">{{ $bot->name }}</div>
+                                        <div style="font-size:10px; color:#4b5563; margin-top:2px;">Updated: {{ $bot->updated_at?->format('M d, Y') ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <code style="background-color:rgba(26,187,156,0.1); color:#1ABB9C; padding:2px 6px; border-radius:4px; font-size:10px;">{{ $bot->version }}</code>
+                            </td>
+                            <td style="font-size:11px;">{{ $bot->address ?? 'Local' }}</td>
+                            <td>
+                                @if($bot->status === 'Active')
+                                    <span class="vi-badge vi-badge-active">ACTIVE</span>
+                                @else
+                                    <span class="vi-badge vi-badge-inactive">INACTIVE</span>
+                                @endif
+                            </td>
+                            <td style="text-align:right;">
+                                <a href="{{ route('admin.bots.edit', $bot) }}" class="vi-btn vi-btn-primary">
+                                    <i class="fa fa-pencil"></i> Edit
+                                </a>
+                                <a href="{{ route('admin.bots.settings', $bot) }}" class="vi-btn vi-btn-settings" style="margin-left:8px;">
+                                    <i class="fa fa-cog"></i> Settings
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:20px;">No bots found</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 {{-- ================= CREATE BOT MODAL ================= --}}
-<div class="modal fade" id="createBotModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <form method="POST" action="{{ route('admin.bots.store') }}" class="w-100">
+<div class="modal fade" id="createBotModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <form method="POST" action="{{ route('admin.bots.store') }}">
             @csrf
 
-            <div class="modal-content border-0 shadow">
+            <div class="modal-content" style="background-color:#111827; border:1px solid rgba(255,255,255,0.1); border-radius:12px;">
 
-                {{-- GREEN GRADIENT HEADER --}}
-                <div class="modal-header text-white"
-                     style="background: linear-gradient(45deg,#1e7e34,#2bb14e) !important;">
-                    <h5 class="modal-title font-weight-bold">
-                        <i class="fa fa-robot mr-2"></i>Add New Bot
+                <div class="modal-header" style="background-color:#1a2235; border-bottom:1px solid rgba(255,255,255,0.1); border-radius:12px 12px 0 0;">
+                    <h5 class="modal-title" style="color:#f1f5f9; font-weight:800; font-size:14px;">
+                        <i class="fa fa-robot" style="color:#3B9EFF; margin-right:8px;"></i>Add New Bot
                     </h5>
-                    <button type="button"
-                            class="close text-white"
-                            data-dismiss="modal">
+                    <button type="button" class="close" data-dismiss="modal" style="color:#94a3b8;">
                         <span>&times;</span>
                     </button>
                 </div>
 
-                <div class="modal-body py-3">
-                    <div class="row">
+                <div class="modal-body" style="padding:18px;">
 
-                        {{-- Bot Name --}}
-                        <div class="col-md-12 mb-2">
-                            <label class="small font-weight-bold">Bot Name</label>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fa fa-robot text-success"></i>
-                                    </span>
-                                </div>
-                                <input class="form-control border-left-0" name="name" placeholder="Enter bot name" required>
-                            </div>
-                        </div>
-
-                        {{-- Version --}}
-                        <div class="col-md-6 mb-2">
-                            <label class="small font-weight-bold">Version</label>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fa fa-code-branch text-primary"></i>
-                                    </span>
-                                </div>
-                                <input class="form-control border-left-0" name="version" placeholder="1.0.0" required>
-                            </div>
-                        </div>
-
-                        {{-- Status --}}
-                        <div class="col-md-6 mb-2">
-                            <label class="small font-weight-bold">Status</label>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fa fa-circle text-success"></i>
-                                    </span>
-                                </div>
-                                <select class="form-control border-left-0" name="status">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- Address --}}
-                        <div class="col-md-12 mb-2">
-                            <label class="small font-weight-bold">Address / Path</label>
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-white border-right-0">
-                                        <i class="fa fa-map-marker-alt text-danger"></i>
-                                    </span>
-                                </div>
-                                <input class="form-control border-left-0" name="address" placeholder="Enter address or path">
-                            </div>
-                        </div>
-
+                    <div class="form-group">
+                        <label style="color:#94a3b8; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Bot Name</label>
+                        <input type="text" name="name" class="form-control" style="background-color:#1a2235; border:1px solid rgba(255,255,255,0.12); color:#f1f5f9; border-radius:8px; padding:10px 14px; font-size:12px;" placeholder="Enter bot name" required>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label style="color:#94a3b8; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Version</label>
+                            <input type="text" name="version" class="form-control" style="background-color:#1a2235; border:1px solid rgba(255,255,255,0.12); color:#f1f5f9; border-radius:8px; padding:10px 14px; font-size:12px;" placeholder="1.0.0" required>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label style="color:#94a3b8; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Status</label>
+                            <select name="status" class="form-control" style="background-color:#1a2235; border:1px solid rgba(255,255,255,0.12); color:#f1f5f9; border-radius:8px; padding:10px 14px; font-size:12px;">
+                                <option value="Active" style="background-color:#111827;">Active</option>
+                                <option value="Inactive" style="background-color:#111827;">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="color:#94a3b8; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Address / Path</label>
+                        <input type="text" name="address" class="form-control" style="background-color:#1a2235; border:1px solid rgba(255,255,255,0.12); color:#f1f5f9; border-radius:8px; padding:10px 14px; font-size:12px;" placeholder="Enter address or path">
+                    </div>
+
                 </div>
 
-                <div class="modal-footer bg-light py-2">
-                    <button class="btn text-white btn-sm px-3 shadow-sm border-0"
-                            type="button"
-                            data-dismiss="modal"
-                            style="background: linear-gradient(45deg,#dc3545,#b02a37);">
+                <div class="modal-footer" style="background-color:#1a2235; border-top:1px solid rgba(255,255,255,0.1); border-radius:0 0 12px 12px;">
+                    <button type="button" class="btn" data-dismiss="modal" style="background-color:rgba(239,68,68,0.13); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); border-radius:6px; font-weight:700; padding:6px 14px;">
                         Cancel
                     </button>
-
-                    <button class="btn text-white btn-sm px-4 shadow-sm border-0"
-                            type="submit"
-                            style="background: linear-gradient(45deg,#28a745,#218838);">
+                    <button type="submit" class="btn" style="background-color:#3B9EFF; color:#fff; border:none; border-radius:6px; font-weight:700; padding:6px 14px;">
                         Save Bot
                     </button>
                 </div>
@@ -202,13 +169,31 @@
 
 @endsection
 
-
 @push('scripts')
 <script>
 $(document).ready(function() {
-
     $('#botsTable').DataTable({
         responsive: true,
+        pageLength: 10,
+        order: [[0, "desc"]],
+        columnDefs: [{ orderable: false, targets: 5 }],
+        language: {
+            search: "",
+            searchPlaceholder: "Search bots...",
+            lengthMenu: "_MENU_ per page",
+            paginate: { previous: "Prev", next: "Next" }
+        }
+    });
+
+    $('.dataTables_filter input')
+        .addClass('form-control form-control-sm')
+        .css({'width':'auto', 'background-color':'#1a2235', 'border':'1px solid rgba(255,255,255,0.12)', 'color':'#f1f5f9', 'border-radius':'8px'});
+
+    $('.dataTables_length select')
+        .addClass('form-control form-control-sm')
+        .css({'width':'auto', 'background-color':'#1a2235', 'border':'1px solid rgba(255,255,255,0.12)', 'color':'#f1f5f9', 'border-radius':'8px'});
+});
+</script>
         pageLength: 10,
         order: [[0, "desc"]],
         columnDefs: [{ orderable: false, targets: 5 }],

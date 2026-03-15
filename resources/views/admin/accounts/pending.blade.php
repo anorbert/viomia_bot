@@ -1,344 +1,250 @@
 @extends('layouts.admin')
 
+@section('title', 'Pending Account Verification — ' . config('app.name'))
+
+@push('styles')
+<style>
+.right_col { background-color: #0a0e17 !important; }
+.vi-header { display: flex !important; align-items: center !important; flex-wrap: wrap; gap: 14px; background: linear-gradient(135deg, #111827 0%, #1a2235 100%) !important; border: 1px solid rgba(245,158,11,0.15) !important; border-top: 3px solid #F59E0B !important; border-radius: 14px !important; padding: 24px !important; margin-bottom: 24px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(245,158,11,0.08) !important; position: relative; overflow: hidden; }
+.vi-header::before { content: ''; position: absolute; top: 0; right: 0; width: 300px; height: 300px; background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+.vi-header > * { position: relative; z-index: 1; }
+.vi-header-title { font-size: 22px !important; font-weight: 900 !important; color: #f1f5f9 !important; letter-spacing: -0.5px; }
+.vi-header-sub { font-size: 13px !important; color: #94a3b8 !important; margin-top: 4px; font-weight: 500; }
+.vi-header-badge { background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.06) 100%) !important; border: 1px solid rgba(245,158,11,0.3) !important; color: #fbbf24 !important; padding: 8px 16px !important; border-radius: 9px !important; font-size: 12px !important; font-weight: 700 !important; margin-left: auto; text-transform: uppercase; letter-spacing: 0.5px; }
+.vi-panel { background-color: #111827 !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 14px !important; overflow: hidden; margin-bottom: 20px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important; transition: all 0.3s ease; }
+.vi-panel:hover { border-color: rgba(245,158,11,0.2) !important; box-shadow: 0 8px 32px rgba(245,158,11,0.08) !important; }
+.vi-panel-head { display: flex !important; align-items: center !important; gap: 12px; padding: 16px 20px !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; background: linear-gradient(90deg, #1a2235 0%, rgba(245,158,11,0.03) 100%) !important; border-left: 4px solid #F59E0B !important; }
+.vi-panel-title { font-size: 12px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 1.4px; color: #cbd5e1 !important; flex: 1; }
+.vi-panel-body { padding: 24px !important; }
+.vi-alert { padding: 14px 18px !important; border-radius: 10px !important; margin-bottom: 20px !important; display: flex !important; align-items: center !important; gap: 12px !important; animation: slideDown 0.3s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.vi-alert-success { background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.05) 100%) !important; border: 1px solid rgba(34,197,94,0.3) !important; color: #4ade80 !important; }
+.vi-alert-error { background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.05) 100%) !important; border: 1px solid rgba(239,68,68,0.3) !important; color: #fca5a5 !important; }
+.vi-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.vi-detail-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.vi-detail-row:last-child { border-bottom: none; }
+.vi-detail-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #5a6b7a; letter-spacing: 1.2px; }
+.vi-detail-value { color: #f1f5f9; font-weight: 600; font-size: 13px; }
+.vi-input { background-color: #1a2235 !important; border: 1px solid rgba(255,255,255,0.12) !important; border-radius: 9px !important; color: #f1f5f9 !important; padding: 12px 16px !important; font-size: 12px !important; width: 100%; transition: all 0.2s ease; }
+.vi-input:focus { outline: none !important; border-color: rgba(245,158,11,0.4) !important; box-shadow: 0 0 0 4px rgba(245,158,11,0.12) !important; }
+.vi-btn { padding: 11px 18px; border-radius: 9px; font-weight: 700; border: none; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+.vi-btn:hover { transform: translateY(-2px); }
+.vi-btn-primary { background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%); color: #fff !important; box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
+.vi-btn-primary:hover { box-shadow: 0 6px 24px rgba(34,197,94,0.4); }
+.vi-btn-danger { background: linear-gradient(135deg, #EF4444 0%, #dc2626 100%); color: #fff !important; box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
+.vi-btn-danger:hover { box-shadow: 0 6px 24px rgba(239,68,68,0.4); }
+.vi-btn-outline { background-color: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15) !important; color: #cbd5e1; }
+.vi-btn-outline:hover { background-color: rgba(255,255,255,0.14); color: #f1f5f9; }
+.vi-badge { padding: 5px 12px; border-radius: 8px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; backdrop-filter: blur(10px); }
+.vi-badge-mt4 { background: linear-gradient(135deg, rgba(59,158,255,0.15) 0%, rgba(59,158,255,0.08) 100%); color: #60a5fa !important; border: 1px solid rgba(59,158,255,0.3); }
+.vi-badge-mt5 { background: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(139,92,246,0.08) 100%); color: #c4b5fd !important; border: 1px solid rgba(139,92,246,0.3); }
+.vi-badge-real { background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.08) 100%); color: #4ade80 !important; border: 1px solid rgba(34,197,94,0.3); }
+.vi-badge-demo { background: linear-gradient(135deg, rgba(107,114,128,0.12) 0%, rgba(107,114,128,0.06) 100%); color: #a1a5b0 !important; border: 1px solid rgba(107,114,128,0.2); }
+.vi-info-box { background: linear-gradient(135deg, rgba(26,187,156,0.08) 0%, rgba(26,187,156,0.04) 100%) !important; border: 1px solid rgba(26,187,156,0.25) !important; border-radius: 10px !important; padding: 14px !important; font-size: 11px !important; color: #cbd5e1 !important; margin-top: 14px; }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid">
-    {{-- Header --}}
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="mb-2">
-                <i class="fa fa-hourglass-half text-warning"></i> Pending Account Verification
-            </h2>
-            <p class="text-muted">Review and verify registered trading accounts awaiting confirmation</p>
-        </div>
-        <div class="col-md-4 text-end">
-            <div class="badge bg-warning text-dark" style="font-size: 16px; padding: 8px 12px;">
-                {{ $pendingAccounts->count() ?? 0 }} Pending
-            </div>
-        </div>
+
+<div class="vi-header">
+    <div>
+        <div style="font-size:11px; font-weight:800; color:#F59E0B; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">⏳ Verification Queue</div>
+        <div class="vi-header-title">Pending Account Verification</div>
+        <div class="vi-header-sub">Review and approve trading accounts awaiting confirmation</div>
     </div>
-
-    {{-- Filters & Actions --}}
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="x_panel">
-                <div class="x_content">
-                    <form method="GET" class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Filter by User</label>
-                            <select name="user_id" class="form-select">
-                                <option value="">-- All Users --</option>
-                                @foreach($users ?? [] as $user)
-                                    <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
-                                        {{ $user->name }} ({{ $user->email }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Filter by Platform</label>
-                            <select name="platform" class="form-select">
-                                <option value="">-- All Platforms --</option>
-                                <option value="mt4" {{ request('platform') == 'mt4' ? 'selected' : '' }}>MT4</option>
-                                <option value="mt5" {{ request('platform') == 'mt5' ? 'selected' : '' }}>MT5</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-filter"></i> Filter
-                            </button>
-                            <a href="{{ route('admin.accounts.pending') }}" class="btn btn-secondary">
-                                <i class="fa fa-redo"></i> Reset
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+    <div class="vi-header-badge">
+        <i class="fa fa-hourglass-half"></i> {{ $pendingAccounts->count() ?? 0 }} Pending
     </div>
-
-    {{-- Alerts --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-circle"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    {{-- Accounts List --}}
-    @forelse($pendingAccounts as $key => $account)
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="x_panel">
-                    <div class="x_title" style="border-bottom: 2px solid #fbbf24;">
-                        <h2 style="margin-bottom: 0; display: flex; align-items: center; gap: 10px;">
-                            <span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">PENDING</span>
-                            <span>{{ $account->user->name ?? 'Unknown' }}</span>
-                            <small class="text-muted">({{ $account->user->email ?? '' }})</small>
-                        </h2>
-                        <div class="clearfix"></div>
-                    </div>
-
-                    <div class="x_content">
-                        <div class="row">
-                            {{-- Left Column: Account Details --}}
-                            <div class="col-md-7">
-                                <div class="account-details">
-                                    <table class="table table-sm table-borderless">
-                                        <tbody>
-                                            <tr>
-                                                <td style="width: 40%; font-weight: 600; color: #374151;">
-                                                    <i class="fa fa-id-card text-primary"></i> Account ID
-                                                </td>
-                                                <td style="color: #555;">{{ $account->id }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 40%; font-weight: 600; color: #374151;">
-                                                    <i class="fa fa-mobile text-primary"></i> Platform
-                                                </td>
-                                                <td>
-                                                    <span class="badge" style="background: {{ $account->platform === 'mt4' ? '#dbeafe' : '#e0f2fe' }}; color: {{ $account->platform === 'mt4' ? '#1e40af' : '#0369a1' }};">
-                                                        {{ strtoupper($account->platform) }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-weight: 600; color: #374151;">
-                                                    <i class="fa fa-server text-primary"></i> Server
-                                                </td>
-                                                <td style="color: #555;">{{ $account->server ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-weight: 600; color: #374151;">
-                                                    <i class="fa fa-user-shield text-primary"></i> Login
-                                                </td>
-                                                <td style="color: #555; font-family: monospace;">{{ $account->login }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-weight: 600; color: #374151;">
-                                                    <i class="fa fa-lock text-primary"></i> Password
-                                                </td>
-                                                <td style="color: #555; font-family: monospace;">
-                                                    <span id="password-{{ $account->id }}" style="display: none;">{{ $account->password }}</span>
-                                                    <span id="password-masked-{{ $account->id }}">••••••••</span>
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                            onclick="togglePassword({{ $account->id }})">
-                                                        <i class="fa fa-eye"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-weight: 600; color: #374151;">
-                                                    <i class="fa fa-layer-group text-primary"></i> Account Type
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-info">
-                                                        {{ ucfirst($account->account_type ?? 'Standard') }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-weight: 600; color: #374151;">
-                                                    <i class="fa fa-calendar text-primary"></i> Submitted
-                                                </td>
-                                                <td style="color: #555;">
-                                                    {{ $account->created_at ? $account->created_at->format('M d, Y H:i') : 'N/A' }}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            {{-- Right Column: Actions --}}
-                            <div class="col-md-5">
-                                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
-                                    <h5 style="margin-bottom: 16px; color: #111827;">
-                                        <i class="fa fa-tasks"></i> Verification Actions
-                                    </h5>
-
-                                    {{-- Verification Form --}}
-                                    <form action="{{ route('admin.accounts.verify', $account->id) }}" method="POST" class="mb-3">
-                                        @csrf
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label">Verification Notes (Optional)</label>
-                                            <textarea name="verification_notes" 
-                                                      class="form-control" 
-                                                      rows="3" 
-                                                      placeholder="Add any notes about this account verification..."></textarea>
-                                        </div>
-
-                                        <div class="d-grid gap-2">
-                                            <button type="submit" 
-                                                    class="btn btn-success btn-lg" 
-                                                    onclick="return confirm('Confirm verification of this account?')">
-                                                <i class="fa fa-check-circle"></i> Approve & Verify
-                                            </button>
-                                        </div>
-                                    </form>
-
-                                    {{-- Reject Form --}}
-                                    <form action="{{ route('admin.accounts.reject', $account->id) }}" method="POST">
-                                        @csrf
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label">Rejection Reason</label>
-                                            <textarea name="rejection_reason" 
-                                                      class="form-control" 
-                                                      rows="3" 
-                                                      placeholder="Explain why this account is being rejected..."
-                                                      required></textarea>
-                                        </div>
-
-                                        <div class="d-grid">
-                                            <button type="submit" 
-                                                    class="btn btn-danger" 
-                                                    onclick="return confirm('Reject this account? The user will be notified.')">
-                                                <i class="fa fa-times-circle"></i> Reject Account
-                                            </button>
-                                        </div>
-                                    </form>
-
-                                    {{-- Status Badge --}}
-                                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-                                        <small class="text-muted">
-                                            <i class="fa fa-info-circle"></i> 
-                                            Approving will activate this account for trading.<br>
-                                            Rejecting will notify the user to resubmit.
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @empty
-        <div class="x_panel">
-            <div class="x_content text-center py-5">
-                <i class="fa fa-inbox" style="font-size: 48px; color: #d1d5db; margin-bottom: 16px; display: block;"></i>
-                <h4 class="text-muted mb-2">No Pending Accounts</h4>
-                <p class="text-muted">All trading accounts have been verified. Check back later for new submissions.</p>
-            </div>
-        </div>
-    @endforelse
-
-    {{-- Pagination --}}
-    @if($pendingAccounts && $pendingAccounts->hasPages())
-        <div class="row">
-            <div class="col-md-12">
-                <nav>
-                    {{ $pendingAccounts->links() }}
-                </nav>
-            </div>
-        </div>
-    @endif
 </div>
 
-<style>
-    .btn {
-        border-radius: 6px;
-        font-weight: 500;
-        padding: 8px 16px;
-        transition: all 0.2s;
-    }
+{{-- Alerts --}}
+@if(session('success'))
+    <div class="vi-alert vi-alert-success">
+        <i class="fa fa-check-circle" style="font-size:16px;"></i>
+        <span>{{ session('success') }}</span>
+    </div>
+@endif
 
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
+@if(session('error'))
+    <div class="vi-alert vi-alert-error">
+        <i class="fa fa-exclamation-circle" style="font-size:16px;"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
 
-    .btn-success {
-        background-color: #10b981;
-        border-color: #10b981;
-    }
+{{-- Accounts List --}}
+@forelse($pendingAccounts as $key => $account)
+    <div class="vi-panel" style="border-top: 3px solid #F59E0B;">
+        <div class="vi-panel-head">
+            <span style="background-color:rgba(245,158,11,0.2); color:#F59E0B; padding:4px 10px; border-radius:6px; font-size:10px; font-weight:800;">PENDING</span>
+            <div class="vi-panel-title" style="flex:1; margin-left:8px;">{{ $account->user->name ?? 'Unknown' }} <span style="font-size:10px; color:#4b5563; font-weight:400; margin-left:8px;">({{ $account->user->email ?? '' }})</span></div>
+        </div>
 
-    .btn-success:hover {
-        background-color: #059669;
-        border-color: #059669;
-    }
+        <div class="vi-panel-body">
+            <div class="vi-details-grid">
+                {{-- Left Column: Account Details --}}
+                <div class="vi-details-col">
+                    <div style="margin-bottom:20px;">
+                        <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);">Account Information</div>
+                        
+                        <div class="vi-detail-row">
+                            <span class="vi-detail-label">Account ID</span>
+                            <span class="vi-detail-value" style="font-family:monospace;">{{ $account->id }}</span>
+                        </div>
 
-    .btn-danger {
-        background-color: #ef4444;
-        border-color: #ef4444;
-    }
+                        <div class="vi-detail-row">
+                            <span class="vi-detail-label">Login</span>
+                            <span class="vi-detail-value" style="font-family:monospace; color:#3B9EFF;">{{ $account->login }}</span>
+                        </div>
 
-    .btn-danger:hover {
-        background-color: #dc2626;
-        border-color: #dc2626;
-    }
+                        <div class="vi-detail-row">
+                            <span class="vi-detail-label">Platform</span>
+                            <span>
+                                @if($account->platform === 'mt4')
+                                    <span class="vi-badge vi-badge-mt4">MT4</span>
+                                @else
+                                    <span class="vi-badge vi-badge-mt5">MT5</span>
+                                @endif
+                            </span>
+                        </div>
 
-    .badge {
-        font-weight: 600;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-    }
+                        <div class="vi-detail-row">
+                            <span class="vi-detail-label">Server</span>
+                            <span class="vi-detail-value">{{ $account->server ?? 'N/A' }}</span>
+                        </div>
 
-    .account-details table td {
-        padding: 12px 0;
-        border-bottom: 1px solid #f3f4f6;
-    }
+                        <div class="vi-detail-row">
+                            <span class="vi-detail-label">Type</span>
+                            <span>
+                                @if(strtolower($account->account_type) === 'real')
+                                    <span class="vi-badge vi-badge-real">REAL</span>
+                                @else
+                                    <span class="vi-badge vi-badge-demo">DEMO</span>
+                                @endif
+                            </span>
+                        </div>
 
-    .account-details table tr:last-child td {
-        border-bottom: none;
-    }
+                        <div class="vi-detail-row">
+                            <span class="vi-detail-label">Password</span>
+                            <span style="display:flex; align-items:center; gap:8px;">
+                                <code style="background-color:rgba(59,158,255,0.1); color:#3B9EFF; padding:2px 6px; border-radius:4px; font-size:10px;">
+                                    <span id="password-{{ $account->id }}" style="display:none;">{{ $account->password }}</span>
+                                    <span id="password-masked-{{ $account->id }}">••••••••</span>
+                                </code>
+                                <button type="button" class="vi-btn vi-btn-outline" style="padding:4px 8px; font-size:10px;" onclick="togglePassword({{ $account->id }})">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </span>
+                        </div>
 
-    .form-label {
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 6px;
-    }
+                        <div class="vi-detail-row">
+                            <span class="vi-detail-label">Submitted</span>
+                            <span class="vi-detail-value">{{ $account->created_at ? $account->created_at->format('M d, Y H:i') : 'N/A' }}</span>
+                        </div>
+                    </div>
+                </div>
 
-    .form-control, .form-select {
-        border: 1.5px solid #d1d5db;
-        border-radius: 6px;
-        padding: 8px 12px;
-    }
+                {{-- Right Column: Actions --}}
+                <div class="vi-details-col">
+                    {{-- Verification Form --}}
+                    {{-- Verification Actions Container --}}
+                    <div style="display: flex; flex-direction: column; gap: 18px;">
+                        {{-- Approve Form --}}
+                        <form action="{{ route('admin.accounts.verify', $account->id) }}" method="POST">
+                            @csrf
+                            
+                            <div style="background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(34,197,94,0.04) 100%); border: 1px solid rgba(34,197,94,0.25); border-radius: 10px; padding: 18px; overflow: hidden;">
+                                <div style="font-size: 12px; font-weight: 800; color: #4ade80; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa fa-check-circle-o"></i> Approve Account
+                                </div>
+                                <div class="vi-form-group">
+                                    <label>Verification Notes <span style="color: #4b5563;">(Optional)</span></label>
+                                    <textarea name="verification_notes" class="vi-input" rows="3" placeholder="Add any internal notes about this account verification..." style="resize: vertical;"></textarea>
+                                </div>
+                                <button type="submit" class="vi-btn vi-btn-primary" style="width: 100%; justify-content: center; padding: 13px;" onclick="return confirm('Approve and verify this account?')">
+                                    <i class="fa fa-check"></i> Approve & Activate
+                                </button>
+                            </div>
+                        </form>
 
-    .form-control:focus, .form-select:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
+                        {{-- Reject Form --}}
+                        <form action="{{ route('admin.accounts.reject', $account->id) }}" method="POST">
+                            @csrf
+                            
+                            <div style="background: linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(239,68,68,0.04) 100%); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 18px; overflow: hidden;">
+                                <div style="font-size: 12px; font-weight: 800; color: #fca5a5; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa fa-times-circle-o"></i> Reject Account
+                                </div>
+                                <div class="vi-form-group">
+                                    <label>Rejection Reason <span style="color: #ef4444;">*</span></label>
+                                    <textarea name="rejection_reason" class="vi-input" rows="3" placeholder="Provide clear reason for rejection..." required style="resize: vertical;"></textarea>
+                                </div>
+                                <button type="submit" class="vi-btn vi-btn-danger" style="width: 100%; justify-content: center; padding: 13px;" onclick="return confirm('Reject this account? User will be notified.')">
+                                    <i class="fa fa-times"></i> Reject
+                                </button>
+                            </div>
+                        </form>
 
-    .x_panel {
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
+                        {{-- Info Box --}}
+                        <div class="vi-info-box">
+                            <i class="fa fa-info-circle" style="color: #1ABB9C;"></i> 
+                            <strong>Approval will activate</strong> the account and grant trading access. 
+                            <strong>Rejection will notify</strong> the user to resubmit or contact support.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@empty
+    <div class="vi-panel">
+        <div class="vi-panel-body" style="text-align: center; padding: 60px 30px;">
+            <div style="font-size: 64px; color: rgba(245,158,11,0.15); margin-bottom: 20px; animation: bounce 2s infinite;">
+                <i class="fa fa-inbox"></i>
+            </div>
+            <div style="font-size: 18px; font-weight: 800; color: #f1f5f9; margin-bottom: 10px;">No Pending Accounts</div>
+            <div style="font-size: 13px; color: #7a96ab; margin-bottom: 24px; line-height: 1.6;">
+                All trading accounts have been verified and are active. Check back when new account submissions arrive.
+            </div>
+            <a href="{{ route('admin.accounts.index') }}" class="vi-btn vi-btn-outline">
+                <i class="fa fa-arrow-left"></i> View All Accounts
+            </a>
+        </div>
+    </div>
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+@endforelse
 
-    .x_title {
-        padding: 16px;
-        background: #fff;
-        border-radius: 8px 8px 0 0;
-    }
+{{-- Pagination --}}
+@if($pendingAccounts && $pendingAccounts->hasPages())
+    <div style="margin-top: 32px; padding: 24px; background-color: #111827 !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 14px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;">
+        <style>
+            .pagination { margin: 0; display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+            .page-link { background-color: transparent !important; border: 1px solid rgba(255,255,255,0.12) !important; color: #cbd5e1 !important; padding: 10px 14px !important; border-radius: 8px !important; font-weight: 600; font-size: 12px; text-decoration: none; transition: all 0.2s; }
+            .page-link:hover { background-color: rgba(245,158,11,0.1) !important; border-color: rgba(245,158,11,0.3) !important; color: #fbbf24 !important; }
+            .page-item.active .page-link { background: linear-gradient(135deg, #F59E0B 0%, #d97706 100%) !important; border-color: #F59E0B !important; color: #fff !important; }
+            .page-item.disabled .page-link { opacity: 0.5; cursor: not-allowed; }
+        </style>
+        {{ $pendingAccounts->links() }}
+    </div>
+@endif
 
-    .x_content {
-        padding: 24px;
-    }
-</style>
 
 <script>
 function togglePassword(accountId) {
-    const passwordEl = document.getElementById('password-' + accountId);
-    const maskedEl = document.getElementById('password-masked-' + accountId);
-    const btn = event.target.closest('button');
-
-    if (passwordEl.style.display === 'none') {
-        passwordEl.style.display = 'inline';
-        maskedEl.style.display = 'none';
-        btn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+    const passwordSpan = document.getElementById('password-' + accountId);
+    const maskedSpan = document.getElementById('password-masked-' + accountId);
+    
+    if (passwordSpan.style.display === 'none') {
+        passwordSpan.style.display = 'inline';
+        maskedSpan.style.display = 'none';
     } else {
-        passwordEl.style.display = 'none';
-        maskedEl.style.display = 'inline';
-        btn.innerHTML = '<i class="fa fa-eye"></i>';
+        passwordSpan.style.display = 'none';
+        maskedSpan.style.display = 'inline';
     }
 }
 </script>

@@ -417,7 +417,7 @@
                     </div>
 
                     @forelse($recentTickets as $ticket)
-                    <a class="v-drop-item" href="{{ route('admin.users.index') }}">
+                    <a class="v-drop-item" href="{{ route('admin.support_tickets.index') }}">
                         <img class="v-ticket-avatar"
                              src="{{ $ticket->user->profile_photo ? asset('storage/'.$ticket->user->profile_photo) : asset('img/bot_logo.png') }}"
                              alt="">
@@ -446,7 +446,7 @@
                     @endforelse
 
                     <div class="v-drop-footer">
-                        <a href="#">All {{ $openSupport }} Ticket{{ $openSupport !== 1 ? 's' : '' }} →</a>
+                        <a href="{{ route('admin.support_tickets.index') }}">All {{ $openSupport }} Ticket{{ $openSupport !== 1 ? 's' : '' }} →</a>
                     </div>
                 </div>
             </div>
@@ -486,7 +486,7 @@
                         <i class="fa fa-users" style="color:#10b981;"></i>
                         <div>Manage Users <small>{{ $totalUsers }} total accounts</small></div>
                     </a>
-                    <a class="v-menu-item" href="{{ route('admin.users.index') }}">
+                    <a class="v-menu-item" href="{{ route('admin.support_tickets.index') }}">
                         <i class="fa fa-ticket" style="color:#f59e0b;"></i>
                         <div>
                             Support Tickets

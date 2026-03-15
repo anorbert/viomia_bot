@@ -54,8 +54,11 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
+            'previous_login_at' => 'datetime',
+            'last_activity_at' => 'datetime',
             'password' => 'hashed',
-            'deleted_at' => 'datetime', // Ensure this is cast to a date
+            'deleted_at' => 'datetime',
         ];
     }
 

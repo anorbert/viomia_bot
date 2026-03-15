@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ViomiaTradeOutcome extends Model
 {
-    //
     use HasFactory;
     protected $fillable = [
         'ticket',
@@ -16,5 +15,9 @@ class ViomiaTradeOutcome extends Model
         'profit',
         'result',
         'recorded_at',
+    ];
+
+    protected $casts = [
+        'recorded_at' => 'datetime',
     ];
 }

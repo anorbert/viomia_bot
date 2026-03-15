@@ -7,14 +7,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ViomiaTradeExecution extends Model
 {
-    //
     use HasFactory;
     protected $fillable = [
-        'ticket',
         'account_id',
+        'ticket',
         'symbol',
-        'profit',
+        'decision',
+        'ml_confidence',
+        'signal_combo',
+        'regime_type',
+        'entry_price',
+        'profit_loss',
         'result',
-        'recorded_at',
+        'session_name',
     ];
 }
