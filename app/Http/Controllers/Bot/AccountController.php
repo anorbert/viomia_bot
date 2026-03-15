@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Account;
+use App\Models\AccountSnapshot;
+use Log;
 
 class AccountController extends Controller
 {
@@ -89,7 +91,7 @@ class AccountController extends Controller
         ])->validate();
 
         // Find account
-        $account = Account::where('account', $validated['account'])->first();
+        $account = Account::where('login', $validated['account'])->first();
 
         if (!$account) {
             return response()->json([

@@ -51,7 +51,7 @@
         /* ── PRELOADER ── */
         #preloader {
             position: fixed; inset: 0;
-            background: #fff;
+            background: #1f2937;
             z-index: 99999;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
@@ -63,7 +63,7 @@
         .vl-spinner {
             width: 42px; height: 42px;
             border-radius: 50%;
-            border: 3px solid #e8eaed;
+            border: 3px solid rgba(255,255,255,0.15);
             border-top-color: #1ABB9C;
             animation: vlSpin 0.75s linear infinite;
         }
@@ -72,7 +72,7 @@
         .vl-brand {
             display: flex; align-items: center; gap: 8px;
             font-size: 13px; font-weight: 700;
-            color: #0d1117;
+            color: #fff;
         }
         .vl-brand-dot {
             width: 8px; height: 8px; border-radius: 50%;

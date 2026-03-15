@@ -14,7 +14,8 @@ class UserReportController extends Controller
     public function index(Request $request)
     {
         // Fetch user trading reports
-        $query = TradeLog::where('user_id', Auth::id());
+        $userAccountIds = auth()->user()->accounts()->pluck('id');
+        $query = TradeLog::whereIn('account_id', $userAccountIds);
 
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -25,7 +26,7 @@ class UserReportController extends Controller
         }
 
         $records = $query->latest()->get();
-        $total = $records->sum('profit_loss');
+        $total = $records->sum('profit');
 
         return view('user.reports.index', compact('records', 'total'));
     }

@@ -22,6 +22,9 @@ class User extends Authenticatable
         'uuid',
         'name',
         'email',
+        'phone',
+        'country',
+        'city',
         'password',
         'country_code',
         'phone_number',
@@ -32,6 +35,7 @@ class User extends Authenticatable
         'is_active',
         'is_default_pin',
         'last_login_at',
+        'last_login_ip',
         'previous_login_at',
         'total_login_count',
         'total_session_minutes',
@@ -125,6 +129,14 @@ public function currentSubscription(): HasOne
 public function supportTickets(): HasMany
 {
     return $this->hasMany(SupportTicket::class, 'user_id');
+}
+
+/**
+ * Relationship with User Settings
+ */
+public function settings(): HasOne
+{
+    return $this->hasOne(UserSettings::class, 'user_id');
 }
 
 /**

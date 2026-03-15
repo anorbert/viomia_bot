@@ -377,13 +377,12 @@
       </div>
     </a>
 
-    <a class="tnv-menu-item" href="{{ route('user.profile.edit', Auth::user()->id) }}">
+    <a class="tnv-menu-item" href="{{ route('user.settings.index') }}">
       <div class="tnv-menu-icon mi-violet"><i class="fa fa-cog"></i></div>
       <div>
         <div class="tnv-menu-label">Settings</div>
         <div class="tnv-menu-sub">Configure preferences</div>
       </div>
-      <span class="tnv-menu-badge">50%</span>
     </a>
 
     <a class="tnv-menu-item" href="{{ route('help') }}">

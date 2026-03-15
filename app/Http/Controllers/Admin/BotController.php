@@ -103,9 +103,9 @@ class BotController extends Controller
         if ($runtime) {
             $stats = [
                 'totalTrades'     => TradeLog::where('bot_status_id', $runtime->id)->count(),
-                'winningTrades'   => TradeLog::where('bot_status_id', $runtime->id)->where('profit_loss', '>', 0)->count(),
-                'losingTrades'    => TradeLog::where('bot_status_id', $runtime->id)->where('profit_loss', '<', 0)->count(),
-                'totalProfitLoss' => TradeLog::where('bot_status_id', $runtime->id)->sum('profit_loss'),
+                'winningTrades'   => TradeLog::where('bot_status_id', $runtime->id)->where('profit', '>', 0)->count(),
+                'losingTrades'    => TradeLog::where('bot_status_id', $runtime->id)->where('profit', '<', 0)->count(),
+                'totalProfitLoss' => TradeLog::where('bot_status_id', $runtime->id)->sum('profit'),
                 'winRate'         => $this->calculateWinRate($runtime->id),
                 'recentErrors'    => ErrorLog::where('bot_status_id', $runtime->id)->latest()->limit(5)->get(),
                 'statusChanges'   => EaStatusChange::where('bot_status_id', $runtime->id)->latest()->limit(10)->get(),

@@ -93,7 +93,7 @@
                         </span>
                     </td>
                     <td>
-                        @if($payment->status === 'completed')
+                        @if($payment->status === 'success')
                             <span class="vi-badge vi-badge-completed">
                                 <i class="fa fa-check-circle"></i> COMPLETED
                             </span>

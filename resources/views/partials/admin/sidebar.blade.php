@@ -609,12 +609,23 @@
     function vsSub(id) {
       var li = document.getElementById(id);
       if (!li) return;
-      var isOpen = li.classList.contains('open');
-      // collapse all others
+      
+      // Check both 'open' and 'active' classes to determine current state
+      var isOpen = li.classList.contains('open') || li.classList.contains('active');
+      
+      // Collapse all others
       document.querySelectorAll('.vs-item[id]').forEach(function(el) {
         if (el !== li) el.classList.remove('open');
       });
-      li.classList.toggle('open', !isOpen);
+      
+      // Toggle current item
+      if (isOpen) {
+        li.classList.remove('open');
+        li.classList.remove('active');
+      } else {
+        li.classList.add('open');
+        li.classList.add('active');
+      }
     }
   </script>
 

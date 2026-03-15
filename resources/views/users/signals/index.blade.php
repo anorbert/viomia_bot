@@ -215,8 +215,22 @@ $(document).ready(function() {
         "searching": true,
         "info": true,
         "lengthChange": false,
+        "autoWidth": false,
         "columnDefs": [
             { "orderable": false, "targets": [0, 10] }
+        ],
+        "aoColumns": [
+            { "sWidth": "30px" },  // #
+            { "sWidth": "100px" }, // Date
+            { "sWidth": "80px" },  // Ticket
+            { "sWidth": "80px" },  // Symbol
+            { "sWidth": "80px" },  // Type
+            { "sWidth": "60px" },  // Lots
+            { "sWidth": "80px" },  // Entry
+            { "sWidth": "60px" },  // SL
+            { "sWidth": "60px" },  // TP
+            { "sWidth": "80px" },  // Status
+            { "sWidth": "100px" }  // Profit
         ]
     });
 
@@ -244,8 +258,22 @@ $(document).ready(function() {
                         "searching": true,
                         "info": true,
                         "lengthChange": false,
+                        "autoWidth": false,
                         "columnDefs": [
                             { "orderable": false, "targets": [0, 10] }
+                        ],
+                        "aoColumns": [
+                            { "sWidth": "30px" },  // #
+                            { "sWidth": "100px" }, // Date
+                            { "sWidth": "80px" },  // Ticket
+                            { "sWidth": "80px" },  // Symbol
+                            { "sWidth": "80px" },  // Type
+                            { "sWidth": "60px" },  // Lots
+                            { "sWidth": "80px" },  // Entry
+                            { "sWidth": "60px" },  // SL
+                            { "sWidth": "60px" },  // TP
+                            { "sWidth": "80px" },  // Status
+                            { "sWidth": "100px" }  // Profit
                         ]
                     });
                 }

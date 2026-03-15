@@ -51,6 +51,13 @@ class SubscriptionPlanController extends Controller
         return view('admin.payments.subscriptions.create');
     }
 
+    public function show(SubscriptionPlan $subscription_plan)
+    {
+        return view('admin.subscription_plans.show', [
+            'plan' => $subscription_plan
+        ]);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

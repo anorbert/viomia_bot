@@ -398,7 +398,7 @@
                                         </div>
                                         <h5 class="text-muted fw-bold">No Payments Found</h5>
                                         <p class="text-muted mb-3">You haven't made any payments yet.</p>
-                                        <a href="{{ route('plans.index') }}" class="btn btn-primary btn-sm" style="border-radius: 8px;">
+                                        <a href="{{ route('user.plans.index') }}" class="btn btn-primary btn-sm" style="border-radius: 8px;">
                                             <i class="fa fa-shopping-cart mr-1"></i>Browse Plans
                                         </a>
                                     </div>

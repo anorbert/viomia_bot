@@ -119,7 +119,7 @@
             <label class="vi-filter-label">Status</label>
             <select class="vi-form-input" name="status">
                 <option value="">All Statuses</option>
-                <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>✓ Completed</option>
+                <option value="success" {{ request('status') === 'success' ? 'selected' : '' }}>✓ Completed</option>
                 <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>⏳ Pending</option>
                 <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>✗ Failed</option>
             </select>
@@ -199,7 +199,7 @@
                         </span>
                     </td>
                     <td>
-                        @if($transaction->status === 'completed')
+                        @if($transaction->status === 'success')
                             <span class="vi-badge vi-badge-completed">
                                 <i class="fa fa-check-circle"></i> COMPLETED
                             </span>
@@ -218,7 +218,7 @@
                         <span style="color:#4b5563;">{{ $transaction->created_at->format('H:i') }}</span>
                     </td>
                     <td style="text-align:right;">
-                        <a href="#" class="vi-btn vi-btn-secondary" title="View">
+                        <a href="{{ route('admin.payments.show', $transaction->id) }}" class="vi-btn vi-btn-secondary" title="View">
                             <i class="fa fa-eye"></i>
                         </a>
                     </td>

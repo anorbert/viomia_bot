@@ -41,6 +41,9 @@
 .vi-badge-real { background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.08) 100%); color: #4ade80 !important; border: 1px solid rgba(34,197,94,0.3); }
 .vi-badge-demo { background: linear-gradient(135deg, rgba(107,114,128,0.12) 0%, rgba(107,114,128,0.06) 100%); color: #a1a5b0 !important; border: 1px solid rgba(107,114,128,0.2); }
 .vi-info-box { background: linear-gradient(135deg, rgba(26,187,156,0.08) 0%, rgba(26,187,156,0.04) 100%) !important; border: 1px solid rgba(26,187,156,0.25) !important; border-radius: 10px !important; padding: 14px !important; font-size: 11px !important; color: #cbd5e1 !important; margin-top: 14px; }
+.cursor-pointer { cursor: pointer; }
+.vi-detail-value[onclick] { cursor: pointer; transition: color 0.2s ease; }
+.vi-detail-value[onclick]:hover { color: #4ade80 !important; }
 </style>
 @endpush
 
@@ -94,7 +97,12 @@
 
                         <div class="vi-detail-row">
                             <span class="vi-detail-label">Login</span>
-                            <span class="vi-detail-value" style="font-family:monospace; color:#3B9EFF;">{{ $account->login }}</span>
+                            <span style="display:flex; align-items:center; gap:8px;">
+                                <span class="vi-detail-value" style="font-family:monospace; color:#3B9EFF; cursor:pointer;" id="login-{{ $account->id }}" onclick="copyToClipboard('{{ $account->login }}', 'login-{{ $account->id }}')" title="Click to copy">{{ $account->login }}</span>
+                                <button type="button" class="vi-btn vi-btn-outline" style="padding:4px 8px; font-size:10px;" onclick="copyToClipboard('{{ $account->login }}', 'login-{{ $account->id }}')" title="Copy login">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                            </span>
                         </div>
 
                         <div class="vi-detail-row">
@@ -110,7 +118,12 @@
 
                         <div class="vi-detail-row">
                             <span class="vi-detail-label">Server</span>
-                            <span class="vi-detail-value">{{ $account->server ?? 'N/A' }}</span>
+                            <span style="display:flex; align-items:center; gap:8px;">
+                                <span class="vi-detail-value cursor-pointer" style="font-family:monospace;" id="server-{{ $account->id }}" onclick="copyToClipboard('{{ $account->server ?? 'N/A' }}', 'server-{{ $account->id }}')" title="Click to copy">{{ $account->server ?? 'N/A' }}</span>
+                                <button type="button" class="vi-btn vi-btn-outline" style="padding:4px 8px; font-size:10px;" onclick="copyToClipboard('{{ $account->server ?? 'N/A' }}', 'server-{{ $account->id }}')" title="Copy server">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                            </span>
                         </div>
 
                         <div class="vi-detail-row">
@@ -141,6 +154,9 @@
                                 </code>
                                 <button type="button" class="vi-btn vi-btn-outline" style="padding:4px 8px; font-size:10px;" onclick="togglePassword({{ $account->id }})">
                                     <i class="fa fa-eye"></i>
+                                </button>
+                                <button type="button" class="vi-btn vi-btn-outline" style="padding:4px 8px; font-size:10px;" onclick="copyPassword({{ $account->id }})" title="Copy password">
+                                    <i class="fa fa-copy"></i>
                                 </button>
                             </span>
                         </div>
@@ -254,6 +270,31 @@ function togglePassword(accountId) {
         passwordSpan.style.display = 'none';
         maskedSpan.style.display = 'inline';
     }
+}
+
+function copyToClipboard(text, elementId) {
+    navigator.clipboard.writeText(text).then(() => {
+        const elem = document.getElementById(elementId);
+        const originalColor = elem.style.color;
+        elem.style.color = '#22C55E';
+        setTimeout(() => {
+            elem.style.color = originalColor;
+            toastr.success('Copied to clipboard!');
+        }, 1500);
+    }).catch(err => {
+        toastr.error('Failed to copy text');
+    });
+}
+
+function copyPassword(accountId) {
+    const passwordSpan = document.getElementById('password-' + accountId);
+    const passwordText = passwordSpan.textContent.trim();
+    
+    navigator.clipboard.writeText(passwordText).then(() => {
+        toastr.success('Password copied to clipboard!');
+    }).catch(err => {
+        toastr.error('Failed to copy password');
+    });
 }
 </script>
 

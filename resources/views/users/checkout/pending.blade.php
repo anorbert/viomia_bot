@@ -170,7 +170,7 @@
             <i class="fa fa-arrow-left me-2"></i> Go to My Subscriptions
           </a>
           <hr class="my-3">
-          <a href="{{ route('plans.index') }}" class="btn btn-outline-secondary w-100">
+          <a href="{{ route('user.plans.index') }}" class="btn btn-outline-secondary w-100">
             <i class="fa fa-list me-2"></i> View Other Plans
           </a>
         </div>

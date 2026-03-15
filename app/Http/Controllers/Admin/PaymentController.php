@@ -87,7 +87,8 @@ class PaymentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $payment = PaymentTransaction::with(['user', 'plan'])->findOrFail($id);
+        return view('admin.payments.show', compact('payment'));
     }
 
     /**
@@ -103,7 +104,20 @@ class PaymentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $payment = PaymentTransaction::findOrFail($id);
+        
+        // Validate the request
+        $request->validate([
+            'status' => 'in:success,pending,failed',
+        ]);
+
+        // Update the payment status
+        $payment->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('admin.payments.show', $payment->id)
+                        ->with('success', 'Payment status updated successfully.');
     }
 
     /**
@@ -158,15 +172,41 @@ class PaymentController extends Controller
         $stats = [
             'total_transactions' => \App\Models\PaymentTransaction::count(),
             'total_amount' => \App\Models\PaymentTransaction::sum('amount'),
-            'completed' => \App\Models\PaymentTransaction::where('status', 'completed')->count(),
+            'completed' => \App\Models\PaymentTransaction::where('status', 'success')->count(),
             'pending' => \App\Models\PaymentTransaction::where('status', 'pending')->count(),
             'failed' => \App\Models\PaymentTransaction::where('status', 'failed')->count(),
             'amount_by_provider' => \App\Models\PaymentTransaction::selectRaw('provider, SUM(amount) as total')
-                ->where('status', 'completed')
+                ->where('status', 'success')
                 ->groupBy('provider')
                 ->get(),
         ];
 
         return view('admin.payments.reports', compact('transactions', 'stats'));
+    }
+
+    /**
+     * Resend payment notification to user
+     */
+    public function resend(string $id)
+    {
+        $payment = PaymentTransaction::with('user')->findOrFail($id);
+
+        if (!$payment->user) {
+            return redirect()->route('admin.payments.show', $payment->id)
+                            ->with('error', 'User not found for this payment.');
+        }
+
+        try {
+            // Send payment confirmation email
+            \Illuminate\Support\Facades\Mail::to($payment->user->email)->send(
+                new \App\Mail\PaymentConfirmation($payment)
+            );
+            
+            return redirect()->route('admin.payments.show', $payment->id)
+                            ->with('success', 'Payment confirmation email sent to ' . $payment->user->email);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.payments.show', $payment->id)
+                            ->with('error', 'Failed to send email: ' . $e->getMessage());
+        }
     }
 }

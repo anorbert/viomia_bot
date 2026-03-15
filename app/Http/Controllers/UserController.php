@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Parking;
 use App\Models\User;
 use Auth;
 use Log;

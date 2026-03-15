@@ -24,9 +24,9 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\SignalController;
 use App\Http\Controllers\Admin\SupportTicketController;
-use App\Http\Controllers\ExitLogsController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\CheckoutController;
+use App\Http\Controllers\Admin\CheckoutController as AdminCheckoutController;
+use App\Http\Controllers\User\CheckoutController as UserCheckoutController;
 
 //Bot Controllers
 use App\Http\Controllers\Bot\TradeLogController;
@@ -40,6 +40,7 @@ use App\Http\Controllers\User\UserPaymentController;
 use App\Http\Controllers\User\UserSignalController;
 use App\Http\Controllers\User\UserTradeController;
 use App\Http\Controllers\User\UserAccountController;
+use App\Http\Controllers\User\UserSettingsController;
 use App\Http\Controllers\ActivityTrackerController;
 
 //AI Analytics Controllers
@@ -82,8 +83,8 @@ Route::resource('user_register',RegisterController::class);
 Route::get('/user_register', [RegisterController::class, 'index'])->name('user_register');
 
 // Callbacks (NO auth — provider posts here)
-Route::post('/payments/callback/momo', [CheckoutController::class, 'momoCallback'])->name('payments.callback.momo');
-Route::post('/payments/webhook/binance', [CheckoutController::class, 'binanceWebhook'])->name('payments.webhook.binance');
+Route::post('/payments/callback/momo', [UserCheckoutController::class, 'momoCallback'])->name('payments.callback.momo');
+Route::post('/payments/webhook/binance', [UserCheckoutController::class, 'binanceWebhook'])->name('payments.webhook.binance');
 
 // Login routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -134,12 +135,27 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/accounts/activate/{id}', [UserAccountController::class,'activateAccount'])->name('accounts.activate');
 
     // Plans + checkout
-    Route::get('/plans', [CheckoutController::class, 'plans'])->name('plans.index');
-    Route::get('/plans/{plan:slug}', [CheckoutController::class, 'showPlan'])->name('plans.show');
+    Route::get('/plans', [UserCheckoutController::class, 'plans'])->name('plans.index');
+    Route::get('/plans/{plan:slug}', [UserCheckoutController::class, 'showPlan'])->name('plans.show');
 
-    Route::post('/checkout/{plan:slug}', [CheckoutController::class, 'start'])->name('checkout.start');
-    Route::get('/checkout/pending/{reference}', [CheckoutController::class, 'pending'])->name('checkout.pending');
-    Route::get('/checkout/status/{reference}', [CheckoutController::class, 'status'])->name('checkout.status');
+    Route::post('/checkout/{plan:slug}', [UserCheckoutController::class, 'start'])->name('checkout.start');
+    Route::get('/checkout/pending/{reference}', [UserCheckoutController::class, 'pending'])->name('checkout.pending');
+    Route::get('/checkout/status/{reference}', [UserCheckoutController::class, 'status'])->name('checkout.status');
+
+    // Settings
+    Route::get('/settings', [UserSettingsController::class, 'index'])->name('settings.index');
+    Route::get('/settings/account', [UserSettingsController::class, 'account'])->name('settings.account');
+    Route::put('/settings/account', [UserSettingsController::class, 'updateAccount'])->name('settings.update-account');
+    Route::get('/settings/security', [UserSettingsController::class, 'security'])->name('settings.security');
+    Route::put('/settings/password', [UserSettingsController::class, 'updatePassword'])->name('settings.update-password');
+    Route::post('/settings/logout-other-sessions', [UserSettingsController::class, 'logoutOtherSessions'])->name('settings.logout-other-sessions');
+    Route::get('/settings/notifications', [UserSettingsController::class, 'notifications'])->name('settings.notifications');
+    Route::put('/settings/notifications', [UserSettingsController::class, 'updateNotifications'])->name('settings.update-notifications');
+    Route::get('/settings/preferences', [UserSettingsController::class, 'preferences'])->name('settings.preferences');
+    Route::put('/settings/preferences', [UserSettingsController::class, 'updatePreferences'])->name('settings.update-preferences');
+    Route::get('/settings/data-privacy', [UserSettingsController::class, 'dataPrivacy'])->name('settings.data-privacy');
+    Route::post('/settings/download-data', [UserSettingsController::class, 'downloadData'])->name('settings.download-data');
+    Route::delete('/settings/account', [UserSettingsController::class, 'deleteAccount'])->name('settings.delete-account');
     });
 });
 
@@ -191,6 +207,7 @@ Route::prefix('admin')
         Route::resource('payments', PaymentController::class);
         Route::get('payment-plans', [PaymentController::class, 'plans'])->name('payments.plans');
         Route::get('payment-reports', [PaymentController::class, 'reports'])->name('payments.reports');
+        Route::post('payments/{id}/resend', [PaymentController::class, 'resend'])->name('payments.resend');
 
         // Settings
         Route::resource('users', UserController::class);
