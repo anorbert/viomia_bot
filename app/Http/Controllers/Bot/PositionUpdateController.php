@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PositionUpdate;
+use App\Models\Account;
 use App\Traits\ApiResponseFormatter;
 
 class PositionUpdateController extends Controller
@@ -25,6 +26,7 @@ class PositionUpdateController extends Controller
         }
 
         $validated = validator($data, [
+            'account'                  => 'required|numeric',
             'ticket'                   => 'required|string',
             'entry_price'              => 'required|numeric',
             'current_price'            => 'required|numeric',
@@ -33,6 +35,14 @@ class PositionUpdateController extends Controller
             'lot_size'                 => 'required|numeric',
             'updated_at'               => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
+
+        // Resolve account login to account_id
+        $account = Account::where('login', $validated['account'])->first();
+        if (!$account) {
+            return $this->errorResponse('Account not found', ['account_login' => $validated['account']], 400);
+        }
+        $validated['account_id'] = $account->id;
+        unset($validated['account']);
 
         try {
             $update = PositionUpdate::updateOrCreate(

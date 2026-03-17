@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()
     {
         $users = User::with('role')->latest()->get();
@@ -47,9 +50,7 @@ class UserController extends Controller
     // Changed string $id to User $user (Route Model Binding)
     public function edit(User $user)
     {
-        // $this->authorize('update', $user); // Security Layer B
-        // Gate::authorize('update', $user);
-        if (auth()->user()->role_id !== 1) { abort(403); }
+        $this->authorize('update', $user);
         $roles = Role::orderBy('name')->get();
         return view('admin.users.edit', compact('user', 'roles'));
     }
@@ -57,8 +58,7 @@ class UserController extends Controller
     // Changed string $id to User $user
     public function update(Request $request, User $user)
     {
-        // $this->authorize('update', $user); // Security Layer B
-        if (auth()->user()->role_id !== 1) { abort(403); }
+        $this->authorize('update', $user);
 
         $data = $request->validate([
             'name'          => ['required', 'string', 'max:255'],

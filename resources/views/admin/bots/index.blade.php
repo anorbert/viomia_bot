@@ -79,7 +79,7 @@
                             <td>
                                 <code style="background-color:rgba(26,187,156,0.1); color:#1ABB9C; padding:2px 6px; border-radius:4px; font-size:10px;">{{ $bot->version }}</code>
                             </td>
-                            <td style="font-size:11px;">{{ $bot->address ?? 'Local' }}</td>
+                            <td style="font-size:11px;">{{ $bot->address ? '✓ Uploaded' : 'Local' }}</td>
                             <td>
                                 @if($bot->status === 'Active')
                                     <span class="vi-badge vi-badge-active">ACTIVE</span>
@@ -88,6 +88,11 @@
                                 @endif
                             </td>
                             <td style="text-align:right;">
+                                @if($bot->address)
+                                    <a href="{{ route('admin.bots.download', $bot) }}" class="vi-btn" style="background-color:rgba(34,197,94,0.13); color:#22C55E; border:1px solid rgba(34,197,94,0.3);">
+                                        <i class="fa fa-download"></i> Download
+                                    </a>
+                                @endif
                                 <a href="{{ route('admin.bots.edit', $bot) }}" class="vi-btn vi-btn-primary">
                                     <i class="fa fa-pencil"></i> Edit
                                 </a>
@@ -110,7 +115,7 @@
 {{-- ================= CREATE BOT MODAL ================= --}}
 <div class="modal fade" id="createBotModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <form method="POST" action="{{ route('admin.bots.store') }}">
+        <form method="POST" action="{{ route('admin.bots.store') }}" enctype="multipart/form-data">
             @csrf
 
             <div class="modal-content" style="background-color:#111827; border:1px solid rgba(255,255,255,0.1); border-radius:12px;">
@@ -147,8 +152,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label style="color:#94a3b8; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Address / Path</label>
-                        <input type="text" name="address" class="form-control" style="background-color:#1a2235; border:1px solid rgba(255,255,255,0.12); color:#f1f5f9; border-radius:8px; padding:10px 14px; font-size:12px;" placeholder="Enter address or path">
+                        <label style="color:#94a3b8; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">EA Bot File</label>
+                        <div style="position:relative; display:block;">
+                            <input type="file" name="address" id="botFile" class="form-control" style="background-color:#1a2235; border:1px solid rgba(255,255,255,0.12); color:#f1f5f9; border-radius:8px; padding:10px 14px; font-size:12px;" accept=".exe,.zip,.dll" required>
+                            <small style="color:#4b5563; display:block; margin-top:6px;">Supported: .exe, .zip, .dll</small>
+                        </div>
                     </div>
 
                 </div>
@@ -192,27 +200,27 @@ $(document).ready(function() {
     $('.dataTables_length select')
         .addClass('form-control form-control-sm')
         .css({'width':'auto', 'background-color':'#1a2235', 'border':'1px solid rgba(255,255,255,0.12)', 'color':'#f1f5f9', 'border-radius':'8px'});
-});
-</script>
-        pageLength: 10,
-        order: [[0, "desc"]],
-        columnDefs: [{ orderable: false, targets: 5 }],
-        language: {
-            search: "",
-            searchPlaceholder: "Search bots...",
-            lengthMenu: "_MENU_ per page",
-            paginate: { previous: "Prev", next: "Next" }
+
+    // File upload preview
+    $('#botFile').on('change', function() {
+        const fileName = $(this).val().split('\\').pop();
+        const fileSize = this.files[0].size;
+        if (fileSize > 100000000) { // 100MB limit
+            alert('File size must not exceed 100MB');
+            $(this).val('');
+        } else if (fileName) {
+            $(this).next('small').after(`<div style="color:#22C55E; margin-top:6px; font-size:11px;"><i class="fa fa-check-circle"></i> File selected: ${fileName}</div>`);
         }
     });
 
-    $('.dataTables_filter input')
-        .addClass('form-control form-control-sm d-inline-block')
-        .css('width','auto');
-
-    $('.dataTables_length select')
-        .addClass('form-control form-control-sm d-inline-block')
-        .css('width','auto');
-
+    // Form submission handler
+    $('#createBotModal form').on('submit', function(e) {
+        const fileInput = $('input[name="address"]');
+        if (fileInput.val() === '') {
+            e.preventDefault();
+            alert('Please select an EA Bot file');
+        }
+    });
 });
 </script>
 @endpush

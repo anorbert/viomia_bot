@@ -78,7 +78,7 @@ class SubscriptionPlanController extends Controller
 
         SubscriptionPlan::create($data);
 
-        return redirect()->route('admin.subscription-plans.index')
+        return redirect()->route('admin.subscription_plans.index')
             ->with('success', 'Subscription plan created successfully.');
     }
 
@@ -109,7 +109,7 @@ class SubscriptionPlanController extends Controller
 
         $subscription_plan->update($data);
 
-        return redirect()->route('admin.payments.subscription_plans.index')
+        return redirect()->route('admin.subscription_plans.index')
             ->with('success', 'Subscription plan updated successfully.');
     }
 

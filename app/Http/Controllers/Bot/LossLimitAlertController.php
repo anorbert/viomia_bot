@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LossLimitAlert;
+use App\Models\Account;
 use App\Traits\ApiResponseFormatter;
 
 class LossLimitAlertController extends Controller
@@ -26,13 +27,22 @@ class LossLimitAlertController extends Controller
         }
 
         $validated = validator($data, [
+            'account'           => 'required|numeric',
             'daily_loss'        => 'required|numeric',
             'daily_loss_limit'  => 'required|numeric',
-            'limit_type'        => 'required|in:USD,PERCENT',
+            'limit_type'        => 'required|in:HARD_STOP,SOFT_STOP,WARNING',
             'balance'           => 'required|numeric',
             'equity'            => 'required|numeric',
             'alert_at'          => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
+
+        // Resolve account login to account_id
+        $account = Account::where('login', $validated['account'])->first();
+        if (!$account) {
+            return $this->errorResponse('Account not found', ['account_login' => $validated['account']], 400);
+        }
+        $validated['account_id'] = $account->id;
+        unset($validated['account']);
 
         try {
             $alert = LossLimitAlert::create($validated);

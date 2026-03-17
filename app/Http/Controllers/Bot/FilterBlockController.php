@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FilterBlock;
+use App\Models\Account;
 use App\Traits\ApiResponseFormatter;
 
 class FilterBlockController extends Controller
@@ -26,10 +27,19 @@ class FilterBlockController extends Controller
         }
 
         $validated = validator($data, [
+            'account'        => 'required|numeric',
             'filter_type'    => 'required|string|in:ASIA,LONDON_DISABLED,NEWS,CORRELATION',
             'block_reason'   => 'required|string',
             'blocked_at'     => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
+
+        // Resolve account login to account_id
+        $account = Account::where('login', $validated['account'])->first();
+        if (!$account) {
+            return $this->errorResponse('Account not found', ['account_login' => $validated['account']], 400);
+        }
+        $validated['account_id'] = $account->id;
+        unset($validated['account']);
 
         try {
             $block = FilterBlock::create($validated);

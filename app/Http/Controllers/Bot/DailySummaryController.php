@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DailySummary;
+use App\Models\Account;
 use App\Traits\ApiResponseFormatter;
 
 class DailySummaryController extends Controller
@@ -26,16 +27,25 @@ class DailySummaryController extends Controller
         }
 
         $validated = validator($data, [
+            'account'           => 'required|numeric',
             'daily_pl'          => 'required|numeric',
             'trades_count'      => 'required|integer',
-            'winning_trades'    => 'required|integer',
-            'losing_trades'     => 'required|integer',
+            'winning_trades'    => 'nullable|integer',
+            'losing_trades'     => 'nullable|integer',
             'win_rate_percent'  => 'required|numeric',
             'balance'           => 'required|numeric',
             'equity'            => 'required|numeric',
             'summary_date'      => 'required|date_format:Y-m-d',
             'captured_at'       => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
+
+        // Resolve account login to account_id
+        $account = Account::where('login', $validated['account'])->first();
+        if (!$account) {
+            return $this->errorResponse('Account not found', ['account_login' => $validated['account']], 400);
+        }
+        $validated['account_id'] = $account->id;
+        unset($validated['account']);
 
         try {
             $existing = DailySummary::where('summary_date', $validated['summary_date'])->first();

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TradeLog;
 use App\Models\Signal;
+use App\Models\Account;
 
 class TradeLogController extends Controller
 {
@@ -53,12 +54,24 @@ class TradeLogController extends Controller
         }
 
         $validated = validator($data, [
+            'account'     => 'required|numeric',
             'ticket'      => 'required',   // POSITION ID
             'close_price' => 'nullable|numeric',
             'profit'      => 'nullable|numeric',
             'closed_lots' => 'nullable|numeric|min:0',
             'reason'      => 'nullable|string',
         ])->validate();
+
+        // Resolve account login to account_id
+        $account = Account::where('login', $validated['account'])->first();
+        if (!$account) {
+            return response()->json([
+                'error' => 'Account not found',
+                'account_login' => $validated['account']
+            ], 400);
+        }
+        $validated['account_id'] = $account->id;
+        unset($validated['account']);
 
         return \DB::transaction(function () use ($validated) {
 

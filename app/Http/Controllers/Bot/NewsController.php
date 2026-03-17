@@ -42,7 +42,11 @@ class NewsController extends Controller
             'raw'        => json_encode($request->all())
         ]);
 
-        return back()->with('ok', 'News saved.');
+        return response()->json([
+            'success' => true,
+            'message' => 'News saved',
+            'data' => $news
+        ], 201);
     }
 
     /**

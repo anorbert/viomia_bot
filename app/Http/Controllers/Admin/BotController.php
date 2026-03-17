@@ -13,6 +13,7 @@ use App\Models\DailySummary;
 use App\Models\EaBot;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class BotController extends Controller
 {
@@ -38,28 +39,35 @@ class BotController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * IMPORTANT: supports AJAX JSON response for your Blade.
+     * Handles file upload for EA Bot executables.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'version'     => 'required|string|max:255',
-            'address'     => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'address'     => 'required|file|mimes:exe,zip,dll|max:102400', // 100MB max
             'status'      => 'nullable|in:Active,Inactive',
         ]);
 
         try {
+            $filePath = null;
+
+            // Handle file upload
+            if ($request->hasFile('address')) {
+                $file = $request->file('address');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('bots', $fileName, 'public');
+            }
+
             $bot = EaBot::create([
                 'name'        => $validated['name'],
                 'version'     => $validated['version'],
-                'address'     => $validated['address'] ?? null,
-                'description' => $validated['description'] ?? null,
+                'address'     => $filePath ?? null,
                 'status'      => $validated['status'] ?? 'Active',
             ]);
 
-            Log::info('Bot created successfully', ['ea_bot_id' => $bot->id, 'by' => auth()->id()]);
+            Log::info('Bot created successfully', ['ea_bot_id' => $bot->id, 'file' => $filePath, 'by' => auth()->id()]);
 
             // AJAX expects JSON
             if ($request->ajax() || $request->wantsJson()) {
@@ -128,18 +136,30 @@ class BotController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * Handles file uploads for bot updates.
      */
     public function update(Request $request, EaBot $bot)
     {
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'version'     => 'required|string|max:255',
-            'address'     => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'address'     => 'nullable|file|mimes:exe,zip,dll|max:102400',
             'status'      => 'required|in:Active,Inactive',
         ]);
 
         try {
+            // Handle file upload
+            if ($request->hasFile('address')) {
+                // Delete old file if exists
+                if ($bot->address && Storage::disk('public')->exists($bot->address)) {
+                    Storage::disk('public')->delete($bot->address);
+                }
+
+                $file = $request->file('address');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $validated['address'] = $file->storeAs('bots', $fileName, 'public');
+            }
+
             $bot->update($validated);
 
             Log::info('Bot updated successfully', ['ea_bot_id' => $bot->id, 'by' => auth()->id()]);
@@ -156,10 +176,16 @@ class BotController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * Deletes the bot file when bot is deleted.
      */
     public function destroy(EaBot $bot)
     {
         try {
+            // Delete bot file if exists
+            if ($bot->address && Storage::disk('public')->exists($bot->address)) {
+                Storage::disk('public')->delete($bot->address);
+            }
+
             $bot->delete();
 
             Log::info('Bot deleted successfully', ['ea_bot_id' => $bot->id, 'by' => auth()->id()]);
@@ -175,11 +201,23 @@ class BotController extends Controller
     }
 
     /**
-     * Display bot logs (runtime logs are tied to bot_status_id).
+     * Download bot file.
+     */
+    public function download(EaBot $bot)
+    {
+        if (!$bot->address || !Storage::disk('public')->exists($bot->address)) {
+            return redirect()->back()->with('error', 'Bot file not found.');
+        }
+
+        return Storage::disk('public')->download($bot->address);
+    }
+
+    /**
+     * Display bot logs (logs are tied to account_id).
      */
     public function logs(Request $request)
     {
-        $botId = $request->get('bot_id'); // bot_status_id
+        $accountId = $request->get('account_id');
         $type  = $request->get('type', 'error'); // error, status, trade
 
         $query = match ($type) {
@@ -189,16 +227,16 @@ class BotController extends Controller
             default  => ErrorLog::query(),
         };
 
-        if ($botId) {
-            $query->where('bot_status_id', $botId);
+        if ($accountId) {
+            $query->where('account_id', $accountId);
         }
 
-        $logs = $query->orderByDesc('created_at')->paginate(20);
+        $logs = $query->with('account')->orderByDesc('created_at')->paginate(20);
 
-        // These are runtime bots (BotStatus)
-        $bots = BotStatus::with('account')->orderByDesc('id')->get();
+        // Get all accounts for filter dropdown (order by login since Account doesn't have name)
+        $accounts = Account::orderBy('login')->get();
 
-        return view('admin.bots.logs', compact('logs', 'bots', 'type', 'botId'));
+        return view('admin.bots.logs', compact('logs', 'accounts', 'type', 'accountId'));
     }
 
     /**

@@ -184,10 +184,11 @@ Route::prefix('admin')
         Route::post('accounts/{account}/toggle', [AccountController::class, 'toggle'])->name('accounts.toggle');
 
         // Bots
-        Route::resource('bots', BotController::class);
         Route::get('bots/logs', [BotController::class, 'logs'])->name('bots.logs');
+        Route::get('bots/{bot}/download', [BotController::class, 'download'])->name('bots.download');
         Route::get('bots/{id}/settings', [BotController::class, 'settings'])->name('bots.settings');
         Route::post('bots/{id}/settings/update', [BotController::class, 'updateSettings'])->name('bots.settings.update');
+        Route::resource('bots', BotController::class);
 
         // Trading Activity
         Route::resource('trades', TradeLogController::class);

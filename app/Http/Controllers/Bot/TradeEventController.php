@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bot;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TradeEvent;
+use App\Models\Account;
 use App\Traits\ApiResponseFormatter;
 
 class TradeEventController extends Controller
@@ -27,6 +28,7 @@ class TradeEventController extends Controller
 
         // Validate
         $validated = validator($data, [
+            'account'       => 'required|numeric',
             'ticket'        => 'required|string|unique:trade_events',
             'direction'     => 'required|in:BUY,SELL',
             'entry_price'   => 'required|numeric',
@@ -36,6 +38,14 @@ class TradeEventController extends Controller
             'signal_source' => 'nullable|string',
             'opened_at'     => 'required|date_format:Y-m-d H:i:s',
         ])->validate();
+
+        // Resolve account login to account_id
+        $account = Account::where('login', $validated['account'])->first();
+        if (!$account) {
+            return $this->errorResponse('Account not found', ['account_login' => $validated['account']], 400);
+        }
+        $validated['account_id'] = $account->id;
+        unset($validated['account']);
 
         try {
             $event = TradeEvent::create($validated);

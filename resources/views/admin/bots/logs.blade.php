@@ -28,6 +28,11 @@
 .vi-badge-status { background-color: rgba(59,158,255,0.13) !important; color: #3B9EFF !important; }
 .vi-badge-trade { background-color: rgba(34,197,94,0.13) !important; color: #22C55E !important; }
 .vi-timestamp { font-family: monospace; font-size: 10px; color: #4b5563; }
+.pagination { display: flex; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.pagination li { display: inline-block; }
+.pagination a, .pagination span { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 6px; font-size: 11px; text-decoration: none; border: 1px solid rgba(255,255,255,0.12); background-color: #1a2235; color: #94a3b8; transition: all 0.2s; }
+.pagination a:hover { border-color: #A78BFA; background-color: rgba(167,139,250,0.1); color: #A78BFA; }
+.pagination .active span { background-color: #A78BFA; color: #fff; border-color: #A78BFA; }
 </style>
 @endpush
 
@@ -39,6 +44,9 @@
         <div class="vi-header-title">Bot Logs & Activity</div>
         <div class="vi-header-sub">Monitor bot performance metrics, error logs, and trading activity</div>
     </div>
+    <a href="{{ route('admin.bots.index') }}" style="margin-left:auto; background-color:rgba(139,92,246,0.13); color:#A78BFA; border:1px solid rgba(139,92,246,0.25); padding:8px 14px; border-radius:6px; font-weight:700; font-size:11px; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+        <i class="fa fa-chevron-left"></i> Back to Bots
+    </a>
 </div>
 
 <div class="vi-panel">
@@ -58,12 +66,12 @@
             </div>
 
             <div class="vi-filter-group">
-                <label class="vi-filter-label">Bot Instance</label>
-                <select name="bot_id" class="vi-filter-select">
-                    <option value="">-- All Bots --</option>
-                    @foreach($bots as $bot)
-                        <option value="{{ $bot->id }}" {{ $botId == $bot->id ? 'selected' : '' }}>
-                            {{ $bot->account->name ?? 'Unknown' }} ({{ $bot->account->login ?? 'N/A' }})
+                <label class="vi-filter-label">Account</label>
+                <select name="account_id" class="vi-filter-select">
+                    <option value="">-- All Accounts --</option>
+                    @foreach($accounts as $account)
+                        <option value="{{ $account->id }}" {{ $accountId == $account->id ? 'selected' : '' }}>
+                            {{ $account->login }} ({{ $account->platform }})
                         </option>
                     @endforeach
                 </select>
@@ -113,30 +121,22 @@
                 <tbody>
                     @forelse($logs as $key => $log)
                         <tr>
-                            <td style="color:#4b5563;">{{ $key + 1 }}</td>
+                            <td style="color:#4b5563;">{{ $logs->firstItem() + $key }}</td>
                             <td>
                                 @if($type === 'error')
                                     <div style="color:#f1f5f9; font-weight:600;">{{ class_basename($log->error_class ?? 'Unknown') }}</div>
                                     <div style="color:#4b5563; font-size:10px; margin-top:4px;">{{ Str::limit($log->error_message ?? 'N/A', 80) }}</div>
                                 @elseif($type === 'status')
-                                    <div style="color:#f1f5f9; font-weight:600;">{{ $log->old_status ?? 'N/A' }} <i class="fa fa-arrow-right" style="margin:0 6px; opacity:.5;"></i> {{ $log->new_status ?? 'N/A' }}</div>
+                                    <div style="color:#f1f5f9; font-weight:600;">{{ $log->status ?? 'N/A' }}</div>
                                     <div style="color:#4b5563; font-size:10px; margin-top:4px;">{{ Str::limit($log->reason ?? 'No reason provided', 60) }}</div>
                                 @else
-                                    <div style="color:#f1f5f9; font-weight:600;">{{ ucfirst($log->trade_type ?? 'N/A') }} @ {{ $log->entry_price ?? 'N/A' }}</div>
-                                    <div style="color:#4b5563; font-size:10px; margin-top:4px;">{{ $log->symbol ?? 'N/A' }} • Lot: {{ $log->lot_size ?? 'N/A' }}</div>
+                                    <div style="color:#f1f5f9; font-weight:600;">{{ ucfirst($log->type ?? 'N/A') }} @ {{ $log->open_price ?? 'N/A' }}</div>
+                                    <div style="color:#4b5563; font-size:10px; margin-top:4px;">{{ $log->symbol ?? 'N/A' }} • Lot: {{ $log->lots ?? 'N/A' }}</div>
                                 @endif
                             </td>
                             <td>
-                                @php
-                                    $botInstance = null;
-                                    if(isset($log->botStatus) && $log->botStatus) {
-                                        $botInstance = $log->botStatus;
-                                    } else {
-                                        $botInstance = $bots->where('id', $log->bot_status_id)->first();
-                                    }
-                                @endphp
-                                <div style="color:#f1f5f9; font-weight:600;">{{ $botInstance?->account?->name ?? 'Unknown' }}</div>
-                                <div style="color:#4b5563; font-size:10px; margin-top:2px;">{{ $botInstance?->account?->login ?? 'N/A' }}</div>
+                                <div style="color:#f1f5f9; font-weight:600;">{{ $log->account?->login ?? 'Unknown' }}</div>
+                                <div style="color:#4b5563; font-size:10px; margin-top:2px;">{{ $log->account?->platform ?? 'N/A' }}</div>
                             </td>
                             <td>
                                 <div class="vi-timestamp">{{ $log->created_at?->format('M d, Y H:i:s') ?? 'N/A' }}</div>
@@ -167,8 +167,8 @@
 
         {{-- Pagination --}}
         @if($logs && $logs->hasPages())
-            <div style="margin-top:20px; display:flex; justify-content:flex-end;">
-                {{ $logs->links() }}
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.07); display:flex; justify-content:center; align-items:center;">
+                {{ $logs->links('pagination::bootstrap-4') }}
             </div>
         @endif
     </div>

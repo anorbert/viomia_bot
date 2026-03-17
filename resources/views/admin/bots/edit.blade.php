@@ -85,7 +85,7 @@
     <div class="vi-panel">
         <div class="vi-panel-title"><i class="fa fa-cog"></i> Bot Settings</div>
 
-        <form id="editBotForm" method="POST" action="{{ route('admin.bots.update', $bot->id) }}">
+        <form id="editBotForm" method="POST" action="{{ route('admin.bots.update', $bot->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -122,22 +122,27 @@
 
             <div class="vi-form-row">
                 <div class="vi-form-group" style="grid-column: 1 / -1;">
-                    <label class="vi-form-label">Download URL / Address</label>
-                    <input type="url" name="address" class="vi-form-input @error('address') is-invalid @enderror"
-                           placeholder="https://downloads.example.com/bot-v3.2.1.ex4"
-                           value="{{ old('address', $bot->address) }}">
-                    @error('address')<div class="vi-error"><i class="fa fa-exclamation-circle"></i> {{ $message }}</div>@enderror
-                    <div class="vi-form-hint"><i class="fa fa-info-circle"></i> Leave blank if not applicable</div>
-                </div>
-            </div>
-
-            <div class="vi-form-row">
-                <div class="vi-form-group" style="grid-column: 1 / -1;">
-                    <label class="vi-form-label">Description</label>
-                    <textarea name="description" class="vi-form-textarea @error('description') is-invalid @enderror"
-                              placeholder="Brief description of this bot's purpose and capabilities...">{{ old('description', $bot->description) }}</textarea>
-                    @error('description')<div class="vi-error"><i class="fa fa-exclamation-circle"></i> {{ $message }}</div>@enderror
-                    <div class="vi-form-hint"><i class="fa fa-info-circle"></i> Optional: document bot features and settings</div>
+                    <label class="vi-form-label">EA Bot File</label>
+                    <div style="display: grid; gap: 12px;">
+                        @if($bot->address)
+                            <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 6px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa fa-check-circle" style="color: #22C55E; font-size: 14px;"></i>
+                                    <div>
+                                        <div style="color: #22C55E; font-weight: 700; font-size: 12px;">File Uploaded</div>
+                                        <div style="color: #94a3b8; font-size: 11px; margin-top: 2px;">Updated: {{ $bot->updated_at?->format('M d, Y H:i') ?? '-' }}</div>
+                                    </div>
+                                </div>
+                                <a href="{{ route('admin.bots.download', $bot) }}" class="vi-btn" style="background-color:rgba(34,197,94,0.13); color:#22C55E; border:1px solid rgba(34,197,94,0.3); margin: 0;">
+                                    <i class="fa fa-download"></i> Download
+                                </a>
+                            </div>
+                        @endif
+                        <input type="file" name="address" id="botFile" class="vi-form-input @error('address') is-invalid @enderror"
+                               accept=".exe,.zip,.dll" style="padding: 8px 12px; cursor: pointer;">
+                        @error('address')<div class="vi-error"><i class="fa fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                        <div class="vi-form-hint"><i class="fa fa-info-circle"></i> Supported: .exe, .zip, .dll (Max 100MB) - Leave blank to keep current file</div>
+                    </div>
                 </div>
             </div>
 
@@ -176,6 +181,22 @@
 document.addEventListener('DOMContentLoaded', function() {
     const firstInput = document.querySelector('.vi-form-input');
     if (firstInput) firstInput.focus();
+
+    // File upload validation
+    const botFile = document.getElementById('botFile');
+    if (botFile) {
+        botFile.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                if (file.size > 102400000) { // 100MB
+                    alert('File size must not exceed 100MB');
+                    this.value = '';
+                } else {
+                    console.log('File selected:', file.name);
+                }
+            }
+        });
+    }
 });
 </script>
 
