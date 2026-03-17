@@ -52,7 +52,7 @@
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
             <div>
                 <div style="font-size: 14px; font-weight: 800; color: #f1f5f9; margin-bottom: 4px;">{{ $trade->symbol ?? 'N/A' }}</div>
-                <div style="font-size: 11px; color: #4b5563;">Opened {{ $trade->created_at->diffForHumans() }} • {{ $trade->created_at->format('M d, Y H:i A') }}</div>
+                <div style="font-size: 11px; color: #4b5563;">Opened {{ $trade->created_at?->diffForHumans() ?? 'unknown' }} • {{ $trade->created_at?->format('M d, Y H:i A') ?? '—' }}</div>
             </div>
             <div style="display: flex; gap: 8px;">
                 @if(strtoupper($trade->direction ?? '') === 'BUY')

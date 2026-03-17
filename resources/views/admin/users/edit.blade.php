@@ -111,12 +111,12 @@
 
             <div class="vi-details-item">
                 <div class="vi-details-label">Member Since</div>
-                <div class="vi-details-value"><i class="fa fa-calendar"></i> {{ $user->created_at->format('M j, Y') }}</div>
+                <div class="vi-details-value"><i class="fa fa-calendar"></i> {{ $user->created_at?->format('M j, Y') ?? '—' }}</div>
             </div>
 
             <div class="vi-details-item">
                 <div class="vi-details-label">Last Updated</div>
-                <div class="vi-details-value"><i class="fa fa-clock"></i> {{ $user->updated_at->format('M j, Y') }}</div>
+                <div class="vi-details-value"><i class="fa fa-clock"></i> {{ $user->updated_at?->format('M j, Y') ?? '—' }}</div>
             </div>
         </div>
 

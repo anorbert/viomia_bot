@@ -112,13 +112,13 @@
                 @if($role->created_at)
                 <div class="vi-metadata-item">
                     <div class="vi-metadata-label"><i class="fa fa-calendar"></i> Created</div>
-                    <div class="vi-metadata-value">{{ $role->created_at->format('M d, Y H:i') }}</div>
+                    <div class="vi-metadata-value">{{ $role->created_at?->format('M d, Y H:i') ?? '—' }}</div>
                 </div>
                 @endif
                 @if($role->updated_at)
                 <div class="vi-metadata-item">
                     <div class="vi-metadata-label"><i class="fa fa-refresh"></i> Last Updated</div>
-                    <div class="vi-metadata-value">{{ $role->updated_at->format('M d, Y H:i') }}</div>
+                    <div class="vi-metadata-value">{{ $role->updated_at?->format('M d, Y H:i') ?? '—' }}</div>
                 </div>
                 @endif
                 <div class="vi-metadata-item">

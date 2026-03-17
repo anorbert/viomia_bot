@@ -110,7 +110,7 @@
                                     <td style="font-size:11px; color:#EF4444;">{{ number_format($decision->stop_loss, 5) }}</td>
                                     <td style="font-size:11px; color:#22C55E;">{{ number_format($decision->take_profit, 5) }}</td>
                                     <td style="font-weight:700; color:#F59E0B;">{{ number_format($decision->rr_ratio, 2) }}:1</td>
-                                    <td style="font-size:11px;">{{ $decision->decided_at->format('M d, h:i A') }}</td>
+                                    <td style="font-size:11px;">{{ $decision->decided_at?->format('M d, h:i A') ?? '—' }}</td>
                                     <td>
                                         @if($decision->web_sentiment === 'POSITIVE')
                                             <span class="vi-badge-buy">+</span>

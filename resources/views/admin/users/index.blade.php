@@ -115,7 +115,7 @@
                             @endif
                             <div style="min-width:0;">
                                 <div style="font-size:13px;font-weight:800;color:#ffffff;">{{ $u->name }}</div>
-                                <div style="font-size:10px;color:#7a96ab;margin-top:1px;">Created: {{ $u->created_at->format('M d, Y') }}</div>
+                                <div style="font-size:10px;color:#7a96ab;margin-top:1px;">Created: {{ $u->created_at?->format('M d, Y') ?? '—' }}</div>
                             </div>
                         </div>
                     </td>

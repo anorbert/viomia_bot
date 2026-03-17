@@ -128,8 +128,8 @@
             <div class="vi-details-item">
                 <div class="vi-details-label">Payment Date</div>
                 <div class="vi-details-value">
-                    <i class="fa fa-calendar"></i> {{ $payment->created_at->format('M d, Y') }}<br>
-                    <span style="font-size: 11px; color: #4b5563;">{{ $payment->created_at->format('H:i:s A') }}</span>
+                    <i class="fa fa-calendar"></i> {{ $payment->created_at?->format('M d, Y') ?? '—' }}<br>
+                    <span style="font-size: 11px; color: #4b5563;">{{ $payment->created_at?->format('H:i:s A') ?? '—' }}</span>
                 </div>
             </div>
 
@@ -187,7 +187,7 @@
                     </div>
                     <div class="user-info">
                         <span class="user-info-label">Member Since</span>
-                        <span class="user-info-value">{{ $payment->user->created_at->format('M d, Y') }}</span>
+                        <span class="user-info-value">{{ $payment->user?->created_at?->format('M d, Y') ?? '—' }}</span>
                     </div>
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.07);">
                         <a href="#" class="vi-btn vi-btn-secondary" style="width: 100%; justify-content: center;">

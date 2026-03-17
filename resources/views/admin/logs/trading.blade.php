@@ -139,7 +139,7 @@
                             {{ $log->profit >= 0 ? '+' : '' }}{{ number_format($log->profit, 2) }}
                         </td>
                         <td class="text-muted small">
-                            {{ $log->created_at->format('M d, H:i') }}
+                            {{ $log->created_at?->format('M d, H:i') ?? '—' }}
                         </td>
                     </tr>
                 @endforeach

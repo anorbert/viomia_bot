@@ -108,8 +108,8 @@
                         @endif
                     </td>
                     <td>
-                        {{ $payment->created_at->format('M d, Y') }}<br>
-                        <span style="font-size:10px; color:#4b5563;">{{ $payment->created_at->format('H:i:s') }}</span>
+                        {{ $payment->created_at?->format('M d, Y') ?? '—' }}<br>
+                        <span style="font-size:10px; color:#4b5563;">{{ $payment->created_at?->format('H:i:s') ?? '—' }}</span>
                     </td>
                     <td style="text-align:right;">
                         <div class="btn-group btn-group-sm" role="group">

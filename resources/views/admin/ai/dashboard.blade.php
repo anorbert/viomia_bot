@@ -523,7 +523,7 @@
               <span class="vi-decision {{ $d1 }}">{{ $d1 }}</span>
             </div>
             <div class="vi-feed-meta">Entry &nbsp;<strong>{{ $lastSignal->entry ?? '—' }}</strong></div>
-            <div class="vi-feed-time"><i class="fa fa-clock-o" style="margin-right:4px;"></i>{{ \Carbon\Carbon::parse($lastSignal->pushed_at)->diffForHumans() }}</div>
+            <div class="vi-feed-time"><i class="fa fa-clock-o" style="margin-right:4px;"></i>{{ ($lastSignal->pushed_at ? \Carbon\Carbon::parse($lastSignal->pushed_at)->diffForHumans() : '—') }}</div>
             <div class="vi-feed-stats">
               <div class="vi-feed-stat"><div class="vi-feed-stat-l">Symbol</div><div class="vi-feed-stat-v">{{ $lastSignal->symbol }}</div></div>
               <div class="vi-feed-stat"><div class="vi-feed-stat-l">Decision</div><div class="vi-feed-stat-v">{{ $d1 ?: '—' }}</div></div>

@@ -128,8 +128,8 @@
                                             <span style="opacity:0.5;">—</span>
                                         @endif
                                     </td>
-                                    <td style="font-size:11px;">{{ $signal->pushed_at ? $signal->pushed_at->format('M d, h:i A') : '—' }}</td>
-                                    <td style="font-size:11px;">{{ $signal->created_at->format('M d, h:i A') }}</td>
+                                    <td style="font-size:11px;">{{ $signal->pushed_at?->format('M d, h:i A') ?? '—' }}</td>
+                                    <td style="font-size:11px;">{{ $signal->created_at?->format('M d, h:i A') ?? '—' }}</td>
                                 </tr>
                             @empty
                                 <tr>

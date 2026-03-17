@@ -97,7 +97,7 @@
             <div class="vi-info-label">Email Verified</div>
             <div class="vi-info-value">
                 @if($user->email_verified_at)
-                    <span style="color: #22C55E;">✓ {{ $user->email_verified_at->format('M d, Y') }}</span>
+                    <span style="color: #22C55E;">✓ {{ $user->email_verified_at?->format('M d, Y') ?? 'Not verified' }}</span>
                 @else
                     <span style="color: #EF4444;">Not verified</span>
                 @endif
@@ -107,7 +107,7 @@
             <div class="vi-info-label">Account Status</div>
             <div class="vi-info-value">
                 @if($user->deleted_at)
-                    <span style="color: #EF4444;">🗑️ Deleted {{ $user->deleted_at->diffForHumans() }}</span>
+                    <span style="color: #EF4444;">🗑️ Deleted {{ $user->deleted_at?->diffForHumans() ?? 'unknown' }}</span>
                 @else
                     <span style="color: #22C55E;">✓ Active</span>
                 @endif
@@ -120,16 +120,16 @@
         <div class="vi-info-grid">
             <div class="vi-info-item">
                 <div class="vi-info-label">Joined</div>
-                <div class="vi-info-value">{{ $user->created_at->format('M d, Y H:i A') }}<br><span style="font-size:10px; color:#4b5563;">{{ $user->created_at->diffForHumans() }}</span></div>
+                <div class="vi-info-value">{{ $user->created_at?->format('M d, Y H:i A') ?? '—' }}<br><span style="font-size:10px; color:#4b5563;">{{ $user->created_at?->diffForHumans() ?? '—' }}</span></div>
             </div>
             <div class="vi-info-item">
                 <div class="vi-info-label">Last Updated</div>
-                <div class="vi-info-value">{{ $user->updated_at->format('M d, Y H:i A') }}<br><span style="font-size:10px; color:#4b5563;">{{ $user->updated_at->diffForHumans() }}</span></div>
+                <div class="vi-info-value">{{ $user->updated_at?->format('M d, Y H:i A') ?? '—' }}<br><span style="font-size:10px; color:#4b5563;">{{ $user->updated_at?->diffForHumans() ?? '—' }}</span></div>
             </div>
             @if($user->last_login_at)
                 <div class="vi-info-item">
                     <div class="vi-info-label">Last Login</div>
-                    <div class="vi-info-value">{{ $user->last_login_at->format('M d, Y H:i A') }}<br><span style="font-size:10px; color:#4b5563;">{{ $user->last_login_at->diffForHumans() }}</span></div>
+                    <div class="vi-info-value">{{ $user->last_login_at?->format('M d, Y H:i A') ?? '—' }}<br><span style="font-size:10px; color:#4b5563;">{{ $user->last_login_at?->diffForHumans() ?? '—' }}</span></div>
                 </div>
             @endif
         </div>
