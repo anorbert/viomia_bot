@@ -93,9 +93,9 @@ class SignalController extends Controller
                 ->where('active', true)
                 ->update(['active' => false]);
             
-            //check the Account number exists
-            $accountExists = Account::where('login', $validated['account'])->exists();
-            if(!$accountExists){
+            //check the Account number exists and get the Account object
+            $account = Account::where('login', $validated['account'])->first();
+            if(!$account){
                 DB::rollBack();
                 return response()->json([
                     'error' => 'Account number does not exist',
@@ -105,7 +105,7 @@ class SignalController extends Controller
 
             // Create TradeLog
             $tradeLog = TradeLog::create([
-                'account_id'  => $accountExists->id, 
+                'account_id'  => $account->id, 
                 'ticket'      => $validated['ticket'],
                 'symbol'      => $validated['symbol'],
                 'type'        => $validated['direction'],

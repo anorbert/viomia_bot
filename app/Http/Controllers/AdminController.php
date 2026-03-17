@@ -152,6 +152,8 @@ class AdminController extends Controller
         /** ================= SYMBOL DISTRIBUTION (LAST 30D) ================= */
         $symbolData = TradeLog::selectRaw('symbol, COUNT(*) as total')
             ->where('created_at', '>=', now()->subDays(30))
+            ->whereNotNull('symbol')
+            ->where('symbol', '!=', '')
             ->groupBy('symbol')
             ->orderByDesc('total')
             ->get();
@@ -182,6 +184,8 @@ class AdminController extends Controller
 
         $exposure = TradeLog::selectRaw("symbol, SUM(lots - closed_lots) as lots, SUM(COALESCE(profit,0)) as pnl")
             ->where('status', 'open')
+            ->whereNotNull('symbol')
+            ->where('symbol', '!=', '')
             ->groupBy('symbol')
             ->orderByDesc('lots')
             ->limit(10)
@@ -288,6 +292,8 @@ class AdminController extends Controller
 
         $exposure = TradeLog::selectRaw("symbol, SUM(lots - closed_lots) as lots, SUM(COALESCE(profit,0)) as pnl")
             ->where('status', 'open')
+            ->whereNotNull('symbol')
+            ->where('symbol', '!=', '')
             ->groupBy('symbol')
             ->orderByDesc('lots')
             ->limit(10)
