@@ -106,7 +106,7 @@
                                     <td>{{ number_format($candle->support, 5) }}</td>
                                     <td>{{ number_format($candle->resistance, 5) }}</td>
                                     <td style="color:#f1f5f9;">{{ $candle->session }}</td>
-                                    <td><small>{{ $candle->created_at->format('Y-m-d H:i:s') }}</small></td>
+                                    <td><small>{{ $candle->created_at?->format('Y-m-d H:i:s') ?? '-' }}</small></td>
                                 </tr>
                             @empty
                                 <tr>
