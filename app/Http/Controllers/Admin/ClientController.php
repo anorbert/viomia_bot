@@ -18,8 +18,7 @@ class ClientController extends Controller
      */
    public function index()
     {
-        $clients = User::where('role_id', 1)
-            ->withTrashed() 
+        $clients = User::withTrashed() 
             ->with([
                 'accounts' => function($q) {
                     $q->withTrashed(); 
