@@ -154,11 +154,11 @@
         <span style="color:#1e293b;">Trading Accounts</span>
       </div>
     </div>
-    @if($accounts->count() === 0 && FALSE)
+    {{-- @if($accounts->count() === 0 && FALSE) --}}
     <button class="btn-connect" data-bs-toggle="modal" data-bs-target="#addAccountModal">
       <i class="fa fa-plus-circle"></i> Connect Account
     </button>
-    @endif
+    {{-- @endif --}}
   </div>
 
   {{-- ── ALERTS ── --}}
