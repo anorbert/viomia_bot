@@ -80,10 +80,34 @@ class TradeLogController extends Controller
                 ->first();
 
             if (!$tradeLog) {
+                // CREATE new TradeLog if not found
+                $tradeLog = TradeLog::create([
+                    'account_id'   => $validated['account_id'],
+                    'ticket'       => $validated['ticket'],
+                    'symbol'       => $validated['symbol'] ?? '',
+                    'type'         => $validated['type'] ?? '',
+                    'lots'         => $validated['closed_lots'] ?? 0,
+                    'sl'           => $validated['sl'] ?? null,
+                    'tp'           => $validated['tp'] ?? null,
+                    'open_price'   => $validated['open_price'] ?? null,
+                    'close_price'  => $validated['close_price'] ?? null,
+                    'profit'       => $validated['profit'] ?? 0,
+                    'closed_lots'  => $validated['closed_lots'] ?? 0,
+                    'status'       => 'closed',
+                    'close_reason' => $validated['reason'] ?? '',
+                ]);
+                \Log::info('Trade log created automatically', [
+                    'ticket' => $validated['ticket'],
+                    'fields' => $tradeLog->toArray()
+                ]);
                 return response()->json([
-                    'error'  => 'Trade log not found',
-                    'ticket' => $validated['ticket']
-                ], 404);
+                    'success'      => true,
+                    'message'      => 'Trade log created automatically',
+                    'ticket'       => $tradeLog->ticket,
+                    'status'       => $tradeLog->status,
+                    'closed_lots'  => $tradeLog->closed_lots,
+                    'profit_total' => $tradeLog->profit,
+                ], 201);
             }
 
             $incomingProfit     = (float)($validated['profit'] ?? 0);
