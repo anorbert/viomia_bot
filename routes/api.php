@@ -6,6 +6,7 @@ use App\Http\Controllers\Bot\BotStatusController;
 use App\Http\Controllers\Bot\NewsController;
 use App\Http\Controllers\Bot\AccountController;
 use App\Http\Controllers\Bot\TradeEventController;
+use App\Http\Controllers\Bot\TradeOutcomeController;
 use App\Http\Controllers\Bot\DailySummaryController;
 use App\Http\Controllers\Bot\PositionUpdateController;
 use App\Http\Controllers\Bot\LossLimitAlertController;
@@ -41,6 +42,13 @@ Route::prefix('bot')->middleware(CheckApiKey::class)->group(function () {
 
     // ===== Trade Events (NEW) =====
     Route::post('/trade/opened', [TradeEventController::class, 'store']);
+
+    // ===== Trade Outcomes (NEW - P0-1) =====
+    // Stores complete trade outcome when trade closes: profit, patterns, technical indicators
+    Route::post('/trade/outcome', [TradeOutcomeController::class, 'store']);
+    Route::get('/trade/outcome/{ticket}', [TradeOutcomeController::class, 'getByTicket']);
+    Route::get('/trade/outcome/stats', [TradeOutcomeController::class, 'getStats']);
+    Route::get('/trade/outcome/pattern-analysis', [TradeOutcomeController::class, 'getPatternAnalysis']);
 
     // ===== Trade Entry Context (NEW - P0-4) =====
     // Stores technical state (RSI, patterns, trend) AT ENTRY for proper AI training

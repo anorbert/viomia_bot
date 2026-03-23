@@ -12,6 +12,11 @@ class ViomiaSignalLog extends Model
         'symbol',
         'decision',
         'entry',
+        'stop_loss',
+        'take_profit',
+        'confidence',
+        'score',
+        'account_id',
         'push_status',
         'laravel_resp',
         'pushed_at',
@@ -19,5 +24,9 @@ class ViomiaSignalLog extends Model
 
     protected $casts = [
         'pushed_at' => 'datetime',
+        'entry' => 'decimal:5',
+        'stop_loss' => 'decimal:5',
+        'take_profit' => 'decimal:5',
+        'confidence' => 'decimal:4',
     ];
 }

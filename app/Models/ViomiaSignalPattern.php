@@ -7,12 +7,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ViomiaSignalPattern extends Model
 {
-    //
     use HasFactory;
     protected $fillable = [
-        'symbol',
-        'pattern_type',
-        'confidence',
-        'detected_at',
+        'pattern_name',
+        'with_bos',
+        'with_equal_levels',
+        'web_sentiment',
+        'market_regime',
+        'decision',
+        'result',
+        'profit',
+    ];
+
+    protected $casts = [
+        'with_bos' => 'boolean',
+        'with_equal_levels' => 'boolean',
+        'profit' => 'decimal:2',
     ];
 }

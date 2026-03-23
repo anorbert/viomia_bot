@@ -21,4 +21,5 @@ class ViomiaTradeExecution extends Model
         'result',
         'session_name',
     ];
+    
 }
