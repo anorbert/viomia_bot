@@ -51,6 +51,11 @@ class SignalController extends Controller
         }
         Log::info('Parsed JSON:', $data);
 
+        // ✅ Normalize direction to lowercase (accept both BUY and buy)
+        if (isset($data['direction'])) {
+            $data['direction'] = strtolower($data['direction']);
+        }
+
         // Step 2: Validate incoming data
         $validated = validator($data, [
             'account'   => 'required|numeric',

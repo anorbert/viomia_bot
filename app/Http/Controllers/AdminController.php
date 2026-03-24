@@ -38,7 +38,8 @@ class AdminController extends Controller
             ->count();
 
         /** ================= TODAY PERFORMANCE ================= */
-        $baseToday = TradeLog::query()->where('created_at', '>=', $today);
+        // Use DATE comparison for more reliable today filtering
+        $baseToday = TradeLog::query()->whereRaw("DATE(created_at) = CURDATE()");
 
         $todaysProfit = (clone $baseToday)->sum(DB::raw('COALESCE(profit,0)'));
         $todaysTrades = (clone $baseToday)->count();
@@ -61,7 +62,7 @@ class AdminController extends Controller
 
         /** ================= AVG TRADE DURATION (CLOSED TODAY) ================= */
         $avgTradeDuration = TradeLog::whereNotNull('close_price')
-            ->where('created_at', '>=', $today)
+            ->whereRaw("DATE(created_at) = CURDATE()")
             ->avg(DB::raw('TIMESTAMPDIFF(MINUTE, created_at, updated_at)')) ?? 0;
 
         /** ================= ALERTS ================= */
@@ -76,7 +77,7 @@ class AdminController extends Controller
 
         /** ================= 7-DAY DAILY PNL (BEST / WORST) ================= */
         $dailyPnL7d = TradeLog::selectRaw("DATE(created_at) as d, SUM(COALESCE(profit,0)) as pnl")
-            ->where('created_at', '>=', $week)
+            ->whereRaw("DATE(created_at) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)")
             ->groupBy('d')
             ->orderBy('d')
             ->pluck('pnl', 'd');
@@ -117,11 +118,12 @@ class AdminController extends Controller
         $journalData = [];
 
         for ($i = 89; $i >= 0; $i--) {
-            $d = now()->subDays($i)->startOfDay();
+            $d = now()->subDays($i);
             $dateKey = $d->format('Y-m-d');
+            $nextDay = $d->copy()->addDay();
             
-            $query = TradeLog::where('created_at', '>=', $d)
-                ->where('created_at', '<', $d->endOfDay());
+            // Use raw DATE comparison for more reliable filtering
+            $query = TradeLog::whereRaw("DATE(created_at) = ?", [$dateKey]);
             
             $trades = (clone $query)->count();
             $pnl = (clone $query)->sum(DB::raw('COALESCE(profit, 0)'));
@@ -208,6 +210,10 @@ class AdminController extends Controller
             'exposure'        => $exposure,
         ];
 
+        // Create aliases for blade variable names
+        $winsCount = $todaysWins;
+        $lossCount = $todaysLosses;
+
         return view('dashboard', compact(
             'totalClients',
             'newClients',
@@ -215,8 +221,8 @@ class AdminController extends Controller
             'activeBots',
             'todaysProfit',
             'todaysTrades',
-            'todaysWins',
-            'todaysLosses',
+            'winsCount',
+            'lossCount',
             'winRate',
             'avgWin',
             'avgLoss',
@@ -244,7 +250,7 @@ class AdminController extends Controller
     public function metrics()
     {
         $today = now()->startOfDay();
-        $q = TradeLog::query()->where('created_at', '>=', $today);
+        $q = TradeLog::query()->whereRaw("DATE(created_at) = CURDATE()");
 
         /** ================= TODAY PERFORMANCE ================= */
         $profit = (clone $q)->sum(DB::raw('COALESCE(profit,0)'));

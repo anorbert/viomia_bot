@@ -155,13 +155,13 @@
                         @endif
                     </td>
                     <td style="color: #f1f5f9; font-weight: 600;">
-                        {{ $trade->entry_price ? '$' . number_format($trade->entry_price, 4) : 'N/A' }}
+                        {{ $trade->open_price ? '$' . number_format($trade->open_price, 2) : 'N/A' }}
                     </td>
                     <td style="color: #f1f5f9; font-weight: 600;">
-                        {{ $trade->exit_price ? '$' . number_format($trade->exit_price, 4) : '—' }}
+                        {{ $trade->close_price ? '$' . number_format($trade->close_price, 2) : '—' }}
                     </td>
                     <td style="color: #f1f5f9; font-weight: 600;">
-                        {{ $trade->volume ? number_format($trade->volume, 2) : 'N/A' }}
+                        {{ $trade->lots ? number_format($trade->lots, 2) : 'N/A' }}
                     </td>
                     <td style="font-weight: 600; color: {{ ($trade->profit ?? 0) >= 0 ? '#22C55E' : '#ef4444' }};">
                         {{ $trade->profit ? (($trade->profit >= 0 ? '+' : '') . number_format($trade->profit, 2)) : '—' }}

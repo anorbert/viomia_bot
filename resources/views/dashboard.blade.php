@@ -339,11 +339,46 @@
 #calendar .fc-toolbar .fc-button:hover { background-color: rgba(26,187,156,0.12) !important; color: #1ABB9C !important; border-color: rgba(26,187,156,0.3) !important; }
 #calendar .fc-toolbar .fc-state-active { background-color: rgba(26,187,156,0.15) !important; color: #1ABB9C !important; border-color: rgba(26,187,156,0.3) !important; }
 #calendar .fc-day-header { background-color: #1a2235 !important; color: #4b5563 !important; font-size: 10px !important; font-weight: 800 !important; letter-spacing: 1px; text-transform: uppercase; border-color: rgba(255,255,255,0.07) !important; }
-#calendar .fc-day { background-color: #111827 !important; border-color: rgba(255,255,255,0.07) !important; }
+#calendar .fc-day { background-color: #111827 !important; border-color: rgba(255,255,255,0.07) !important; position: relative; min-height: 90px !important; }
+#calendar .fc-daygrid-day.fc-day-other { background-color: rgba(17, 24, 39, 0.4) !important; }
+#calendar .fc-daygrid-day:hover { background-color: rgba(26, 187, 156, 0.08) !important; }
 #calendar .fc-today { background-color: rgba(26,187,156,0.06) !important; }
-#calendar .fc-day-number { color: #94a3b8 !important; font-size: 11px !important; }
+
+/* ── P/L Profit highlighting ── */
+#calendar .fc-daygrid-day-profit { background-color: rgba(34,197,94,0.12) !important; border-left: 3px solid #22C55E !important; }
+#calendar .fc-daygrid-day-loss { background-color: rgba(239,68,68,0.12) !important; border-left: 3px solid #EF4444 !important; }
+#calendar .fc-daygrid-day-breakeven { background-color: rgba(255,255,255,0.03) !important; border-left: 3px solid #94a3b8 !important; }
+
+#calendar .fc-day-number { color: #94a3b8 !important; font-size: 13px !important; font-weight: 700 !important; position: relative; z-index: 2; margin-bottom: 2px; }
+#calendar .fc-daygrid-day-frame { position: relative; display: flex; flex-direction: column; padding: 8px !important; }
+
+/* ── Custom P/L display ── */
+.dayPnLBox {
+    position: absolute;
+    top: 28px; left: 6px; right: 6px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.05));
+    border-radius: 6px;
+    padding: 6px 4px;
+    text-align: center;
+    z-index: 3;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: -0.3px;
+}
+.dayPnLBox.profit { color: #22C55E; }
+.dayPnLBox.loss { color: #EF4444; }
+.dayPnLBox.noData { color: #4b5563; opacity: 0.5; font-size: 11px; }
+
+.dayTradesCount {
+    position: absolute;
+    top: 48px; left: 6px;
+    font-size: 10px;
+    color: #4b5563;
+    z-index: 3;
+}
+
+#calendar .fc-event { border-radius: 6px !important; font-size: 0px !important; padding: 0px !important; border: none !important; display: none !important; }
 #calendar { background-color: transparent !important; }
-#calendar .fc-event { border-radius: 6px !important; font-size: 11px !important; font-weight: 700 !important; padding: 3px 6px !important; }
 
 /* animations */
 @keyframes dbUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
@@ -729,11 +764,66 @@
             <div class="db-panel-head">
                 <div class="db-panel-title">
                     <span class="db-panel-ico" style="background-color:rgba(26,187,156,0.13);color:#1ABB9C;"><i class="fa fa-calendar"></i></span>
-                    Daily Trading Journal
+                    Monthly Trading Journal — Day-by-Day P&L
+                </div>
+                <div style="display:flex; gap:8px; margin-left:auto;">
+                    <select id="journalFilter" class="form-control form-control-sm" style="width:auto; background-color:#1a2235 !important; border:1px solid rgba(255,255,255,0.07) !important; color:#f1f5f9; border-radius:6px; font-size:11px; padding:6px 10px;">
+                        <option value="all">All Days</option>
+                        <option value="profitable">Profitable</option>
+                        <option value="break-even">Break-Even</option>
+                        <option value="losses">Loss Days</option>
+                        <option value="high-volume">High Volume</option>
+                    </select>
                 </div>
             </div>
-            <div class="db-panel-body">
-                <div id='calendar' style="min-height:600px;"></div>
+            <div style="padding:16px;">
+                {{-- Monthly Summary --}}
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:18px; padding-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.07);">
+                    <div style="background-color:#1a2235; border-radius:8px; padding:12px; text-align:center; border-left:3px solid #3B9EFF;">
+                        <div style="font-size:9px; color:#4b5563; font-weight:700; text-transform:uppercase; margin-bottom:6px;">Month Total P&L</div>
+                        <div style="font-size:24px; font-weight:900;" id="monthlyTotalPnL" style="color:#f1f5f9;">$0.00</div>
+                    </div>
+                    <div style="background-color:#1a2235; border-radius:8px; padding:12px; text-align:center; border-left:3px solid #22C55E;">
+                        <div style="font-size:9px; color:#4b5563; font-weight:700; text-transform:uppercase; margin-bottom:6px;">Profitable Days</div>
+                        <div style="font-size:24px; font-weight:900; color:#22C55E;" id="monthlyProfitableDays">0</div>
+                    </div>
+                    <div style="background-color:#1a2235; border-radius:8px; padding:12px; text-align:center; border-left:3px solid #EF4444;">
+                        <div style="font-size:9px; color:#4b5563; font-weight:700; text-transform:uppercase; margin-bottom:6px;">Loss Days</div>
+                        <div style="font-size:24px; font-weight:900; color:#EF4444;" id="monthlyLossDays">0</div>
+                    </div>
+                </div>
+
+                {{-- Calendar Grid --}}
+                <div id='calendar' style="min-height:520px; overflow:hidden;"></div>
+                
+                {{-- Day stats on bottom click --}}
+                <div id="dayStatsPanel" style="margin-top:16px; background-color:#1a2235 !important; border:1px solid rgba(255,255,255,0.07) !important; border-radius:10px; padding:16px; display:none;">
+                    <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#4b5563 !important; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.07); padding-bottom:12px;">
+                        <span id="dayStatsDate">Date</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                        <div style="background-color:#111827 !important; border-radius:8px; padding:10px; border-left:3px solid #1ABB9C;">
+                            <div style="font-size:9px; color:#4b5563 !important; font-weight:700; text-transform:uppercase; margin-bottom:4px;">Trades</div>
+                            <div style="font-size:20px; font-weight:900; color:#f1f5f9;" id="dayStatsTradeCount">0</div>
+                        </div>
+                        <div style="background-color:#111827 !important; border-radius:8px; padding:10px; border-left:3px solid #22C55E;">
+                            <div style="font-size:9px; color:#4b5563 !important; font-weight:700; text-transform:uppercase; margin-bottom:4px;">Day P&L</div>
+                            <div style="font-size:20px; font-weight:900;" id="dayStatsPnL" style="color:#f1f5f9;">$0.00</div>
+                        </div>
+                        <div style="background-color:#111827 !important; border-radius:8px; padding:10px; border-left:3px solid #FB923C;">
+                            <div style="font-size:9px; color:#4b5563 !important; font-weight:700; text-transform:uppercase; margin-bottom:4px;">Win Rate</div>
+                            <div style="font-size:16px; font-weight:900; color:#f1f5f9;" id="dayStatsWinRate">0%</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px; background-color:#111827 !important; border-radius:8px; padding:10px;">
+                        <div style="font-size:9px; color:#4b5563 !important; font-weight:700; text-transform:uppercase; margin-bottom:6px;">Breakdown</div>
+                        <div style="display:flex; gap:8px; font-size:12px;">
+                            <div style="flex:1;"><span style="color:#22C55E; font-weight:700;" id="dayStatsWins">0</span><div style="color:#4b5563; font-size:8px;">Wins</div></div>
+                            <div style="flex:1;"><span style="color:#EF4444; font-weight:700;" id="dayStatsLosses">0</span><div style="color:#4b5563; font-size:8px;">Losses</div></div>
+                            <div style="flex:1;"><span style="color:#A78BFA; font-weight:700;" id="dayStatsLots">0</span><div style="color:#4b5563; font-size:8px;">Lots</div></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -742,14 +832,68 @@
         <div class="db-panel">
             <div class="db-panel-head">
                 <div class="db-panel-title">
-                    <span class="db-panel-ico" style="background-color:rgba(239,68,68,0.13);color:#EF4444;"><i class="fa fa-bug"></i></span>
-                    Recent Errors
+                    <span class="db-panel-ico" style="background-color:rgba(26,187,156,0.13);color:#1ABB9C;"><i class="fa fa-bar-chart"></i></span>
+                    Journal Analytics
                 </div>
             </div>
-            <div class="db-panel-body" style="max-height:300px;overflow-y:auto;" id="recentErrors">
-                <div style="text-align:center;padding:20px;color:#4b5563;">
-                    <i class="fa fa-spinner fa-spin" style="display:block;font-size:20px;margin-bottom:8px;opacity:.4;"></i>
-                    Loading...
+            <div class="db-panel-body" style="padding:0;">
+                {{-- 7-day performance --}}
+                <div style="padding:16px; border-bottom:1px solid rgba(255,255,255,0.07);">
+                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#4b5563 !important; margin-bottom:10px;">Last 7 Days</div>
+                    <div id="journalWeeklyStats" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+                        <div style="background-color:#1a2235; padding:10px; border-radius:6px; text-align:center;">
+                            <div style="color:#4b5563; font-size:9px; margin-bottom:4px;">Win Days</div>
+                            <div style="color:#22C55E; font-weight:700; font-size:18px;" id="journalWinDays">0</div>
+                        </div>
+                        <div style="background-color:#1a2235; padding:10px; border-radius:6px; text-align:center;">
+                            <div style="color:#4b5563; font-size:9px; margin-bottom:4px;">Loss Days</div>
+                            <div style="color:#EF4444; font-weight:700; font-size:18px;" id="journalLossDays">0</div>
+                        </div>
+                        <div style="background-color:#1a2235; padding:10px; border-radius:6px; text-align:center;">
+                            <div style="color:#4b5563; font-size:9px; margin-bottom:4px;">Total Trades</div>
+                            <div style="color:#3B9EFF; font-weight:700; font-size:18px;" id="journalTotalTrades">0</div>
+                        </div>
+                        <div style="background-color:#1a2235; padding:10px; border-radius:6px; text-align:center;">
+                            <div style="color:#4b5563; font-size:9px; margin-bottom:4px;">Weekly P&L</div>
+                            <div style="font-weight:700; font-size:18px;" id="journalWeeklyPnL" style="color:#f1f5f9;">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Best/Worst days --}}
+                <div style="padding:16px; border-bottom:1px solid rgba(255,255,255,0.07);">
+                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#4b5563 !important; margin-bottom:10px;">Performance Extremes</div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div style="background-color:rgba(34,197,94,0.10); border-left:3px solid #22C55E; padding:10px; border-radius:6px;">
+                            <div style="font-size:9px; color:#4b5563; margin-bottom:4px;">Best Day</div>
+                            <div style="color:#22C55E; font-weight:700; font-size:14px;" id="journalBestDay">N/A</div>
+                        </div>
+                        <div style="background-color:rgba(239,68,68,0.10); border-left:3px solid #EF4444; padding:10px; border-radius:6px;">
+                            <div style="font-size:9px; color:#4b5563; margin-bottom:4px;">Worst Day</div>
+                            <div style="color:#EF4444; font-weight:700; font-size:14px;" id="journalWorstDay">N/A</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Consistency score --}}
+                <div style="padding:16px;">
+                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#4b5563 !important; margin-bottom:10px;">Consistency Score</div>
+                    <div id="consistencyMeter" style="width:100%; height:8px; background-color:#1a2235; border-radius:4px; overflow:hidden;">
+                        <div id="consistencyBar" style="height:100%; width:0%; background:linear-gradient(90deg, #EF4444, #FB923C, #22C55E); border-radius:4px; transition:width 0.3s ease;"></div>
+                    </div>
+                    <div style="margin-top:8px; font-size:11px; text-align:center; color:#94a3b8;" id="consistencyText">0%</div>
+                </div>
+
+                {{-- Recent Errors --}}
+                <div style="padding:16px; border-top:1px solid rgba(255,255,255,0.07);">
+                    <div style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#4b5563 !important; margin-bottom:10px;">
+                        <i class="fa fa-exclamation-triangle" style="margin-right:6px;"></i>Recent Errors
+                    </div>
+                    <div id="recentErrors" style="max-height:180px; overflow-y:auto; font-size:11px;">
+                        <div style="text-align:center;padding:12px;color:#4b5563;">
+                            <i class="fa fa-check-circle" style="color:#22C55E; margin-right:6px;"></i>No errors
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -860,16 +1004,16 @@ function renderErrors(list) {
     const el = document.getElementById('recentErrors');
     if (!el) return;
     if (!list || list.length === 0) {
-        el.innerHTML = `<div style="text-align:center;padding:24px;color:#4b5563;font-size:12px;"><i class="fa fa-check-circle" style="color:#22C55E;display:block;font-size:22px;margin-bottom:8px;"></i>No errors today</div>`;
+        el.innerHTML = `<div style="text-align:center;padding:12px;color:#4b5563;font-size:11px;"><i class="fa fa-check-circle" style="color:#22C55E;margin-right:6px;"></i>No errors</div>`;
         return;
     }
-    el.innerHTML = list.map(e => `
-        <div class="db-error-item">
-            <div>
-                <div class="db-error-type">${e.type}</div>
-                <div class="db-error-msg">${e.msg}</div>
+    el.innerHTML = list.slice(0, 5).map(e => `
+        <div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="flex:1;">
+                <div style="color:#EF4444; font-weight:700; font-size:10px;">${e.type}</div>
+                <div style="color:#4b5563; font-size:10px; margin-top:2px; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${e.msg}</div>
             </div>
-            <span class="db-error-time">${e.at}</span>
+            <span style="color:#4b5563; font-size:9px; white-space:nowrap; margin-left:6px;">${e.at}</span>
         </div>
     `).join('');
 }
@@ -939,55 +1083,218 @@ refreshMetrics();
 setInterval(refreshMetrics, 5000);
 </script>
 
-{{-- FullCalendar --}}
+{{-- FullCalendar with Advanced Journal Features --}}
 <script>
 $(document).ready(function () {
 
+    // Filter state
+    let journalFilter = 'all';
+    
     function buildCalendarEvents() {
         const events = [];
         const data   = window.tradingJournalData || {};
         for (const dateStr in data) {
             const d = data[dateStr];
+            
+            // Apply filter
+            if (journalFilter !== 'all') {
+                if (journalFilter === 'profitable' && d.pnl <= 0) continue;
+                if (journalFilter === 'break-even' && d.pnl !== 0) continue;
+                if (journalFilter === 'losses' && d.pnl >= 0) continue;
+                if (journalFilter === 'high-volume' && d.trades < 5) continue;
+            }
+            
             if (d.trades > 0 || d.pnl !== 0) {
                 events.push({
-                    title: `${d.trades} ⇆  $${Math.abs(d.pnl).toFixed(2)}`,
+                    title: `${d.trades} trades • $${Math.abs(d.pnl).toFixed(2)}`,
                     start: dateStr,
                     allDay: true,
-                    extendedProps: { trades: d.trades, pnl: d.pnl }
+                    extendedProps: { 
+                        trades: d.trades, 
+                        pnl: d.pnl,
+                        lots: d.lots,
+                        wins: d.wins,
+                        losses: d.losses
+                    }
                 });
             }
         }
         return events;
     }
 
+    function renderDayStats(date, stats) {
+        const dateStr = moment(date).format('ddd, MMM D, YYYY');
+        document.getElementById('dayStatsDate').innerText = dateStr;
+        document.getElementById('dayStatsTradeCount').innerText = stats.trades;
+        
+        const pnlEl = document.getElementById('dayStatsPnL');
+        pnlEl.innerText = (stats.pnl >= 0 ? '+' : '') + '$' + Math.abs(stats.pnl).toFixed(2);
+        pnlEl.style.color = stats.pnl >= 0 ? '#22C55E' : '#EF4444';
+        
+        const winRate = stats.trades > 0 ? Math.round((stats.wins / stats.trades) * 100) : 0;
+        document.getElementById('dayStatsWinRate').innerText = winRate + '%';
+        document.getElementById('dayStatsWins').innerText = stats.wins;
+        document.getElementById('dayStatsLosses').innerText = stats.losses;
+        document.getElementById('dayStatsLots').innerText = stats.lots.toFixed(2);
+        
+        document.getElementById('dayStatsPanel').style.display = 'block';
+        document.getElementById('dayStatsPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function calculateMonthlyPnL() {
+        const data = window.tradingJournalData || {};
+        const now = moment();
+        const monthStart = moment().startOf('month');
+        const monthEnd = moment().endOf('month');
+        
+        let monthlyTotal = 0;
+        let profitableDays = 0;
+        let lossDays = 0;
+        
+        for (const dateStr in data) {
+            const d = data[dateStr];
+            const dateObj = moment(dateStr);
+            
+            if (dateObj.isBetween(monthStart, monthEnd, null, '[]')) {
+                monthlyTotal += d.pnl;
+                if (d.pnl > 0) profitableDays++;
+                if (d.pnl < 0) lossDays++;
+            }
+        }
+        
+        // Update monthly summary
+        const monthlyPnLEl = document.getElementById('monthlyTotalPnL');
+        monthlyPnLEl.innerText = (monthlyTotal >= 0 ? '+' : '') + '$' + Math.abs(monthlyTotal).toFixed(2);
+        monthlyPnLEl.style.color = monthlyTotal >= 0 ? '#22C55E' : '#EF4444';
+        
+        document.getElementById('monthlyProfitableDays').innerText = profitableDays;
+        document.getElementById('monthlyLossDays').innerText = lossDays;
+    }
+
+    function calculateJournalAnalytics() {
+        const data = window.tradingJournalData || {};
+        const now = moment();
+        const sevenDaysAgo = moment().subtract(7, 'days');
+        
+        let winDays = 0, lossDays = 0, totalTrades = 0, weeklyPnL = 0;
+        let bestDay = { pnl: -Infinity, date: null };
+        let worstDay = { pnl: Infinity, date: null };
+        
+        for (const dateStr in data) {
+            const d = data[dateStr];
+            const dateObj = moment(dateStr);
+            
+            // 7-day analysis
+            if (dateObj.isAfter(sevenDaysAgo) && dateObj.isBefore(now)) {
+                if (d.pnl > 0) winDays++;
+                if (d.pnl < 0) lossDays++;
+                totalTrades += d.trades;
+                weeklyPnL += d.pnl;
+                
+                if (d.pnl > bestDay.pnl) {
+                    bestDay = { pnl: d.pnl, date: dateStr };
+                }
+                if (d.pnl < worstDay.pnl) {
+                    worstDay = { pnl: d.pnl, date: dateStr };
+                }
+            }
+        }
+        
+        // Update weekly stats
+        document.getElementById('journalWinDays').innerText = winDays;
+        document.getElementById('journalLossDays').innerText = lossDays;
+        document.getElementById('journalTotalTrades').innerText = totalTrades;
+        document.getElementById('journalWeeklyPnL').innerText = (weeklyPnL >= 0 ? '+' : '') + '$' + weeklyPnL.toFixed(2);
+        const weeklyPnLEl = document.getElementById('journalWeeklyPnL');
+        weeklyPnLEl.style.color = weeklyPnL >= 0 ? '#22C55E' : '#EF4444';
+        
+        // Best/Worst days
+        const bestDayText = bestDay.date 
+            ? `${moment(bestDay.date).format('MMM D')} (+$${bestDay.pnl.toFixed(2)})` 
+            : 'N/A';
+        const worstDayText = worstDay.date 
+            ? `${moment(worstDay.date).format('MMM D')} (-$${Math.abs(worstDay.pnl).toFixed(2)})` 
+            : 'N/A';
+        document.getElementById('journalBestDay').innerText = bestDayText;
+        document.getElementById('journalWorstDay').innerText = worstDayText;
+        
+        // Consistency score (0-100)
+        const totalDays = winDays + lossDays;
+        const consistency = totalDays > 0 ? Math.round((winDays / totalDays) * 100) : 0;
+        const consistencyBar = document.getElementById('consistencyBar');
+        consistencyBar.style.width = consistency + '%';
+        document.getElementById('consistencyText').innerText = consistency + '% Consistent';
+    }
+
     window.renderCalendar = function () {
         $('#calendar').fullCalendar('removeEvents');
         $('#calendar').fullCalendar('addEventSource', buildCalendarEvents());
+        calculateMonthlyPnL();
+        calculateJournalAnalytics();
     };
 
     $('#calendar').fullCalendar({
         header: {
             left:   'prev,next today',
             center: 'title',
-            right:  'month,agendaWeek,agendaDay'
+            right:  'month'
         },
         defaultDate: moment(),
         editable:    false,
         eventLimit:  true,
         events:      buildCalendarEvents(),
-        eventRender: function (event, element) {
-            const pnl = event.extendedProps.pnl;
-            if (pnl > 0) {
-                element.css({ 'background-color':'rgba(34,197,94,0.18)', 'border-color':'#22C55E', 'color':'#22C55E' });
-            } else if (pnl < 0) {
-                element.css({ 'background-color':'rgba(239,68,68,0.18)', 'border-color':'#EF4444', 'color':'#EF4444' });
-            } else {
-                element.css({ 'background-color':'rgba(255,255,255,0.06)', 'border-color':'rgba(255,255,255,0.15)', 'color':'#94a3b8' });
+        dayClick: function(date) {
+            const dateStr = date.format('YYYY-MM-DD');
+            const data = window.tradingJournalData || {};
+            if (data[dateStr]) {
+                renderDayStats(date, data[dateStr]);
             }
-            element.css({ 'font-weight':'700', 'border-radius':'6px', 'padding':'4px 6px' });
+        },
+        viewRender: function(view, element) {
+            // After calendar renders, inject P/L display into day cells
+            setTimeout(function() {
+                const data = window.tradingJournalData || {};
+                $('.fc-daygrid-day, .fc-day-other').each(function() {
+                    const dateStr = $(this).attr('data-date');
+                    if (dateStr && data[dateStr] && data[dateStr].pnl !== 0) {
+                        const d = data[dateStr];
+                        
+                        // Add P/L class
+                        if (d.pnl > 0) {
+                            $(this).addClass('fc-daygrid-day-profit');
+                        } else if (d.pnl < 0) {
+                            $(this).addClass('fc-daygrid-day-loss');
+                        } else {
+                            $(this).addClass('fc-daygrid-day-breakeven');
+                        }
+                        
+                        // Add P/L label
+                        const pnlLabel = $(`<div class="dayPnLBox ${d.pnl > 0 ? 'profit' : 'loss'}">
+                            ${d.pnl >= 0 ? '+' : ''}$${Math.abs(d.pnl).toFixed(0)}
+                        </div>`);
+                        $(this).find('.fc-daygrid-day-frame').append(pnlLabel);
+                        
+                        // Add trades count
+                        const tradesLabel = $(`<div class="dayTradesCount">${d.trades} trades</div>`);
+                        $(this).find('.fc-daygrid-day-frame').append(tradesLabel);
+                    }
+                });
+            }, 100);
+        },
+        eventRender: function (event, element) {
+            element.hide();
         }
     });
 
+    // Filter handler
+    $('#journalFilter').on('change', function() {
+        journalFilter = $(this).val();
+        window.renderCalendar();
+    });
+
+    // Initial render
+    calculateMonthlyPnL();
+    calculateJournalAnalytics();
 });
 </script>
 @endpush

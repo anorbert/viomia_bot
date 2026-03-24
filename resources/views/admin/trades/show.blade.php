@@ -131,14 +131,14 @@
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">Closed At</div>
-                    <div class="stat-value">{{ $trade->closed_at ? \Carbon\Carbon::parse($trade->closed_at)->format('M d, H:i') : 'N/A' }}</div>
+                    <div class="stat-value">{{ $trade->updated_at ? $trade->updated_at->format('M d, H:i') : 'N/A' }}</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">Duration</div>
                     <div class="stat-value">
                         @php
-                            $duration = $trade->closed_at 
-                                ? \Carbon\Carbon::parse($trade->closed_at)->diff(\Carbon\Carbon::parse($trade->created_at))->format('%d d %h h')
+                            $duration = $trade->updated_at && $trade->created_at
+                                ? $trade->updated_at->diff($trade->created_at)->format('%d d %h h')
                                 : 'N/A';
                         @endphp
                         {{ $duration }}
@@ -155,18 +155,20 @@
     <div class="vi-section">
         <div class="vi-section-title">ℹ️ Trade Information</div>
         <div class="vi-info-grid">
+            @if($trade->account)
             <div class="vi-info-item">
-                <div class="vi-info-label">Account</div>
-                <div class="vi-info-value">{{ $trade->account->name ?? 'N/A' }}<br><span style="font-size:10px; color:#4b5563;">{{ $trade->account->account_number ?? 'N/A' }}</span></div>
+                <div class="vi-info-label">Account Login</div>
+                <div class="vi-info-value">{{ $trade->account->login ?? 'N/A' }}<br><span style="font-size:10px; color:#4b5563;">{{ $trade->account->account_type ?? 'N/A' }}</span></div>
             </div>
             <div class="vi-info-item">
                 <div class="vi-info-label">Platform</div>
                 <div class="vi-info-value">{{ $trade->account->platform ?? 'N/A' }}</div>
             </div>
             <div class="vi-info-item">
-                <div class="vi-info-label">Broker</div>
-                <div class="vi-info-value">{{ $trade->account->broker_server ?? 'N/A' }}</div>
+                <div class="vi-info-label">Server</div>
+                <div class="vi-info-value">{{ $trade->account->server ?? 'N/A' }}</div>
             </div>
+            @endif
             <div class="vi-info-item">
                 <div class="vi-info-label">Trade Type</div>
                 <div class="vi-info-value">{{ $trade->trade_type ?? 'Manual' }}</div>
@@ -174,11 +176,11 @@
         </div>
     </div>
 
-    @if($trade->comment || $trade->note)
+    @if($trade->close_reason)
         <div class="vi-section">
-            <div class="vi-section-title">💬 Notes</div>
+            <div class="vi-section-title">💬 Closing Reason</div>
             <div style="background-color: #1a2235; padding: 12px; border-radius: 6px; color: #94a3b8; font-size: 12px; border-left: 3px solid #1ABB9C;">
-                {{ $trade->comment ?? $trade->note ?? 'No notes' }}
+                {{ $trade->close_reason ?? 'No reason provided' }}
             </div>
         </div>
     @endif

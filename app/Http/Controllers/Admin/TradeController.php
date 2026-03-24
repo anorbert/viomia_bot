@@ -11,10 +11,39 @@ class TradeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        return view('admin.trades.index');
+        // Get query builder
+        $query = TradeLog::query();
+
+        // Search by symbol
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('symbol', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by type
+        if ($request->has('type') && !empty($request->type)) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by status
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        // Paginate results (15 per page)
+        $trades = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        // Calculate statistics
+        $allTrades = TradeLog::all();
+        $totalTrades = $allTrades->count();
+        $buyTrades = $allTrades->where('type', 'buy')->count();
+        $sellTrades = $allTrades->where('type', 'sell')->count();
+        $totalProfit = $allTrades->sum('profit');
+
+        return view('admin.trades.index', compact(
+            'trades', 'totalTrades', 'buyTrades', 'sellTrades', 'totalProfit'
+        ));
     }
 
     /**
@@ -38,7 +67,20 @@ class TradeController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Find trade by ID with account relation or fail with 404
+        $trade = TradeLog::with('account')->findOrFail($id);
+
+        // Map TradeLog fields to template expectations using a collection
+        $trade->direction = $trade->type;
+        $trade->entry_price = $trade->open_price;
+        $trade->stop_loss = $trade->sl;
+        $trade->take_profit = $trade->tp;
+        $trade->lot_size = $trade->lots;
+        $trade->exit_price = $trade->close_price;
+        $trade->current_price = $trade->close_price ?? $trade->open_price;
+        $trade->pnl = $trade->profit ?? 0;
+
+        return view('admin.trades.show', compact('trade'));
     }
 
     /**

@@ -13,10 +13,29 @@ class TradeLogController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $trades = TradeLog::latest()->paginate(50);
-        
+        // Get query builder
+        $query = TradeLog::query();
+
+        // Search by symbol
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('symbol', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by type
+        if ($request->has('type') && !empty($request->type)) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by status
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        // Paginate results (15 per page)
+        $trades = $query->latest()->paginate(15);
+
         // Calculate summary statistics for stats cards
         $allTrades = TradeLog::all();
         $totalTrades = $allTrades->count();
@@ -41,7 +60,7 @@ class TradeLogController extends Controller
     public function store(Request $request)
     {
         $raw = $request->getContent();
-        \Log::info('Incoming MT5 close payload:', ['raw' => $raw]);
+        \Log::info('Incoming MT5 payload:', ['raw' => $raw]);
 
         $clean = preg_replace('/\x00/', '', $raw);
 
@@ -53,129 +72,149 @@ class TradeLogController extends Controller
             ], 400);
         }
 
-        $validated = validator($data, [
-            'account'     => 'required|numeric',
-            'ticket'      => 'required',   // POSITION ID
-            'close_price' => 'nullable|numeric',
-            'profit'      => 'nullable|numeric',
-            'closed_lots' => 'nullable|numeric|min:0',
-            'reason'      => 'nullable|string',
-        ])->validate();
+        // ✅ Normalize type to uppercase (if present)
+        if (isset($data['type'])) {
+            $data['type'] = strtoupper($data['type']);
+        }
 
-        // Resolve account login to account_id
-        $account = Account::where('login', $validated['account'])->first();
+        // ✅ Normalize direction to lowercase (if present, for signal endpoint)
+        if (isset($data['direction'])) {
+            $data['direction'] = strtolower($data['direction']);
+        }
+
+        // Resolve account login to account_id FIRST
+        if (!isset($data['account'])) {
+            return response()->json(['error' => 'Account field required'], 400);
+        }
+        $account = Account::where('login', $data['account'])->first();
         if (!$account) {
             return response()->json([
                 'error' => 'Account not found',
-                'account_login' => $validated['account']
+                'account_login' => $data['account']
             ], 400);
         }
-        $validated['account_id'] = $account->id;
-        unset($validated['account']);
+        $accountId = $account->id;
 
-        return \DB::transaction(function () use ($validated) {
+        // ✅ Check if trade exists by ticket FIRST
+        $existingTradeLog = TradeLog::where('ticket', $data['ticket'] ?? null)->first();
 
-            $tradeLog = TradeLog::where('ticket', $validated['ticket'])
-                ->lockForUpdate()
-                ->first();
+        if ($existingTradeLog) {
+            // CLOSING existing trade - only require closing fields
+            $validated = validator($data, [
+                'account'     => 'required|numeric',
+                'ticket'      => 'required|string',
+                'close_price' => 'required|numeric|gt:0',
+                'profit'      => 'required|numeric',
+                'closed_lots' => 'required|numeric|gt:0',
+                'reason'      => 'required|string|in:TP,SL,manual',
+            ])->validate();
 
-            if (!$tradeLog) {
-                // CREATE new TradeLog if not found
-                $tradeLog = TradeLog::create([
-                    'account_id'   => $validated['account_id'],
+            \Log::info('Closing existing trade:', ['ticket' => $validated['ticket']]);
+
+            return \DB::transaction(function () use ($existingTradeLog, $validated, $accountId) {
+                $incomingProfit     = (float)($validated['profit'] ?? 0);
+                $incomingClosedLots = (float)($validated['closed_lots'] ?? 0);
+
+                $currentProfit = (float)($existingTradeLog->profit ?? 0);
+                $currentClosed = (float)($existingTradeLog->closed_lots ?? 0);
+
+                $newClosed = $currentClosed + $incomingClosedLots;
+                $lotsOpen = (float)$existingTradeLog->lots;
+                $epsilon  = 0.0000001;
+
+                $status = ($newClosed + $epsilon >= $lotsOpen) ? 'closed' : 'partial_closed';
+
+                $updates = [
+                    'profit'      => $currentProfit + $incomingProfit,
+                    'closed_lots' => $newClosed,
+                    'status'      => $status,
+                    'close_price' => $validated['close_price'],
+                    'close_reason' => $validated['reason'],
+                    'closed_at'    => now(),
+                ];
+
+                $existingTradeLog->update($updates);
+                $existingTradeLog->refresh();
+
+                \Log::info('Trade closed successfully', [
                     'ticket'       => $validated['ticket'],
-                    'symbol'       => $validated['symbol'] ?? '',
-                    'type'         => $validated['type'] ?? '',
-                    'lots'         => $validated['closed_lots'] ?? 0,
-                    'sl'           => $validated['sl'] ?? null,
-                    'tp'           => $validated['tp'] ?? null,
-                    'open_price'   => $validated['open_price'] ?? null,
-                    'close_price'  => $validated['close_price'] ?? null,
-                    'profit'       => $validated['profit'] ?? 0,
-                    'closed_lots'  => $validated['closed_lots'] ?? 0,
-                    'status'       => 'closed',
-                    'close_reason' => $validated['reason'] ?? '',
+                    'added_profit' => $incomingProfit,
+                    'total_profit' => $existingTradeLog->profit,
+                    'status'       => $existingTradeLog->status,
                 ]);
-                \Log::info('Trade log created automatically', [
-                    'ticket' => $validated['ticket'],
-                    'fields' => $tradeLog->toArray()
-                ]);
+
                 return response()->json([
-                    'success'      => true,
-                    'message'      => 'Trade log created automatically',
-                    'ticket'       => $tradeLog->ticket,
-                    'status'       => $tradeLog->status,
-                    'closed_lots'  => $tradeLog->closed_lots,
-                    'profit_total' => $tradeLog->profit,
+                    'success'    => true,
+                    'message'    => 'Trade closed successfully',
+                    'ticket'     => $existingTradeLog->ticket,
+                    'status'     => $existingTradeLog->status,
+                    'profit'     => $existingTradeLog->profit,
+                    'closed_at'  => $existingTradeLog->closed_at,
+                ], 200);
+            });
+
+        } else {
+            // OPENING new trade - require all opening fields
+            $validated = validator($data, [
+                'account'     => 'required|numeric',
+                'ticket'      => 'required|string',
+                'symbol'      => 'required|string',
+                'type'        => 'required|in:BUY,SELL',
+                'lots'        => 'required|numeric|gt:0',
+                'open_price'  => 'required|numeric|gt:0',
+                'sl'          => 'required|numeric|gte:0',
+                'tp'          => 'required|numeric|gte:0',
+            ])->validate();
+
+            \Log::info('Opening new trade:', ['ticket' => $validated['ticket']]);
+
+            return \DB::transaction(function () use ($validated, $accountId) {
+                $tradeLog = TradeLog::create([
+                    'account_id'   => $accountId,
+                    'ticket'       => $validated['ticket'],
+                    'symbol'       => $validated['symbol'],
+                    'type'         => $validated['type'],
+                    'lots'         => $validated['lots'],
+                    'open_price'   => $validated['open_price'],
+                    'sl'           => $validated['sl'],
+                    'tp'           => $validated['tp'],
+                    'status'       => 'open',
+                    'opened_at'    => now(),
+                ]);
+
+                \Log::info('Trade opened successfully', [
+                    'ticket' => $validated['ticket'],
+                    'symbol' => $validated['symbol'],
+                ]);
+
+                return response()->json([
+                    'success'   => true,
+                    'message'   => 'Trade opened successfully',
+                    'ticket'    => $tradeLog->ticket,
+                    'status'    => $tradeLog->status,
+                    'opened_at' => $tradeLog->opened_at,
                 ], 201);
-            }
-
-            $incomingProfit     = (float)($validated['profit'] ?? 0);
-            $incomingClosedLots = (float)($validated['closed_lots'] ?? 0);
-
-            $currentProfit = (float)($tradeLog->profit ?? 0);
-            $currentClosed = (float)($tradeLog->closed_lots ?? 0);
-
-            $newClosed = $currentClosed + $incomingClosedLots;
-
-            $lotsOpen = (float)$tradeLog->lots;
-            $epsilon  = 0.0000001;
-
-            $status = ($newClosed + $epsilon >= $lotsOpen) ? 'closed' : 'partial_closed';
-
-            $updates = [
-                'profit'      => $currentProfit + $incomingProfit,
-                'closed_lots' => $newClosed,
-                'status'      => $status,
-            ];
-
-            if (array_key_exists('close_price', $validated) && $validated['close_price'] !== null) {
-                $updates['close_price'] = $validated['close_price'];
-            }
-
-            if (!empty($validated['reason'])) {
-                $updates['close_reason'] = $validated['reason'];
-            }
-
-            $tradeLog->update($updates);
-            $tradeLog->refresh();
-
-            \Log::info('Trade log updated', [
-                'ticket'       => $validated['ticket'],
-                'added_profit' => $incomingProfit,
-                'profit_total' => $tradeLog->profit,
-                'added_lots'   => $incomingClosedLots,
-                'closed_lots'  => $tradeLog->closed_lots,
-                'open_lots'    => $tradeLog->lots,
-                'status'       => $tradeLog->status,
-                'close_price'  => $tradeLog->close_price,
-                'reason'       => $tradeLog->close_reason,
-            ]);
-
-            if ($status === 'closed') {
-                $signal = Signal::where('ticket', $validated['ticket'])->first();
-                if ($signal) {
-                    $signal->update(['active' => false]);
-                    \Log::info('Linked signal closed', ['ticket' => $validated['ticket']]);
-                }
-            }
-
-            return response()->json([
-                'success'       => true,
-                'message'       => 'Trade log updated successfully',
-                'ticket'        => $validated['ticket'],
-                'status'        => $status,
-                'closed_lots'   => $tradeLog->closed_lots,
-                'profit_total'  => $tradeLog->profit,
-            ], 200);
-        });
+            });
+        }
     }
+
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
         $trade = TradeLog::with(['account'])->findOrFail($id);
+
+        // Map TradeLog fields to template expectations
+        $trade->direction = $trade->type;
+        $trade->entry_price = $trade->open_price;
+        $trade->stop_loss = $trade->sl;
+        $trade->take_profit = $trade->tp;
+        $trade->lot_size = $trade->lots;
+        $trade->exit_price = $trade->close_price;
+        $trade->current_price = $trade->close_price ?? $trade->open_price;
+        $trade->pnl = $trade->profit ?? 0;
+
         return view('admin.trades.show', compact('trade'));
     }
 
