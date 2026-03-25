@@ -19,6 +19,7 @@ use App\Http\Controllers\Bot\DecisionValidatorController;
 use App\Http\Controllers\Bot\SignalValidatorController;
 use App\Http\Controllers\Bot\TradeEntryContextController;
 use App\Http\Controllers\Bot\P0RaceConditionVerifierController;
+use App\Http\Controllers\Bot\SignalPatternController;
 use App\Middleware\CheckApiKey;
 
 Route::prefix('bot')->middleware(CheckApiKey::class)->group(function () {
@@ -36,6 +37,13 @@ Route::prefix('bot')->middleware(CheckApiKey::class)->group(function () {
     // ===== Signals =====
     Route::get('/signal', [SignalController::class, 'getActive']);
     Route::post('/signal', [SignalController::class, 'store']);
+
+    // ===== Signal Patterns (NEW - P0-2b) =====
+    // Saves signal pattern information when signals are generated
+    Route::post('/signal/pattern', [SignalPatternController::class, 'store']);
+    Route::get('/signal/pattern/analysis', [SignalPatternController::class, 'getAnalysis']);
+    Route::get('/signal/pattern/history/{symbol}', [SignalPatternController::class, 'getHistory']);
+    Route::put('/signal/pattern/{patternId}/outcome', [SignalPatternController::class, 'linkOutcome']);
 
     // ===== Trade Logs =====
     Route::post('/trade/log', [TradeLogController::class, 'store']);
